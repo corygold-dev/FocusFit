@@ -1,24 +1,23 @@
 // app/exercise.tsx
-import { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
-import { sampleSize } from 'lodash';
 import { useAudioPlayer } from 'expo-audio';
+import { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
+import endSoundFile from '../assets/audio/finish-sound.wav';
 import smallBeepFile from '../assets/audio/short-beep.wav';
 import finalBeepFile from '../assets/audio/short-ping.mp3';
-import endSoundFile from '../assets/audio/finish-sound.wav';
+import { Exercise } from './lib/exercises';
+import { pickWorkout } from './utils/pickWorkout';
+import { formatTime } from './utils/formatTime';
 
 type Phase = 'preview' | 'countdown' | 'active';
-
-const exercises = ['Push-ups', 'Squats', 'Lunges', 'Burpees', 'Sit-ups'];
-const stretches = ['Hamstring stretch', 'Shoulder stretch', 'Quad stretch'];
 
 export default function ExerciseScreen() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>('preview');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentList, setCurrentList] = useState<string[]>([]);
+  const [currentList, setCurrentList] = useState<Exercise[]>([]);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -28,7 +27,7 @@ export default function ExerciseScreen() {
   const endSound = useAudioPlayer(endSoundFile);
 
   useEffect(() => {
-    const workout = [...sampleSize(exercises, 2), ...sampleSize(stretches, 1)];
+    const workout = pickWorkout();
     setCurrentList(workout);
   }, []);
 
@@ -55,7 +54,7 @@ export default function ExerciseScreen() {
 
   useEffect(() => {
     if (phase === 'countdown' && secondsLeft === 0) {
-      const isStretch = currentList[currentIndex]?.includes('stretch');
+      const isStretch = currentList[currentIndex].category === 'stretch';
       const duration = isStretch ? 60 : 30;
       setSecondsLeft(duration);
       setTotalDuration(duration);
@@ -79,7 +78,7 @@ export default function ExerciseScreen() {
     setPhase('countdown');
   };
 
-  const currentExercise = currentList[currentIndex];
+  const currentExercise = currentList[currentIndex]?.name ?? '';
   const progress = totalDuration > 0 ? (totalDuration - secondsLeft) / totalDuration : 0;
 
   return (
@@ -94,13 +93,13 @@ export default function ExerciseScreen() {
       {phase === 'countdown' && (
         <>
           <Text style={styles.title}>Get ready...</Text>
-          <Text style={styles.timer}>{secondsLeft}</Text>
+          <Text style={styles.timer}>{formatTime(secondsLeft)}</Text>
         </>
       )}
       {phase === 'active' && (
         <>
           <Text style={styles.title}>{currentExercise}</Text>
-          <Text style={styles.timer}>{secondsLeft}s</Text>
+          <Text style={styles.timer}>{formatTime(secondsLeft)}</Text>
           <Progress.Bar progress={progress} width={200} height={12} />
         </>
       )}
