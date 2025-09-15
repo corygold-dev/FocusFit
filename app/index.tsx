@@ -98,6 +98,7 @@ export default function TimerScreen() {
       <View style={styles.buttonContainer}>
         <Button title={isRunning ? 'Pause' : 'Start'} onPress={toggleTimer} />
         <Button title="Reset" onPress={resetTimer} />
+        <Button title="Skip" onPress={() => router.push('/exercise' as Href)} />
       </View>
     </SafeAreaView>
   );
@@ -106,7 +107,12 @@ export default function TimerScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 30 },
   title: { fontSize: 24, fontWeight: 'bold' },
-  buttonContainer: { flexDirection: 'row', gap: 20 },
+  buttonContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 20,
+    justifyContent: 'center',
+  },
   presets: { flexDirection: 'row', gap: 20, marginVertical: 20 },
   presetButton: { fontSize: 18, color: '#2575fc', fontWeight: '600' },
 });
