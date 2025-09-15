@@ -1,5 +1,5 @@
 // app/exercise.tsx
-import { useAudioPlayer } from 'expo-audio';
+import { useAudioPlayer, AudioPlayer } from 'expo-audio';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
@@ -26,7 +26,7 @@ export default function ExerciseScreen() {
   const finalBeep = useAudioPlayer(finalBeepFile);
   const endSound = useAudioPlayer(endSoundFile);
 
-  const playSound = async (sound) => {
+  const playSound = async (sound: AudioPlayer) => {
     await sound.seekTo(0);
     sound.play();
   };
