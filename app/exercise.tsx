@@ -1,16 +1,12 @@
-import { useAudioPlayer } from 'expo-audio';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
-import endSoundFile from '../assets/audio/finish-sound.wav';
-import smallBeepFile from '../assets/audio/short-beep.wav';
-import finalBeepFile from '../assets/audio/short-ping.mp3';
 import { Exercise } from './lib/exercises';
 import { pickWorkout } from '../utils/pickWorkout';
 import { formatTime } from '../utils/formatTime';
-import { playSound } from '@/utils/playSound';
 import { ONE_SECOND } from '@/utils/constants';
+import { useSounds } from './providers/SoundProvider';
 
 type Phase = 'preview' | 'countdown' | 'active';
 
@@ -23,9 +19,7 @@ export default function ExerciseScreen() {
   const [totalDuration, setTotalDuration] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const smallBeep = useAudioPlayer(smallBeepFile);
-  const finalBeep = useAudioPlayer(finalBeepFile);
-  const endSound = useAudioPlayer(endSoundFile);
+  const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
 
   useEffect(() => {
     const workout = pickWorkout();
@@ -34,8 +28,8 @@ export default function ExerciseScreen() {
 
   useEffect(() => {
     if (phase === 'countdown') {
-      if (secondsLeft > 0) playSound(smallBeep);
-      else if (secondsLeft === 0) playSound(finalBeep);
+      if (secondsLeft > 0) playSmallBeep();
+      else if (secondsLeft === 0) playFinalBeep();
 
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => prev - 1);
@@ -51,7 +45,7 @@ export default function ExerciseScreen() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [finalBeep, phase, secondsLeft, smallBeep]);
+  }, [phase, playFinalBeep, playSmallBeep, secondsLeft]);
 
   useEffect(() => {
     if (phase === 'countdown' && secondsLeft === 0) {
@@ -62,7 +56,7 @@ export default function ExerciseScreen() {
     }
 
     if (phase === 'active' && secondsLeft === 0) {
-      playSound(endSound);
+      playEndSound();
       if (currentIndex < currentList.length - 1) {
         setCurrentIndex((i) => i + 1);
         setPhase('preview');
@@ -70,7 +64,7 @@ export default function ExerciseScreen() {
         router.replace('/');
       }
     }
-  }, [secondsLeft, phase, currentIndex, currentList, endSound, router]);
+  }, [secondsLeft, phase, currentIndex, currentList, router, playEndSound]);
 
   const startCountdown = () => {
     setSecondsLeft(3);
@@ -86,6 +80,9 @@ export default function ExerciseScreen() {
       {phase === 'preview' && (
         <>
           <Text style={styles.title}>Next up:</Text>
+          <View style={styles.videoPlaceholder}>
+            <Text style={styles.videoText}>Video Preview</Text>
+          </View>
           <Text style={styles.exercise}>{currentExercise}</Text>
           <Button title="Start exercise" onPress={startCountdown} />
         </>
@@ -112,4 +109,18 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
   exercise: { fontSize: 32, fontWeight: '600', marginBottom: 40 },
   timer: { fontSize: 48, fontWeight: 'bold', marginBottom: 20 },
+  videoPlaceholder: {
+    width: 300,
+    height: 180,
+    backgroundColor: '#eee',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  videoText: {
+    color: '#888',
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });

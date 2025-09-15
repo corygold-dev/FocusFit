@@ -5,10 +5,8 @@ import Slider from '@react-native-community/slider';
 import * as Progress from 'react-native-progress';
 import { useRouter, Href } from 'expo-router';
 import { formatTime } from '@/utils/formatTime';
-import endSoundFile from '../assets/audio/finish-sound.wav';
-import { useAudioPlayer } from 'expo-audio';
-import { playSound } from '@/utils/playSound';
 import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
+import { useSounds } from './providers/SoundProvider';
 
 export default function TimerScreen() {
   const router = useRouter();
@@ -17,7 +15,7 @@ export default function TimerScreen() {
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const endSound = useAudioPlayer(endSoundFile);
+  const { playEndSound } = useSounds();
 
   const toggleTimer = () => setIsRunning((prev) => !prev);
 
@@ -45,10 +43,10 @@ export default function TimerScreen() {
   useEffect(() => {
     if (secondsLeft === 0) {
       setIsRunning(false);
-      playSound(endSound);
+      playEndSound();
       router.push('/exercise' as Href);
     }
-  }, [secondsLeft, router, endSound]);
+  }, [secondsLeft, router, playEndSound]);
 
   const progress = 1 - secondsLeft / duration;
 
