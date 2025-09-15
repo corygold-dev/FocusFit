@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
 import _ from 'lodash';
 
@@ -48,14 +49,14 @@ export default function TimerScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Focus Timer</Text>
       <Text style={styles.timer}>{formatTime(secondsLeft)}</Text>
       <View style={styles.buttonContainer}>
         <Button title={isRunning ? 'Pause' : 'Start'} onPress={toggleTimer} />
         <Button title="Reset" onPress={resetTimer} />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

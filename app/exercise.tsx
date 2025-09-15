@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import _ from 'lodash';
 
@@ -37,7 +38,7 @@ export default function ExerciseScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Exercise Time! 💪</Text>
 
       {currentSet.exercises.map((exercise, idx) => (
@@ -57,7 +58,7 @@ export default function ExerciseScreen() {
       </View>
 
       <Button title="Done" onPress={() => router.push('/')} />
-    </View>
+    </SafeAreaView>
   );
 }
 
