@@ -18,6 +18,7 @@ export default [
       'react/react-in-jsx-scope': 'off', // Expo/React Native doesn’t need React import
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'newline-per-chained-call': ['error', { ignoreChainWithDepth: 1 }],
     },
     languageOptions: {
       parserOptions: {

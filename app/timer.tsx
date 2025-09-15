@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { useRouter, Href } from 'expo-router';
+import _ from 'lodash';
 
-const TIMER_DURATION = 25 * 60;
+const TIMER_DURATION = 5;
 
 export default function TimerScreen() {
   const router = useRouter();
@@ -10,9 +11,7 @@ export default function TimerScreen() {
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const toggleTimer = () => {
-    setIsRunning((prev) => !prev);
-  };
+  const toggleTimer = () => setIsRunning((prev) => !prev);
 
   const resetTimer = () => {
     setIsRunning(false);
@@ -29,7 +28,9 @@ export default function TimerScreen() {
     }
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
     };
   }, [isRunning, secondsLeft]);
 
@@ -41,11 +42,9 @@ export default function TimerScreen() {
   }, [secondsLeft, router]);
 
   const formatTime = (seconds: number) => {
-    const formattedMinutes = Math.floor(seconds / 60)
-      .toString()
-      .padStart(2, '0');
-    const formattedSeconds = (seconds % 60).toString().padStart(2, '0');
-    return `${formattedMinutes}:${formattedSeconds}`;
+    const minutes = _.padStart(String(Math.floor(seconds / 60)), 2, '0');
+    const secs = _.padStart(String(seconds % 60), 2, '0');
+    return `${minutes}:${secs}`;
   };
 
   return (
