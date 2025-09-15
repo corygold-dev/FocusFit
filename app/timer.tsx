@@ -10,7 +10,7 @@ export default function TimerScreen() {
   const router = useRouter();
   const [secondsLeft, setSecondsLeft] = useState(TIMER_DURATION);
   const [isRunning, setIsRunning] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const toggleTimer = () => setIsRunning((prev) => !prev);
 

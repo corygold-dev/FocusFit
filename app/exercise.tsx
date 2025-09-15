@@ -26,6 +26,11 @@ export default function ExerciseScreen() {
   const finalBeep = useAudioPlayer(finalBeepFile);
   const endSound = useAudioPlayer(endSoundFile);
 
+  const playSound = async (sound) => {
+    await sound.seekTo(0);
+    sound.play();
+  };
+
   useEffect(() => {
     const workout = pickWorkout();
     setCurrentList(workout);
@@ -33,8 +38,8 @@ export default function ExerciseScreen() {
 
   useEffect(() => {
     if (phase === 'countdown') {
-      if (secondsLeft > 0) smallBeep.play();
-      else if (secondsLeft === 0) finalBeep.play();
+      if (secondsLeft > 0) playSound(smallBeep);
+      else if (secondsLeft === 0) playSound(finalBeep);
 
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => prev - 1);
@@ -54,15 +59,14 @@ export default function ExerciseScreen() {
 
   useEffect(() => {
     if (phase === 'countdown' && secondsLeft === 0) {
-      const isStretch = currentList[currentIndex].category === 'stretch';
-      const duration = isStretch ? 60 : 30;
+      const duration = currentList[currentIndex].duration;
       setSecondsLeft(duration);
       setTotalDuration(duration);
       setPhase('active');
     }
 
     if (phase === 'active' && secondsLeft === 0) {
-      endSound.play();
+      playSound(endSound);
       if (currentIndex < currentList.length - 1) {
         setCurrentIndex((i) => i + 1);
         setPhase('preview');
