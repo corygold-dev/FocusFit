@@ -71,7 +71,7 @@ export default function ExerciseScreen() {
         setCurrentIndex((i) => i + 1);
         setPhase('preview');
       } else {
-        router.replace('/timer');
+        router.replace('/');
       }
     }
   }, [secondsLeft, phase, currentIndex, currentList, endSound, router]);
