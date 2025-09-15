@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Exercise, exercises } from '../lib/exercises';
+import { Exercise, exercises } from '../app/lib/exercises';
 
 export function pickWorkout(): Exercise[] {
   const nonStretch = _.filter(exercises, (e) => e.category !== 'stretch');

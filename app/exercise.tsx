@@ -1,5 +1,4 @@
-// app/exercise.tsx
-import { useAudioPlayer, AudioPlayer } from 'expo-audio';
+import { useAudioPlayer } from 'expo-audio';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
@@ -8,8 +7,10 @@ import endSoundFile from '../assets/audio/finish-sound.wav';
 import smallBeepFile from '../assets/audio/short-beep.wav';
 import finalBeepFile from '../assets/audio/short-ping.mp3';
 import { Exercise } from './lib/exercises';
-import { pickWorkout } from './utils/pickWorkout';
-import { formatTime } from './utils/formatTime';
+import { pickWorkout } from '../utils/pickWorkout';
+import { formatTime } from '../utils/formatTime';
+import { playSound } from '@/utils/playSound';
+import { ONE_SECOND } from '@/utils/constants';
 
 type Phase = 'preview' | 'countdown' | 'active';
 
@@ -26,11 +27,6 @@ export default function ExerciseScreen() {
   const finalBeep = useAudioPlayer(finalBeepFile);
   const endSound = useAudioPlayer(endSoundFile);
 
-  const playSound = async (sound: AudioPlayer) => {
-    await sound.seekTo(0);
-    sound.play();
-  };
-
   useEffect(() => {
     const workout = pickWorkout();
     setCurrentList(workout);
@@ -43,13 +39,13 @@ export default function ExerciseScreen() {
 
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => prev - 1);
-      }, 1000);
+      }, ONE_SECOND);
     }
 
     if (phase === 'active') {
       intervalRef.current = setInterval(() => {
         setSecondsLeft((prev) => prev - 1);
-      }, 1000);
+      }, ONE_SECOND);
     }
 
     return () => {
