@@ -21,7 +21,7 @@ export function useNotificationsSetup() {
           await Notifications.setNotificationChannelAsync('default', {
             name: 'Default',
             importance: Notifications.AndroidImportance.HIGH,
-            sound: 'default',
+            sound: 'finish_sound',
           });
         }
       } catch (error) {

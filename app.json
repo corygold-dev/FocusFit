@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleResources": ["assets/audio/finish-sound.wav"]
     },
     "android": {
       "adaptiveIcon": {

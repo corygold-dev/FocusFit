@@ -1,13 +1,12 @@
 import * as Notifications from 'expo-notifications';
-import endSoundFile from '../../assets/audio/finish-sound.wav';
 
 export async function scheduleTimerNotification(seconds: number) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Time's up ⏱️",
-        body: 'Your focus session has ended.',
-        sound: endSoundFile,
+        title: 'Focus Timer Finished',
+        body: 'Time to Move!',
+        sound: 'finish-sound.wav',
       },
       trigger: {
         type: 'timeInterval',

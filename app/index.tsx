@@ -105,11 +105,13 @@ export default function TimerScreen() {
         {PRESET_MINUTES.map((min) => (
           <Text
             key={min}
-            style={styles.presetButton}
+            style={[styles.presetButton, isRunning && { opacity: 0.4, color: '#aaa' }]}
             onPress={() => {
-              setDuration(min * 60);
-              setSecondsLeft(min * 60);
-              endTimeRef.current = null;
+              if (!isRunning) {
+                setDuration(min * 60);
+                setSecondsLeft(min * 60);
+                endTimeRef.current = null;
+              }
             }}
           >
             {min} min
@@ -124,13 +126,16 @@ export default function TimerScreen() {
         step={SLIDER.STEP}
         value={secondsLeft / 60}
         onValueChange={(value) => {
-          const newSeconds = value * 60;
-          setDuration(newSeconds);
-          setSecondsLeft(newSeconds);
-          endTimeRef.current = null;
+          if (!isRunning) {
+            const newSeconds = value * 60;
+            setDuration(newSeconds);
+            setSecondsLeft(newSeconds);
+            endTimeRef.current = null;
+          }
         }}
-        minimumTrackTintColor="#2575fc"
-        maximumTrackTintColor="#eee"
+        minimumTrackTintColor={isRunning ? '#ccc' : '#2575fc'} // gray when locked
+        maximumTrackTintColor={isRunning ? '#eee' : '#eee'}
+        disabled={isRunning}
       />
 
       <View style={styles.buttonContainer}>
