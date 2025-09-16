@@ -1,13 +1,14 @@
-import { EQUIPMENT_OPTIONS } from '@/utils/constants';
-import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/utils/constants';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   initialEquipment: string[];
-  initialDifficulty: 'Easy' | 'Medium' | 'Hard';
-  onSave: (settings: { equipment: string[]; difficulty: 'Easy' | 'Medium' | 'Hard' }) => void;
+  initialDifficulty: 'easy' | 'medium' | 'hard';
+  onSave: (settings: { equipment: string[]; difficulty: 'easy' | 'medium' | 'hard' }) => void;
 };
 
 export default function SettingsModal({
@@ -18,7 +19,7 @@ export default function SettingsModal({
   onSave,
 }: Props) {
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
-  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>(initialDifficulty);
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);
 
   useEffect(() => {
     if (visible) {
@@ -65,10 +66,10 @@ export default function SettingsModal({
           </ScrollView>
 
           <Text style={styles.sectionTitle}>Difficulty:</Text>
-          {['Easy', 'Medium', 'Hard'].map((level) => (
+          {DIFFICULTY_LEVELS.map((level) => (
             <TouchableOpacity
               key={level}
-              onPress={() => setDifficulty(level as 'Easy' | 'Medium' | 'Hard')}
+              onPress={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
               style={[styles.optionButton, difficulty === level && styles.optionSelected]}
             >
               <Text
@@ -77,7 +78,7 @@ export default function SettingsModal({
                   fontWeight: '600',
                 }}
               >
-                {level}
+                {_.capitalize(level)}
               </Text>
             </TouchableOpacity>
           ))}

@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { Settings } from 'lucide-react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Slider from '@react-native-community/slider';
-import * as Progress from 'react-native-progress';
-import { useRouter, Href } from 'expo-router';
-import { formatTime } from '@/utils/formatTime';
-import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
-import { useSounds } from './providers/SoundProvider';
-import { cancelNotification, scheduleTimerNotification } from '@/utils/notifications';
 import SettingsModal from '@/components/SettingsModal';
+import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
+import { formatTime } from '@/utils/formatTime';
+import { cancelNotification, scheduleTimerNotification } from '@/utils/notifications';
+import Slider from '@react-native-community/slider';
+import { Href, useRouter } from 'expo-router';
+import { Settings } from 'lucide-react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as Progress from 'react-native-progress';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSounds } from './providers/SoundProvider';
+import { useUserSettings } from './providers/UserSettingsProvider';
 
 export default function TimerScreen() {
   const router = useRouter();
@@ -17,8 +18,9 @@ export default function TimerScreen() {
   const [secondsLeft, setSecondsLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [equipment, setEquipment] = useState<string[]>([]);
-  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
+
+  const { settings, updateSettings } = useUserSettings();
+
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notificationIdRef = useRef<string | null>(null);
   const endTimeRef = useRef<number | null>(null);
@@ -172,11 +174,10 @@ export default function TimerScreen() {
       <SettingsModal
         visible={showSettings}
         onClose={() => setShowSettings(false)}
-        initialEquipment={equipment}
-        initialDifficulty={difficulty}
+        initialEquipment={settings.equipment}
+        initialDifficulty={settings.difficulty}
         onSave={({ equipment, difficulty }) => {
-          setEquipment(equipment);
-          setDifficulty(difficulty);
+          updateSettings({ equipment, difficulty });
         }}
       />
     </SafeAreaView>
