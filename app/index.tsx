@@ -7,6 +7,7 @@ import { useRouter, Href } from 'expo-router';
 import { formatTime } from '@/utils/formatTime';
 import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
 import { useSounds } from './providers/SoundProvider';
+import { cancelNotification, scheduleTimerNotification } from '@/utils/notifications';
 
 export default function TimerScreen() {
   const router = useRouter();
@@ -14,23 +15,62 @@ export default function TimerScreen() {
   const [secondsLeft, setSecondsLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const notificationIdRef = useRef<string | null>(null);
+  const endTimeRef = useRef<number | null>(null);
 
   const { playEndSound } = useSounds();
 
-  const toggleTimer = () => setIsRunning((prev) => !prev);
+  const startTimer = async (newDuration?: number) => {
+    const time = newDuration ?? secondsLeft;
+    endTimeRef.current = Date.now() + time * ONE_SECOND;
+    setIsRunning(true);
 
-  const resetTimer = () => {
+    notificationIdRef.current = await scheduleTimerNotification(time);
+  };
+
+  const pauseTimer = async () => {
+    setIsRunning(false);
+
+    if (notificationIdRef.current) {
+      await cancelNotification(notificationIdRef.current);
+      notificationIdRef.current = null;
+    }
+
+    if (endTimeRef.current) {
+      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
+      setSecondsLeft(remaining);
+      endTimeRef.current = null;
+    }
+  };
+
+  const resetTimer = async () => {
     setIsRunning(false);
     setSecondsLeft(duration);
+    endTimeRef.current = null;
+
+    if (notificationIdRef.current) {
+      await cancelNotification(notificationIdRef.current);
+      notificationIdRef.current = null;
+    }
   };
 
   useEffect(() => {
-    if (isRunning && secondsLeft > 0) {
-      intervalRef.current = setInterval(() => setSecondsLeft((prev) => prev - 1), ONE_SECOND);
-    } else if (!isRunning && intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
+    if (!isRunning) return;
+
+    intervalRef.current = setInterval(() => {
+      if (!endTimeRef.current) return;
+
+      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
+      setSecondsLeft(remaining);
+
+      if (remaining <= 0) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+        setIsRunning(false);
+        playEndSound();
+        router.push('/exercise' as Href);
+      }
+    }, ONE_SECOND);
 
     return () => {
       if (intervalRef.current) {
@@ -38,15 +78,12 @@ export default function TimerScreen() {
         intervalRef.current = null;
       }
     };
-  }, [isRunning, secondsLeft]);
+  }, [isRunning, playEndSound, router]);
 
-  useEffect(() => {
-    if (secondsLeft === 0) {
-      setIsRunning(false);
-      playEndSound();
-      router.push('/exercise' as Href);
-    }
-  }, [secondsLeft, router, playEndSound]);
+  const toggleTimer = () => {
+    if (isRunning) pauseTimer();
+    else startTimer();
+  };
 
   const progress = 1 - secondsLeft / duration;
 
@@ -72,6 +109,7 @@ export default function TimerScreen() {
             onPress={() => {
               setDuration(min * 60);
               setSecondsLeft(min * 60);
+              endTimeRef.current = null;
             }}
           >
             {min} min
@@ -86,8 +124,10 @@ export default function TimerScreen() {
         step={SLIDER.STEP}
         value={secondsLeft / 60}
         onValueChange={(value) => {
-          setDuration(value * 60);
-          setSecondsLeft(value * 60);
+          const newSeconds = value * 60;
+          setDuration(newSeconds);
+          setSecondsLeft(newSeconds);
+          endTimeRef.current = null;
         }}
         minimumTrackTintColor="#2575fc"
         maximumTrackTintColor="#eee"
