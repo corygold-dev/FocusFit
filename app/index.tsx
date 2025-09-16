@@ -23,13 +23,22 @@ export default function TimerScreen() {
   const startTimer = async (newDuration?: number) => {
     const time = newDuration ?? secondsLeft;
     endTimeRef.current = Date.now() + time * ONE_SECOND;
+
     setIsRunning(true);
 
-    notificationIdRef.current = await scheduleTimerNotification(time);
+    if (endTimeRef.current) {
+      const triggerDate = new Date(endTimeRef.current);
+      notificationIdRef.current = await scheduleTimerNotification(triggerDate);
+    }
   };
 
   const pauseTimer = async () => {
     setIsRunning(false);
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
 
     if (notificationIdRef.current) {
       await cancelNotification(notificationIdRef.current);
@@ -48,6 +57,11 @@ export default function TimerScreen() {
     setSecondsLeft(duration);
     endTimeRef.current = null;
 
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
     if (notificationIdRef.current) {
       await cancelNotification(notificationIdRef.current);
       notificationIdRef.current = null;
@@ -55,7 +69,7 @@ export default function TimerScreen() {
   };
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning || !endTimeRef.current) return;
 
     intervalRef.current = setInterval(() => {
       if (!endTimeRef.current) return;
@@ -133,7 +147,7 @@ export default function TimerScreen() {
             endTimeRef.current = null;
           }
         }}
-        minimumTrackTintColor={isRunning ? '#ccc' : '#2575fc'} // gray when locked
+        minimumTrackTintColor={isRunning ? '#ccc' : '#2575fc'}
         maximumTrackTintColor={isRunning ? '#eee' : '#eee'}
         disabled={isRunning}
       />

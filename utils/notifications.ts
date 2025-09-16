@@ -1,18 +1,17 @@
 import * as Notifications from 'expo-notifications';
 
-export async function scheduleTimerNotification(seconds: number) {
+export async function scheduleTimerNotification(triggerDate: Date) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Focus Timer Finished',
         body: 'Time to Move!',
-        sound: 'finish-sound.wav',
+        sound: 'finish-sound.wav', // custom sound
       },
       trigger: {
-        type: 'timeInterval',
-        seconds,
-        repeats: false,
-      } as Notifications.TimeIntervalTriggerInput,
+        type: 'date',
+        date: triggerDate,
+      } as Notifications.DateTriggerInput,
     });
     return id;
   } catch (error) {
