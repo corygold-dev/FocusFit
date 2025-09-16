@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { Settings } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 import * as Progress from 'react-native-progress';
@@ -8,12 +9,16 @@ import { formatTime } from '@/utils/formatTime';
 import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
 import { useSounds } from './providers/SoundProvider';
 import { cancelNotification, scheduleTimerNotification } from '@/utils/notifications';
+import SettingsModal from '@/components/SettingsModal';
 
 export default function TimerScreen() {
   const router = useRouter();
   const [duration, setDuration] = useState(DEFAULT_MINUTES * 60);
   const [secondsLeft, setSecondsLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [equipment, setEquipment] = useState<string[]>([]);
+  const [difficulty, setDifficulty] = useState<'Easy' | 'Medium' | 'Hard'>('Medium');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const notificationIdRef = useRef<string | null>(null);
   const endTimeRef = useRef<number | null>(null);
@@ -103,6 +108,12 @@ export default function TimerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <SafeAreaView edges={['top']} style={styles.header}>
+        <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.cogButton}>
+          <Settings size={32} color="#2575fc" />
+        </TouchableOpacity>
+      </SafeAreaView>
+
       <Text style={styles.title}>Focus Timer</Text>
 
       <Progress.Circle
@@ -157,12 +168,33 @@ export default function TimerScreen() {
         <Button title="Reset" onPress={resetTimer} />
         <Button title="Skip" onPress={() => router.push('/exercise' as Href)} />
       </View>
+
+      <SettingsModal
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+        initialEquipment={equipment}
+        initialDifficulty={difficulty}
+        onSave={({ equipment, difficulty }) => {
+          setEquipment(equipment);
+          setDifficulty(difficulty);
+        }}
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 30 },
+  header: {
+    width: '100%',
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    alignItems: 'flex-end',
+  },
+  cogButton: {
+    padding: 8,
+  },
   title: { fontSize: 24, fontWeight: 'bold' },
   buttonContainer: {
     flexDirection: 'row',

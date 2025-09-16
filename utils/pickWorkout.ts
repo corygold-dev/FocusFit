@@ -1,8 +1,21 @@
 import _ from 'lodash';
 import { Exercise, exercises } from '../app/lib/exercises';
 
-export function pickWorkout(): Exercise[] {
-  const nonMobility = _.filter(exercises, (e) => e.category !== 'mobility');
+type UserSettings = {
+  difficulty: 'easy' | 'medium' | 'hard';
+  equipment: string[];
+};
+
+export function pickWorkout(userSettings: UserSettings): Exercise[] {
+  const { difficulty, equipment } = userSettings;
+
+  const filteredExercises = _.filter(exercises, (e) => {
+    const difficultyMatches = e.difficulty.includes(difficulty);
+    const equipmentMatches = !e.equipment || _.every(e.equipment, (eq) => equipment.includes(eq));
+    return difficultyMatches && equipmentMatches;
+  });
+
+  const nonMobility = _.filter(filteredExercises, (e) => e.category !== 'mobility');
 
   const [first] = _.sampleSize(nonMobility, 1);
 

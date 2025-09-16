@@ -7,11 +7,14 @@ import { pickWorkout } from '../utils/pickWorkout';
 import { formatTime } from '../utils/formatTime';
 import { ONE_SECOND } from '@/utils/constants';
 import { useSounds } from './providers/SoundProvider';
+import { useUserSettings } from './providers/UserSettingsProvider';
 
 type Phase = 'preview' | 'countdown' | 'active';
 
 export default function ExerciseScreen() {
   const router = useRouter();
+  const { settings } = useUserSettings();
+
   const [phase, setPhase] = useState<Phase>('preview');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentList, setCurrentList] = useState<Exercise[]>([]);
@@ -22,9 +25,9 @@ export default function ExerciseScreen() {
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
 
   useEffect(() => {
-    const workout = pickWorkout();
+    const workout = pickWorkout(settings);
     setCurrentList(workout);
-  }, []);
+  }, [settings]);
 
   useEffect(() => {
     if (phase === 'countdown') {
