@@ -2,7 +2,7 @@ import { exercises } from '@/app/lib/exercises';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/utils/constants';
 import _ from 'lodash';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ChevronDown, ChevronUp, Moon, Smartphone, Sun } from 'lucide-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
@@ -38,12 +38,13 @@ export default function SettingsModal({
   initialExcludedExercises = [],
   onSave,
 }: Props) {
-  const { theme, isDark } = useTheme();
+  const { theme, isDark, themeMode, setThemeMode } = useTheme();
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);
   const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
   const [showDifficultyDropdown, setShowDifficultyDropdown] = useState<boolean>(false);
   const [showExcludedExercises, setShowExcludedExercises] = useState<boolean>(false);
+  const [showThemeDropdown, setShowThemeDropdown] = useState<boolean>(false);
 
   useEffect(() => {
     if (visible) {
@@ -54,6 +55,28 @@ export default function SettingsModal({
       setShowExcludedExercises(false);
     }
   }, [visible, initialEquipment, initialDifficulty, initialExcludedExercises]);
+
+  const getThemeIcon = (mode: string) => {
+    switch (mode) {
+      case 'light':
+        return (
+          <Sun size={18} color={mode === themeMode ? theme.colors.primary : theme.colors.text} />
+        );
+      case 'dark':
+        return (
+          <Moon size={18} color={mode === themeMode ? theme.colors.primary : theme.colors.text} />
+        );
+      case 'system':
+        return (
+          <Smartphone
+            size={18}
+            color={mode === themeMode ? theme.colors.primary : theme.colors.text}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const toggleEquipment = (item: string) => {
     setEquipment((prev) => (_.includes(prev, item) ? _.without(prev, item) : [...prev, item]));
@@ -177,6 +200,12 @@ export default function SettingsModal({
       paddingHorizontal: 10,
       borderRadius: 4,
     },
+    themeOptionContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+
     exerciseRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -267,6 +296,63 @@ export default function SettingsModal({
           <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
               <Text style={styles.modalTitle}>Settings</Text>
+              <Text style={styles.sectionTitle}>Theme:</Text>
+              <View style={styles.dropdownContainer}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setShowThemeDropdown(!showThemeDropdown)}
+                >
+                  <View style={styles.themeOptionContainer}>
+                    {getThemeIcon(themeMode)}
+                    <Text style={styles.dropdownText}>
+                      {themeMode === 'system'
+                        ? 'Match System'
+                        : themeMode === 'dark'
+                          ? 'Dark'
+                          : 'Light'}
+                    </Text>
+                  </View>
+                  {showThemeDropdown ? (
+                    <ChevronUp size={20} color={theme.colors.text} />
+                  ) : (
+                    <ChevronDown size={20} color={theme.colors.text} />
+                  )}
+                </TouchableOpacity>
+
+                {showThemeDropdown && (
+                  <View style={styles.dropdownMenu}>
+                    {['light', 'dark', 'system'].map((mode) => (
+                      <TouchableOpacity
+                        key={mode}
+                        style={[
+                          styles.dropdownOption,
+                          mode === themeMode && styles.dropdownOptionSelected,
+                        ]}
+                        onPress={() => {
+                          setThemeMode(mode as 'light' | 'dark' | 'system');
+                          setShowThemeDropdown(false);
+                        }}
+                      >
+                        <View style={styles.themeOptionContainer}>
+                          {getThemeIcon(mode)}
+                          <Text
+                            style={[
+                              styles.dropdownOptionText,
+                              mode === themeMode && styles.dropdownOptionTextSelected,
+                            ]}
+                          >
+                            {mode === 'system'
+                              ? 'Match System'
+                              : mode === 'dark'
+                                ? 'Dark'
+                                : 'Light'}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
 
               <Text style={styles.sectionTitle}>Select Equipment:</Text>
               <View style={styles.equipmentContainer}>
