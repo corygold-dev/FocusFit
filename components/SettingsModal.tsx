@@ -1,4 +1,5 @@
 import { exercises } from '@/app/lib/exercises';
+import { useTheme } from '@/app/providers/ThemeProvider';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/utils/constants';
 import _ from 'lodash';
 import { ArrowLeft } from 'lucide-react-native';
@@ -37,6 +38,7 @@ export default function SettingsModal({
   initialExcludedExercises = [],
   onSave,
 }: Props) {
+  const { theme, isDark } = useTheme();
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);
   const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
@@ -74,6 +76,148 @@ export default function SettingsModal({
     mobility: 'Mobility',
   };
 
+  const styles = StyleSheet.create({
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    mainContainer: {
+      flex: 1,
+      padding: 20,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    modalContent: {
+      width: '90%',
+      maxWidth: 450,
+      backgroundColor: theme.colors.modalBackground,
+      borderRadius: 12,
+      height: '75%',
+      justifyContent: 'space-around',
+    },
+    excludeModalContent: {
+      height: '75%',
+      padding: 0,
+    },
+    excludeContainer: {
+      flex: 1,
+      padding: 20,
+      display: 'flex',
+      flexDirection: 'column',
+    },
+    exercisesScrollView: {
+      flex: 1,
+      marginVertical: 10,
+    },
+    modalTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginBottom: 15,
+      textAlign: 'center',
+      color: theme.colors.text,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginTop: 10,
+      marginBottom: 5,
+      color: theme.colors.text,
+    },
+    optionButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      borderRadius: 8,
+      marginBottom: 10,
+    },
+    optionSelected: {
+      backgroundColor: theme.colors.primary,
+    },
+    optionText: {
+      fontWeight: '600',
+      color: theme.colors.primary,
+    },
+    optionTextSelected: {
+      color: '#ffffff',
+    },
+    buttonRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 15,
+    },
+    excludeButton: {
+      marginTop: 20,
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    excludeButtonText: {
+      color: theme.colors.primary,
+      fontWeight: '600',
+      fontSize: 16,
+    },
+    backButton: {
+      marginBottom: 10,
+      alignSelf: 'flex-start',
+    },
+    backButtonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    backText: {
+      color: theme.colors.primary,
+      fontSize: 16,
+      marginLeft: 5,
+    },
+    excludeTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      marginLeft: 40,
+      marginRight: 40,
+      textAlign: 'center',
+      color: theme.colors.text,
+    },
+    helpText: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: 15,
+      textAlign: 'center',
+    },
+    categorySection: {
+      marginBottom: 15,
+    },
+    categoryTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.textSecondary,
+      marginBottom: 5,
+      backgroundColor: isDark ? '#2C2C2C' : '#F0F4F8',
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderRadius: 4,
+    },
+    exerciseRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.colors.border,
+    },
+    exerciseName: {
+      fontSize: 16,
+      flex: 1,
+      color: theme.colors.text,
+    },
+  });
+
   const mainSettingsContent = (
     <View style={styles.mainContainer}>
       <Text style={styles.modalTitle}>Settings</Text>
@@ -87,10 +231,7 @@ export default function SettingsModal({
             style={[styles.optionButton, _.includes(equipment, item) && styles.optionSelected]}
           >
             <Text
-              style={{
-                color: _.includes(equipment, item) ? 'white' : '#2575fc',
-                fontWeight: '600',
-              }}
+              style={[styles.optionText, _.includes(equipment, item) && styles.optionTextSelected]}
             >
               {item}
             </Text>
@@ -105,12 +246,7 @@ export default function SettingsModal({
           onPress={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
           style={[styles.optionButton, difficulty === level && styles.optionSelected]}
         >
-          <Text
-            style={{
-              color: difficulty === level ? 'white' : '#2575fc',
-              fontWeight: '600',
-            }}
-          >
+          <Text style={[styles.optionText, difficulty === level && styles.optionTextSelected]}>
             {_.capitalize(level)}
           </Text>
         </TouchableOpacity>
@@ -122,8 +258,8 @@ export default function SettingsModal({
         </Text>
       </TouchableOpacity>
       <View style={styles.buttonRow}>
-        <Button title="Cancel" onPress={onClose} />
-        <Button title="Save" onPress={handleSave} />
+        <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
+        <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
       </View>
     </View>
   );
@@ -136,7 +272,7 @@ export default function SettingsModal({
             <View style={styles.excludeContainer}>
               <TouchableOpacity style={styles.backButton} onPress={() => setShowExcludeMenu(false)}>
                 <View style={styles.backButtonContent}>
-                  <ArrowLeft size={24} color="#2575fc" />
+                  <ArrowLeft size={24} color={theme.colors.primary} />
                   <Text style={styles.backText}>Back</Text>
                 </View>
               </TouchableOpacity>
@@ -160,7 +296,11 @@ export default function SettingsModal({
                           <Switch
                             value={!_.includes(excludedExercises, exercise.name)}
                             onValueChange={() => toggleExerciseExclusion(exercise.name)}
-                            trackColor={{ false: '#ff6b6b', true: '#4cd964' }}
+                            trackColor={{
+                              false: theme.colors.error,
+                              true: theme.colors.success,
+                            }}
+                            thumbColor={theme.colors.switchThumb}
                           />
                         </View>
                       ))}
@@ -170,8 +310,8 @@ export default function SettingsModal({
               </ScrollView>
 
               <View style={styles.buttonRow}>
-                <Button title="Cancel" onPress={onClose} />
-                <Button title="Save" onPress={handleSave} />
+                <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
+                <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
               </View>
             </View>
           ) : (
@@ -182,146 +322,3 @@ export default function SettingsModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  mainContainer: {
-    flex: 1,
-    padding: 20,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  modalContent: {
-    width: '90%',
-    maxWidth: 450,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    height: '75%',
-    justifyContent: 'space-around',
-  },
-  excludeModalContent: {
-    height: '75%',
-    padding: 0,
-  },
-  excludeContainer: {
-    flex: 1,
-    padding: 20,
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  exercisesScrollView: {
-    flex: 1,
-    marginVertical: 10,
-  },
-  scrollViewContent: {
-    paddingBottom: 10,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  optionButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: '#2575fc',
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  excludeContentContainer: {
-    flex: 1,
-    width: '100%',
-  },
-  optionSelected: {
-    backgroundColor: '#2575fc',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-  },
-  excludeButton: {
-    marginTop: 20,
-    backgroundColor: '#eef3fd',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  excludeButtonText: {
-    color: '#2575fc',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    justifyContent: 'center',
-    height: 40,
-  },
-  backButton: {
-    marginBottom: 10,
-    alignSelf: 'flex-start',
-  },
-  backButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  backText: {
-    color: '#2575fc',
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  excludeTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginLeft: 40,
-    marginRight: 40,
-    textAlign: 'center',
-  },
-  helpText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  categorySection: {
-    marginBottom: 15,
-  },
-  categoryTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#555',
-    marginBottom: 5,
-    backgroundColor: '#f5f5f5',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 4,
-  },
-  exerciseRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ddd',
-  },
-  exerciseName: {
-    fontSize: 16,
-    flex: 1,
-  },
-});

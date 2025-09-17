@@ -1,4 +1,5 @@
 import { useInterval } from '@/app/hooks/useInterval';
+import { useTheme } from '@/app/providers/ThemeProvider';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import SettingsModal from '@/components/SettingsModal';
 import { cleanupTimerResources } from '@/utils/cleanupTimerResources';
@@ -16,6 +17,7 @@ import { useSounds } from './providers/SoundProvider';
 import { useUserSettings } from './providers/UserSettingsProvider';
 
 export default function TimerScreen() {
+  const { theme, isDark } = useTheme();
   const router = useRouter();
   const [duration, setDuration] = useState(DEFAULT_MINUTES * 60);
   const [secondsLeft, setSecondsLeft] = useState(duration);
@@ -124,6 +126,57 @@ export default function TimerScreen() {
     };
   }, []);
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: 30,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      width: '100%',
+      position: 'absolute',
+      top: 10,
+      right: 20,
+      alignItems: 'flex-end',
+    },
+    cogButton: {
+      padding: 8,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+    },
+    buttonContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 20,
+      justifyContent: 'center',
+    },
+    presets: {
+      flexDirection: 'row',
+      gap: 20,
+      marginVertical: 20,
+    },
+    presetButton: {
+      padding: 10,
+      borderRadius: 8,
+    },
+    presetButtonDisabled: {
+      opacity: 0.4,
+    },
+    presetButtonText: {
+      fontSize: 18,
+      color: theme.colors.primary,
+      fontWeight: '600',
+    },
+    presetButtonTextDisabled: {
+      color: theme.colors.textSecondary,
+    },
+  });
+
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView edges={['top']} style={styles.header}>
@@ -133,7 +186,7 @@ export default function TimerScreen() {
           accessibilityLabel="Open settings"
           accessibilityRole="button"
         >
-          <Settings size={32} color="#2575fc" />
+          <Settings size={32} color={theme.colors.primary} />
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -145,8 +198,9 @@ export default function TimerScreen() {
         showsText
         formatText={() => formatTime(secondsLeft)}
         thickness={12}
-        color="#2575fc"
-        unfilledColor="#eee"
+        color={theme.colors.primary}
+        unfilledColor={isDark ? '#2D3748' : '#E1E8F0'}
+        textStyle={{ color: theme.colors.text }}
       />
 
       <View style={styles.presets}>
@@ -186,8 +240,9 @@ export default function TimerScreen() {
             endTimeRef.current = null;
           }
         }}
-        minimumTrackTintColor={isRunning ? '#ccc' : '#2575fc'}
-        maximumTrackTintColor={isRunning ? '#eee' : '#eee'}
+        minimumTrackTintColor={isRunning ? theme.colors.textSecondary : theme.colors.primary}
+        maximumTrackTintColor={isDark ? '#2D3748' : '#E1E8F0'}
+        thumbTintColor={theme.colors.primaryLight}
         disabled={isRunning}
         accessibilityLabel={`Adjust timer duration, currently ${Math.floor(secondsLeft / 60)} minutes`}
       />
@@ -196,12 +251,19 @@ export default function TimerScreen() {
         <Button
           title={isRunning ? 'Pause' : 'Start'}
           onPress={toggleTimer}
+          color={theme.colors.primary}
           accessibilityLabel={isRunning ? 'Pause timer' : 'Start timer'}
         />
-        <Button title="Reset" onPress={resetTimer} accessibilityLabel="Reset timer" />
+        <Button
+          title="Reset"
+          onPress={resetTimer}
+          color={isDark ? theme.colors.surface : theme.colors.textSecondary}
+          accessibilityLabel="Reset timer"
+        />
         <Button
           title="Skip"
           onPress={skipToExercise}
+          color={theme.colors.primary}
           accessibilityLabel="Skip timer and go to exercises"
         />
       </View>
@@ -229,40 +291,3 @@ export default function TimerScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 30 },
-  header: {
-    width: '100%',
-    position: 'absolute',
-    top: 10,
-    right: 20,
-    alignItems: 'flex-end',
-  },
-  cogButton: {
-    padding: 8,
-  },
-  title: { fontSize: 24, fontWeight: 'bold' },
-  buttonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 20,
-    justifyContent: 'center',
-  },
-  presets: { flexDirection: 'row', gap: 20, marginVertical: 20 },
-  presetButton: {
-    padding: 10,
-    borderRadius: 8,
-  },
-  presetButtonDisabled: {
-    opacity: 0.4,
-  },
-  presetButtonText: {
-    fontSize: 18,
-    color: '#2575fc',
-    fontWeight: '600',
-  },
-  presetButtonTextDisabled: {
-    color: '#aaa',
-  },
-});

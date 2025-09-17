@@ -5,16 +5,18 @@ import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import * as Progress from 'react-native-progress';
 import { formatTime } from '../utils/formatTime';
 import { pickWorkout } from '../utils/pickWorkout';
+import { useInterval } from './hooks/useInterval';
 import { Exercise } from './lib/exercises';
 import { useSounds } from './providers/SoundProvider';
+import { useTheme } from './providers/ThemeProvider';
 import { useUserSettings } from './providers/UserSettingsProvider';
-import { useInterval } from './hooks/useInterval';
 
 type Phase = 'preview' | 'countdown' | 'active' | 'completed';
 
 export default function ExerciseScreen() {
   const router = useRouter();
   const { settings } = useUserSettings();
+  const { theme, isDark } = useTheme();
 
   const [phase, setPhase] = useState<Phase>('preview');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -92,10 +94,71 @@ export default function ExerciseScreen() {
 
   const progress = totalDuration > 0 ? (totalDuration - secondsLeft) / totalDuration : 0;
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      backgroundColor: theme.colors.background,
+    },
+    centerContent: {
+      gap: 20,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      color: theme.colors.text,
+    },
+    exercise: {
+      fontSize: 32,
+      fontWeight: '600',
+      marginBottom: 40,
+      textAlign: 'center',
+      color: theme.colors.text,
+    },
+    timer: {
+      fontSize: 48,
+      fontWeight: 'bold',
+      marginBottom: 20,
+      color: theme.colors.text,
+    },
+    videoPlaceholder: {
+      width: 300,
+      height: 180,
+      backgroundColor: isDark ? theme.colors.surfaceVariant : '#eee',
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 20,
+    },
+    videoText: {
+      color: theme.colors.textSecondary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    loadingText: {
+      fontSize: 18,
+      color: theme.colors.textSecondary,
+    },
+    errorText: {
+      fontSize: 20,
+      color: theme.colors.error,
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    completedText: {
+      fontSize: 24,
+      color: theme.colors.success,
+      marginBottom: 30,
+    },
+  });
+
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#2575fc" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
         <Text style={styles.loadingText}>Loading your workout...</Text>
       </View>
     );
@@ -108,6 +171,7 @@ export default function ExerciseScreen() {
         <Button
           title="Return Home"
           onPress={() => router.replace('/')}
+          color={theme.colors.primary}
           accessibilityLabel="Return to home screen"
         />
       </View>
@@ -125,6 +189,7 @@ export default function ExerciseScreen() {
           <Text style={styles.exercise}>{currentExercise}</Text>
           <Button
             title="Start exercise"
+            color={theme.colors.primary}
             onPress={startCountdown}
             accessibilityLabel={`Start ${currentExercise} exercise`}
           />
@@ -150,6 +215,9 @@ export default function ExerciseScreen() {
             progress={progress}
             width={200}
             height={12}
+            color={theme.colors.primary}
+            unfilledColor={isDark ? theme.colors.surfaceVariant : '#eee'}
+            borderColor={theme.colors.border}
             accessibilityLabel={`Progress: ${Math.round(progress * 100)}%`}
           />
         </>
@@ -159,66 +227,9 @@ export default function ExerciseScreen() {
         <>
           <Text style={styles.title}>Workout Complete!</Text>
           <Text style={styles.completedText}>Great job!</Text>
-          <ActivityIndicator size="small" color="#2575fc" />
+          <ActivityIndicator size="small" color={theme.colors.primary} />
         </>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  centerContent: {
-    gap: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  exercise: {
-    fontSize: 32,
-    fontWeight: '600',
-    marginBottom: 40,
-    textAlign: 'center',
-  },
-  timer: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  videoPlaceholder: {
-    width: 300,
-    height: 180,
-    backgroundColor: '#eee',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  videoText: {
-    color: '#888',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  loadingText: {
-    fontSize: 18,
-    color: '#555',
-  },
-  errorText: {
-    fontSize: 20,
-    color: '#d32f2f',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  completedText: {
-    fontSize: 24,
-    color: '#43a047',
-    marginBottom: 30,
-  },
-});
