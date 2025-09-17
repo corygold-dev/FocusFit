@@ -1,5 +1,5 @@
 import { useTheme } from '@/app/providers/ThemeProvider';
-import ConfirmationDialog from '@/components/ConfirmationDialog';
+import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
 import SettingsModal from '@/components/settingsModal/SettingsModal';
 import SettingsButton from '@/components/timerScreen/SettingsButton';
 import { createStyles } from '@/components/timerScreen/styles/timerScreen.styles';

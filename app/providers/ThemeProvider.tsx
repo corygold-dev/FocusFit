@@ -3,6 +3,7 @@ import _ from 'lodash';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { getTheme, Theme } from '@/styles/theme';
+import { THEME_MODE_STORAGE_KEY } from '@/utils/constants';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -27,7 +28,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const loadThemePreference = async () => {
       try {
-        const savedTheme = await AsyncStorage.getItem('@theme_mode');
+        const savedTheme = await AsyncStorage.getItem(THEME_MODE_STORAGE_KEY);
         if (!_.isNil(savedTheme)) {
           setThemeMode(savedTheme as ThemeMode);
         }
@@ -47,7 +48,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setThemeMode(mode);
     _.attempt(
       async () => {
-        await AsyncStorage.setItem('@theme_mode', mode);
+        await AsyncStorage.setItem(THEME_MODE_STORAGE_KEY, mode);
       },
       (error: unknown) => {
         if (error instanceof Error) {

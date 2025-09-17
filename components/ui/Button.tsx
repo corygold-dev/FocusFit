@@ -1,6 +1,7 @@
 import { useTheme } from '@/app/providers/ThemeProvider';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
+import { createStyles } from './styles/button.styles';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -15,44 +16,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const { theme } = useTheme();
-
-  const styles = StyleSheet.create({
-    button: {
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      borderRadius: 8,
-      minWidth: 100,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    primary: {
-      backgroundColor: theme.colors.primary,
-    },
-    secondary: {
-      backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderColor: theme.colors.primary,
-    },
-    disabled: {
-      backgroundColor:
-        disabled && variant === 'primary' ? theme.colors.buttonDisabled : 'transparent',
-      borderColor: theme.colors.textSecondary,
-      opacity: 0.7,
-    },
-    text: {
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    primaryText: {
-      color: '#FFFFFF',
-    },
-    secondaryText: {
-      color: theme.colors.primary,
-    },
-    disabledText: {
-      color: theme.colors.textSecondary,
-    },
-  });
+  const styles = createStyles(theme, variant, disabled);
 
   return (
     <TouchableOpacity

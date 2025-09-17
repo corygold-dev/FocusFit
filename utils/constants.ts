@@ -16,6 +16,9 @@ export const USER_SETTINGS_STORAGE_KEY = 'userSettings';
 export const EQUIPMENT_OPTIONS = ['TRX', 'Kettlebell', 'Pull-up Bar', 'Resistance Band'];
 export const THEME_MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
+// ===== Theme Constants =====
+export const THEME_MODE_STORAGE_KEY = 'themeMode';
+
 // ===== UI Constants =====
 export const SLIDER = {
   MIN: 5,
