@@ -1,4 +1,5 @@
-# 2min.fit
+# 2 Minute Fit App
+ > Stay Fit. Stay Focused.
 
 A minimalist workout app that helps you stay fit with quick, effective exercise routines that adapt to your equipment and preferences.
 
@@ -30,12 +31,14 @@ A minimalist workout app that helps you stay fit with quick, effective exercise 
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone git@github.com:corygold-dev/2min.fit-app.git
    cd 2min.fit-app
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -111,7 +114,11 @@ Add new exercises in `app/lib/exercises.ts` following the existing structure:
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under a proprietary license - see the [LICENSE](LICENSE) file for details.
+
+The 2min.fit application and its source code are copyright © 2023 Cory Gold. All rights reserved.
+
+This software is protected under copyright law and international treaties. No part of this software may be reproduced, distributed, or transmitted in any form or by any means without the prior written permission of the copyright owner.
 
 ## Acknowledgments
 
@@ -120,4 +127,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-*Built with ❤️ for fitness/tech enthusiasts*
+_Built with ❤️ for fitness/tech enthusiasts_
