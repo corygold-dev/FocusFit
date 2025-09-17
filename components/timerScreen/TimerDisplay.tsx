@@ -2,8 +2,8 @@ import { formatTime } from '@/utils/formatTime';
 import React from 'react';
 import { Text, View } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/timerDisplay.styles';
+import { timerDisplayStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface TimerDisplayProps {
   title: string;
@@ -13,7 +13,7 @@ interface TimerDisplayProps {
 
 export default function TimerDisplay({ title, progress, secondsLeft }: TimerDisplayProps) {
   const { theme, isDark } = useTheme();
-  const styles = createStyles(theme);
+  const styles = timerDisplayStyles(theme);
 
   return (
     <View style={styles.container}>

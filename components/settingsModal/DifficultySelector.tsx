@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import _ from 'lodash';
-import { createStyles } from './styles/difficultySelector.styles';
 import { Difficulty } from '@/utils/constants';
+import { difficultySelectorStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type DifficultySelectorProps = {
   difficulty: Difficulty;
@@ -18,7 +18,7 @@ export default function DifficultySelector({
   onChange,
 }: DifficultySelectorProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = difficultySelectorStyles(theme);
 
   const [showDropdown, setShowDropdown] = useState(false);
 

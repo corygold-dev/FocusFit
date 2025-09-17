@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import Button from '@/components/ui/Button';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/errorState.styles';
+import { errorStateStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface ErrorStateProps {
   error: string;
@@ -11,7 +11,7 @@ interface ErrorStateProps {
 
 export default function ErrorState({ error, onReturnHome }: ErrorStateProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = errorStateStyles(theme);
 
   return (
     <View style={styles.container}>

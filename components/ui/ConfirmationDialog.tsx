@@ -1,7 +1,7 @@
-import { useTheme } from '@/app/providers/ThemeProvider';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { createStyles } from './styles/confirmationDialog.styles';
+import { confirmationDialogStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type Props = {
   visible: boolean;
@@ -23,7 +23,7 @@ export default function ConfirmationDialog({
   onCancel,
 }: Props) {
   const { theme, isDark } = useTheme();
-  const styles = createStyles(theme, isDark);
+  const styles = confirmationDialogStyles(theme, isDark);
 
   if (!visible) return null;
 

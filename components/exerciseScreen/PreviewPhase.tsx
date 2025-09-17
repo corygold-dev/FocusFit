@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import Button from '@/components/ui/Button';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/previewPhase.styles';
+import { previewPhaseStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface PreviewPhaseProps {
   exerciseName: string;
@@ -11,7 +11,7 @@ interface PreviewPhaseProps {
 
 export default function PreviewPhase({ exerciseName, onStart }: PreviewPhaseProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = previewPhaseStyles(theme);
 
   return (
     <>

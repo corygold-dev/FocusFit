@@ -2,15 +2,17 @@ import React from 'react';
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTheme } from './providers/ThemeProvider';
-import { useUserSettings } from './providers/UserSettingsProvider';
-import { useWorkout } from './hooks/useWorkout';
 import { createStyles } from '@/components/exerciseScreen/styles/exerciseScreen.styles';
-import PreviewPhase from '@/components/exerciseScreen/PreviewPhase';
-import CountdownPhase from '@/components/exerciseScreen/CountdownPhase';
-import ActivePhase from '@/components/exerciseScreen/ActivePhase';
-import CompletedPhase from '@/components/exerciseScreen/CompletedPhase';
-import LoadingState from '@/components/exerciseScreen/LoadingState';
-import ErrorState from '@/components/exerciseScreen/ErrorState';
+import {
+  ActivePhase,
+  CompletedPhase,
+  CountdownPhase,
+  ErrorState,
+  LoadingState,
+  PreviewPhase,
+} from '@/components';
+import { useWorkout } from './hooks';
+import { useUserSettings } from './providers';
 
 export default function ExerciseScreen() {
   const router = useRouter();

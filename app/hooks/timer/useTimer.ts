@@ -1,9 +1,9 @@
-import { useInterval } from '@/app/hooks/useInterval';
-import { TIMER } from '@/utils/constants';
-import { cleanupTimerResources } from '@/utils/cleanupTimerResources';
-import { scheduleTimerNotification } from '@/utils/notifications';
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useInterval } from '@/app/hooks/timer/useInterval';
 import { useSounds } from '@/app/providers/SoundProvider';
+import { cleanupTimerResources } from '@/utils/cleanupTimerResources';
+import { TIMER } from '@/utils/constants';
+import { scheduleTimerNotification } from '@/utils/notifications';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface TimerOptions {
   onComplete?: () => void;

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
 import Button from '@/components/ui/Button';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/completedPhase.styles';
+import { completedPhaseStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface CompletedPhaseProps {
   onReturnHome: () => void;
@@ -10,7 +10,7 @@ interface CompletedPhaseProps {
 
 export default function CompletedPhase({ onReturnHome }: CompletedPhaseProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = completedPhaseStyles(theme);
 
   return (
     <>

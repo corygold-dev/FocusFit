@@ -1,22 +1,24 @@
 import { useTheme } from '@/app/providers/ThemeProvider';
-import ConfirmationDialog from '@/components/ui/ConfirmationDialog';
-import SettingsModal from '@/components/settingsModal/SettingsModal';
-import SettingsButton from '@/components/timerScreen/SettingsButton';
-import { createStyles } from '@/components/timerScreen/styles/timerScreen.styles';
-import TimerControls from '@/components/timerScreen/TimerControls';
-import TimerDisplay from '@/components/timerScreen/TimerDisplay';
-import TimerPresets from '@/components/timerScreen/TimerPresets';
-import TimerSlider from '@/components/timerScreen/TimerSlider';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTimer } from './hooks/useTimer';
-import { useUserSettings } from './providers/UserSettingsProvider';
+import {
+  ConfirmationDialog,
+  SettingsButton,
+  SettingsModal,
+  TimerControls,
+  TimerDisplay,
+  TimerPresets,
+  TimerSlider,
+} from '@/components';
+import { useUserSettings } from './providers';
+import { useTimer } from './hooks';
+import { timerScreenStyles } from '@/components/timerScreen/styles';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = timerScreenStyles(theme);
   const router = useRouter();
 
   const [showSettings, setShowSettings] = useState(false);

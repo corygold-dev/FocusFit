@@ -1,12 +1,12 @@
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/utils/constants';
-import { createStyles } from './styles/settingsModalStyles.styles';
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, ScrollView, Text, View } from 'react-native';
 import DifficultySelector from './DifficultySelector';
 import EquipmentSelector from './EquipmentSelector';
 import ExerciseExclusionList from './ExerciseExclusionList';
 import ThemeSelector from './ThemeSelector';
+import { settingsModalStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type Props = {
   visible: boolean;
@@ -30,7 +30,7 @@ export default function SettingsModal({
   onSave,
 }: Props) {
   const { theme, themeMode, setThemeMode } = useTheme();
-  const styles = createStyles(theme);
+  const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);

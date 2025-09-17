@@ -1,8 +1,6 @@
+import { audio } from '@/assets';
 import { useAudioPlayer } from 'expo-audio';
 import React, { createContext, useCallback, useContext } from 'react';
-import endSoundFile from '../../assets/audio/finish-sound.wav';
-import smallBeepFile from '../../assets/audio/short-beep.wav';
-import finalBeepFile from '../../assets/audio/short-ping.mp3';
 
 type SoundContextType = {
   playSmallBeep: () => void;
@@ -13,9 +11,9 @@ type SoundContextType = {
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
 export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const smallBeep = useAudioPlayer(smallBeepFile);
-  const finalBeep = useAudioPlayer(finalBeepFile);
-  const endSound = useAudioPlayer(endSoundFile);
+  const smallBeep = useAudioPlayer(audio.smallBeep);
+  const finalBeep = useAudioPlayer(audio.finalBeep);
+  const endSound = useAudioPlayer(audio.finishSound);
 
   const playSmallBeep = useCallback(() => {
     try {

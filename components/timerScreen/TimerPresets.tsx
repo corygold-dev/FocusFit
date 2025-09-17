@@ -2,8 +2,8 @@ import { TIMER } from '@/utils/constants';
 import React from 'react';
 import { View } from 'react-native';
 import Button from '@/components/ui/Button';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/timerPresets.styles';
+import { timerPresetsStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface TimerPresetsProps {
   isRunning: boolean;
@@ -12,7 +12,7 @@ interface TimerPresetsProps {
 
 export default function TimerPresets({ isRunning, onSelectPreset }: TimerPresetsProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = timerPresetsStyles(theme);
 
   return (
     <View style={styles.presets}>

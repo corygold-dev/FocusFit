@@ -1,9 +1,9 @@
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Settings } from 'lucide-react-native';
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createStyles } from './styles/settingsButton.styles';
+import { settingsButtonStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface SettingsButtonProps {
   onPress: () => void;
@@ -11,7 +11,7 @@ interface SettingsButtonProps {
 
 export default function SettingsButton({ onPress }: SettingsButtonProps) {
   const { theme } = useTheme();
-  const styles = createStyles();
+  const styles = settingsButtonStyles();
 
   return (
     <SafeAreaView edges={['top']} style={styles.header}>

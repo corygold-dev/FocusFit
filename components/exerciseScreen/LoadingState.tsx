@@ -1,11 +1,11 @@
 import React from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/loadingState.styles';
+import { loadingStateStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 export default function LoadingState() {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = loadingStateStyles(theme);
 
   return (
     <View style={styles.container}>

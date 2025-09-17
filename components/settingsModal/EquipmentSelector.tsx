@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@/app/providers/ThemeProvider';
 import _ from 'lodash';
-import { createStyles } from './styles/equipmentSelector.styles';
+import { equipmentSelectorStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type EquipmentSelectorProps = {
   equipment: string[];
@@ -16,7 +16,7 @@ export default function EquipmentSelector({
   onChange,
 }: EquipmentSelectorProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = equipmentSelectorStyles(theme);
 
   const toggleEquipment = useCallback(
     (item: string) => {

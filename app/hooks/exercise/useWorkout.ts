@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { Exercise } from '@/app/lib/exercises';
+import { useSounds } from '@/app/providers';
 import { TIMER } from '@/utils/constants';
-import { useInterval } from './useInterval';
-import { Exercise } from '../lib/exercises';
 import { pickWorkout } from '@/utils/exerciseUtils';
-import { useSounds } from '../providers/SoundProvider';
+import { useEffect, useMemo, useState } from 'react';
+import { useInterval } from '../timer';
 
 type Phase = 'preview' | 'countdown' | 'active' | 'completed';
 type UserSettings = {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import Button from '@/components/ui/Button';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/timerControls.styles';
+import { Button } from '../ui';
+import { timerControlsStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface TimerControlsProps {
   isRunning: boolean;
@@ -18,7 +18,7 @@ export default function TimerControls({
   onSkip,
 }: TimerControlsProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = timerControlsStyles(theme);
 
   return (
     <View style={styles.buttonContainer}>

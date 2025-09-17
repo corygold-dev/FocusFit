@@ -2,8 +2,8 @@ import { SLIDER } from '@/utils/constants';
 import React from 'react';
 import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/timerSlider.styles';
+import { timerSliderStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface TimerSliderProps {
   value: number;
@@ -13,7 +13,7 @@ interface TimerSliderProps {
 
 export default function TimerSlider({ value, isRunning, onChange }: TimerSliderProps) {
   const { theme, isDark } = useTheme();
-  const styles = createStyles(theme);
+  const styles = timerSliderStyles(theme);
 
   return (
     <View style={styles.container}>

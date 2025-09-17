@@ -2,8 +2,8 @@ import React from 'react';
 import { Text } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { formatTime } from '@/utils/formatTime';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/activePhase.styles';
+import { activePhaseStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface ActivePhaseProps {
   exerciseName: string;
@@ -13,7 +13,7 @@ interface ActivePhaseProps {
 
 export default function ActivePhase({ exerciseName, secondsLeft, progress }: ActivePhaseProps) {
   const { theme, isDark } = useTheme();
-  const styles = createStyles(theme);
+  const styles = activePhaseStyles(theme);
 
   return (
     <>

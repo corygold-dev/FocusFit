@@ -1,9 +1,9 @@
 import { ChevronDown, ChevronUp, Moon, Smartphone, Sun } from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { THEME_MODES, ThemeMode } from '@/utils/constants';
-import { createStyles } from './styles/themeSelector.styles';
+import { themeSelectorStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type ThemeSelectorProps = {
   currentTheme: ThemeMode;
@@ -12,7 +12,7 @@ type ThemeSelectorProps = {
 
 export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = themeSelectorStyles(theme);
 
   const [showDropdown, setShowDropdown] = useState(false);
 

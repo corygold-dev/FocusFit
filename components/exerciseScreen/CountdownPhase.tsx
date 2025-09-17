@@ -1,8 +1,8 @@
 import React from 'react';
 import { Text } from 'react-native';
 import { formatTime } from '@/utils/formatTime';
-import { useTheme } from '@/app/providers/ThemeProvider';
-import { createStyles } from './styles/countdownPhase.styles';
+import { countdownPhaseStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface CountdownPhaseProps {
   secondsLeft: number;
@@ -10,7 +10,7 @@ interface CountdownPhaseProps {
 
 export default function CountdownPhase({ secondsLeft }: CountdownPhaseProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme);
+  const styles = countdownPhaseStyles(theme);
 
   return (
     <>

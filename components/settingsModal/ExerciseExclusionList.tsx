@@ -1,11 +1,11 @@
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { CATEGORY_LABELS, CategoryKey } from '@/utils/constants';
 import { countExcludedExercises, getFilteredExercisesByCategory } from '@/utils/exerciseUtils';
 import _ from 'lodash';
 import { ChevronDown, ChevronUp } from 'lucide-react-native';
 import React, { useMemo, useState } from 'react';
 import { Switch, Text, TouchableOpacity, View } from 'react-native';
-import { createStyles } from './styles/exerciseExclusionList.styles';
+import { exerciseExclusionListStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 type ExerciseExclusionListProps = {
   excludedExercises: string[];
@@ -19,7 +19,7 @@ export default function ExerciseExclusionList({
   onChange,
 }: ExerciseExclusionListProps) {
   const { theme, isDark } = useTheme();
-  const styles = createStyles(theme, isDark);
+  const styles = exerciseExclusionListStyles(theme, isDark);
 
   const [showExcludedExercises, setShowExcludedExercises] = useState(false);
 

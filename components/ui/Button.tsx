@@ -1,7 +1,7 @@
-import { useTheme } from '@/app/providers/ThemeProvider';
 import React from 'react';
 import { Text, TouchableOpacity, TouchableOpacityProps } from 'react-native';
-import { createStyles } from './styles/button.styles';
+import { buttonStyles } from './styles';
+import { useTheme } from '@/app/providers';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -16,7 +16,7 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   const { theme } = useTheme();
-  const styles = createStyles(theme, variant, disabled);
+  const styles = buttonStyles(theme, variant, disabled);
 
   return (
     <TouchableOpacity
