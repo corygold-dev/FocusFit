@@ -1,11 +1,11 @@
-import { ONE_SECOND } from '@/utils/constants';
+import { TIMER } from '@/utils/constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import Button from '../components/Button';
 import * as Progress from 'react-native-progress';
+import Button from '../components/ui/Button';
 import { formatTime } from '../utils/formatTime';
-import { pickWorkout } from '../utils/pickWorkout';
+import { pickWorkout } from '../utils/exerciseUtils';
 import { useInterval } from './hooks/useInterval';
 import { Exercise } from './lib/exercises';
 import { useSounds } from './providers/SoundProvider';
@@ -34,7 +34,7 @@ export default function ExerciseScreen() {
     () => {
       setSecondsLeft((prev) => prev - 1);
     },
-    isTimerActive ? ONE_SECOND : null,
+    isTimerActive ? TIMER.ONE_SECOND : null,
   );
 
   useEffect(() => {
@@ -230,7 +230,7 @@ export default function ExerciseScreen() {
       {phase === 'completed' && (
         <>
           <Text style={styles.title}>Workout Complete!</Text>
-          <Text style={styles.completedText}>Great job!</Text>
+          <Text style={styles.completedText}>Great job — don't forget to hydrate!</Text>
           <Button
             title="Return Home"
             variant="primary"

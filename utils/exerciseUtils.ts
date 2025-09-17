@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { Exercise, exercises } from '../app/lib/exercises';
+import { Difficulty } from './constants';
 
 type UserSettings = {
   difficulty: 'easy' | 'medium' | 'hard';
@@ -32,4 +33,20 @@ export function pickWorkout(userSettings: UserSettings): Exercise[] {
   );
 
   return [first, second, mobility].filter(Boolean);
+}
+
+export function getFilteredExercisesByCategory(difficulty: Difficulty) {
+  const difficultyFilteredExercises = _.filter(exercises, (exercise) =>
+    exercise.difficulty.includes(difficulty),
+  );
+  return _.groupBy(difficultyFilteredExercises, 'category');
+}
+
+export function countExcludedExercises(excludedExercises: string[], difficulty: Difficulty) {
+  const availableExerciseNames = _.chain(exercises)
+    .filter((exercise) => exercise.difficulty.includes(difficulty))
+    .map('name')
+    .value();
+
+  return _.filter(excludedExercises, (name) => _.includes(availableExerciseNames, name)).length;
 }

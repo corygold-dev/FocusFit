@@ -1,9 +1,9 @@
 import { useInterval } from '@/app/hooks/useInterval';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
-import SettingsModal from '@/components/SettingsModal';
+import SettingsModal from '@/components/settingsModal/SettingsModal';
 import { cleanupTimerResources } from '@/utils/cleanupTimerResources';
-import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
+import { TIMER, SLIDER } from '@/utils/constants';
 import { formatTime } from '@/utils/formatTime';
 import { scheduleTimerNotification } from '@/utils/notifications';
 import Slider from '@react-native-community/slider';
@@ -11,16 +11,16 @@ import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Button from '../components/Button';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Button from '../components/ui/Button';
 import { useSounds } from './providers/SoundProvider';
 import { useUserSettings } from './providers/UserSettingsProvider';
 
 export default function TimerScreen() {
   const { theme, isDark } = useTheme();
   const router = useRouter();
-  const [duration, setDuration] = useState(DEFAULT_MINUTES * 60);
+  const [duration, setDuration] = useState(TIMER.DEFAULT_MINUTES * 60);
   const [secondsLeft, setSecondsLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -38,7 +38,7 @@ export default function TimerScreen() {
 
   const startTimer = async (newDuration?: number) => {
     const time = newDuration ?? secondsLeft;
-    endTimeRef.current = Date.now() + time * ONE_SECOND;
+    endTimeRef.current = Date.now() + time * TIMER.ONE_SECOND;
 
     setIsRunning(true);
 
@@ -58,7 +58,10 @@ export default function TimerScreen() {
     await cleanupTimerResources(intervalRef, notificationIdRef);
 
     if (endTimeRef.current) {
-      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
+      const remaining = Math.max(
+        Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+        0,
+      );
       setSecondsLeft(remaining);
       endTimeRef.current = null;
     }
@@ -109,7 +112,10 @@ export default function TimerScreen() {
     () => {
       if (!endTimeRef.current) return;
 
-      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
+      const remaining = Math.max(
+        Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+        0,
+      );
       setSecondsLeft(remaining);
 
       if (remaining <= 0) {
@@ -118,7 +124,7 @@ export default function TimerScreen() {
         router.push('/exercise');
       }
     },
-    isRunning ? ONE_SECOND : null,
+    isRunning ? TIMER.ONE_SECOND : null,
   );
 
   useEffect(() => {
@@ -208,7 +214,7 @@ export default function TimerScreen() {
       />
 
       <View style={styles.presets}>
-        {PRESET_MINUTES.map((min) => (
+        {TIMER.PRESET_MINUTES.map((min) => (
           <Button
             key={min}
             title={`${min} min`}
