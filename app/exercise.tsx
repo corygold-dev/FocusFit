@@ -1,7 +1,8 @@
 import { ONE_SECOND } from '@/utils/constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import Button from '../components/Button';
 import * as Progress from 'react-native-progress';
 import { formatTime } from '../utils/formatTime';
 import { pickWorkout } from '../utils/pickWorkout';
@@ -153,6 +154,9 @@ export default function ExerciseScreen() {
       color: theme.colors.success,
       marginBottom: 30,
     },
+    returnButton: {
+      marginTop: 20,
+    },
   });
 
   if (isLoading) {
@@ -170,8 +174,8 @@ export default function ExerciseScreen() {
         <Text style={styles.errorText}>{error}</Text>
         <Button
           title="Return Home"
+          variant="primary"
           onPress={() => router.replace('/')}
-          color={theme.colors.primary}
           accessibilityLabel="Return to home screen"
         />
       </View>
@@ -189,7 +193,7 @@ export default function ExerciseScreen() {
           <Text style={styles.exercise}>{currentExercise}</Text>
           <Button
             title="Start exercise"
-            color={theme.colors.primary}
+            variant="primary"
             onPress={startCountdown}
             accessibilityLabel={`Start ${currentExercise} exercise`}
           />
@@ -227,7 +231,13 @@ export default function ExerciseScreen() {
         <>
           <Text style={styles.title}>Workout Complete!</Text>
           <Text style={styles.completedText}>Great job!</Text>
-          <ActivityIndicator size="small" color={theme.colors.primary} />
+          <Button
+            title="Return Home"
+            variant="primary"
+            onPress={() => router.replace('/')}
+            accessibilityLabel="Return to home screen"
+            style={styles.returnButton}
+          />
         </>
       )}
     </View>

@@ -10,7 +10,8 @@ import Slider from '@react-native-community/slider';
 import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Button from '../components/Button';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSounds } from './providers/SoundProvider';
@@ -157,12 +158,15 @@ export default function TimerScreen() {
     },
     presets: {
       flexDirection: 'row',
-      gap: 20,
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      gap: 12,
       marginVertical: 20,
     },
     presetButton: {
-      padding: 10,
-      borderRadius: 8,
+      minWidth: 80,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
     },
     presetButtonDisabled: {
       opacity: 0.4,
@@ -205,12 +209,12 @@ export default function TimerScreen() {
 
       <View style={styles.presets}>
         {PRESET_MINUTES.map((min) => (
-          <TouchableOpacity
+          <Button
             key={min}
-            style={[styles.presetButton, isRunning && styles.presetButtonDisabled]}
+            title={`${min} min`}
+            variant="secondary"
             disabled={isRunning}
             accessibilityLabel={`Set timer to ${min} minutes`}
-            accessibilityRole="button"
             onPress={() => {
               if (!isRunning) {
                 setDuration(min * 60);
@@ -218,11 +222,8 @@ export default function TimerScreen() {
                 endTimeRef.current = null;
               }
             }}
-          >
-            <Text style={[styles.presetButtonText, isRunning && styles.presetButtonTextDisabled]}>
-              {min} min
-            </Text>
-          </TouchableOpacity>
+            style={styles.presetButton}
+          />
         ))}
       </View>
 
@@ -251,19 +252,17 @@ export default function TimerScreen() {
         <Button
           title={isRunning ? 'Pause' : 'Start'}
           onPress={toggleTimer}
-          color={theme.colors.primary}
           accessibilityLabel={isRunning ? 'Pause timer' : 'Start timer'}
         />
         <Button
           title="Reset"
           onPress={resetTimer}
-          color={isDark ? theme.colors.surface : theme.colors.textSecondary}
+          disabled={isRunning}
           accessibilityLabel="Reset timer"
         />
         <Button
           title="Skip"
           onPress={skipToExercise}
-          color={theme.colors.primary}
           accessibilityLabel="Skip timer and go to exercises"
         />
       </View>

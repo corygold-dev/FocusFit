@@ -14,6 +14,7 @@ export const colors = {
     switchThumb: '#FFFFFF',
     buttonDisabled: '#CBD5E0',
     modalBackground: '#FFFFFF',
+    card: '#FFFFFF',
   },
 
   dark: {
@@ -26,6 +27,7 @@ export const colors = {
     switchThumb: '#E1E8F0',
     buttonDisabled: '#4A5568',
     modalBackground: '#2C2C2C',
+    card: '#1E1E1E',
   },
 };
 

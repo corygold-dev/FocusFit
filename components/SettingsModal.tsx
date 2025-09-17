@@ -2,7 +2,7 @@ import { exercises } from '@/app/lib/exercises';
 import { useTheme } from '@/app/providers/ThemeProvider';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/utils/constants';
 import _ from 'lodash';
-import { ArrowLeft } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -42,14 +42,14 @@ export default function SettingsModal({
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);
   const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
-  const [showExcludeMenu, setShowExcludeMenu] = useState<boolean>(false);
+  const [showDifficultyDropdown, setShowDifficultyDropdown] = useState<boolean>(false);
 
   useEffect(() => {
     if (visible) {
       setEquipment(initialEquipment);
       setDifficulty(initialDifficulty);
       setExcludedExercises(initialExcludedExercises);
-      setShowExcludeMenu(false);
+      setShowDifficultyDropdown(false);
     }
   }, [visible, initialEquipment, initialDifficulty, initialExcludedExercises]);
 
@@ -83,33 +83,19 @@ export default function SettingsModal({
       justifyContent: 'center',
       alignItems: 'center',
     },
-    mainContainer: {
-      flex: 1,
-      padding: 20,
-      display: 'flex',
-      flexDirection: 'column',
-    },
     modalContent: {
       width: '90%',
       maxWidth: 450,
       backgroundColor: theme.colors.modalBackground,
       borderRadius: 12,
-      height: '75%',
-      justifyContent: 'space-around',
+      height: '80%',
+      overflow: 'hidden',
     },
-    excludeModalContent: {
-      height: '75%',
-      padding: 0,
-    },
-    excludeContainer: {
+    container: {
       flex: 1,
+    },
+    scrollContent: {
       padding: 20,
-      display: 'flex',
-      flexDirection: 'column',
-    },
-    exercisesScrollView: {
-      flex: 1,
-      marginVertical: 10,
     },
     modalTitle: {
       fontSize: 22,
@@ -121,17 +107,21 @@ export default function SettingsModal({
     sectionTitle: {
       fontSize: 18,
       fontWeight: '600',
-      marginTop: 10,
-      marginBottom: 5,
+      marginTop: 20,
+      marginBottom: 10,
       color: theme.colors.text,
     },
-    optionButton: {
-      paddingVertical: 10,
-      paddingHorizontal: 15,
+    equipmentContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+    },
+    equipmentButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
       borderWidth: 1,
       borderColor: theme.colors.primary,
       borderRadius: 8,
-      marginBottom: 10,
+      margin: 5,
     },
     optionSelected: {
       backgroundColor: theme.colors.primary,
@@ -146,42 +136,10 @@ export default function SettingsModal({
     buttonRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginTop: 15,
-    },
-    excludeButton: {
-      marginTop: 20,
-      paddingVertical: 10,
-      paddingHorizontal: 15,
-      borderWidth: 1,
-      borderColor: theme.colors.primary,
-      borderRadius: 8,
-      alignItems: 'center',
-    },
-    excludeButtonText: {
-      color: theme.colors.primary,
-      fontWeight: '600',
-      fontSize: 16,
-    },
-    backButton: {
-      marginBottom: 10,
-      alignSelf: 'flex-start',
-    },
-    backButtonContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    backText: {
-      color: theme.colors.primary,
-      fontSize: 16,
-      marginLeft: 5,
-    },
-    excludeTitle: {
-      fontSize: 22,
-      fontWeight: 'bold',
-      marginLeft: 40,
-      marginRight: 40,
-      textAlign: 'center',
-      color: theme.colors.text,
+      padding: 20,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+      backgroundColor: theme.colors.modalBackground,
     },
     helpText: {
       fontSize: 14,
@@ -197,7 +155,7 @@ export default function SettingsModal({
       fontWeight: '600',
       color: theme.colors.textSecondary,
       marginBottom: 5,
-      backgroundColor: isDark ? '#2C2C2C' : '#F0F4F8',
+      backgroundColor: isDark ? theme.colors.surfaceVariant : '#F0F4F8',
       paddingVertical: 5,
       paddingHorizontal: 10,
       borderRadius: 4,
@@ -216,74 +174,144 @@ export default function SettingsModal({
       flex: 1,
       color: theme.colors.text,
     },
+    dropdownContainer: {
+      position: 'relative',
+      zIndex: 10,
+    },
+    dropdownButton: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 15,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 8,
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    dropdownText: {
+      fontSize: 16,
+      color: theme.colors.text,
+      fontWeight: '500',
+    },
+    dropdownMenu: {
+      position: 'absolute',
+      top: '100%',
+      left: 0,
+      right: 0,
+      backgroundColor: theme.colors.modalBackground,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      borderRadius: 8,
+      marginTop: 5,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      zIndex: 20,
+    },
+    dropdownOption: {
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+    },
+    dropdownOptionSelected: {
+      backgroundColor: theme.colors.surfaceVariant,
+    },
+    dropdownOptionText: {
+      fontSize: 16,
+      color: theme.colors.text,
+    },
+    dropdownOptionTextSelected: {
+      color: theme.colors.primary,
+      fontWeight: 'bold',
+    },
+    excludedExercisesSection: {
+      marginTop: 20,
+    },
   });
-
-  const mainSettingsContent = (
-    <View style={styles.mainContainer}>
-      <Text style={styles.modalTitle}>Settings</Text>
-
-      <Text style={styles.sectionTitle}>Select Equipment:</Text>
-      <ScrollView>
-        {_.map(EQUIPMENT_OPTIONS, (item) => (
-          <TouchableOpacity
-            key={item}
-            onPress={() => toggleEquipment(item)}
-            style={[styles.optionButton, _.includes(equipment, item) && styles.optionSelected]}
-          >
-            <Text
-              style={[styles.optionText, _.includes(equipment, item) && styles.optionTextSelected]}
-            >
-              {item}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-
-      <Text style={styles.sectionTitle}>Difficulty:</Text>
-      {_.map(DIFFICULTY_LEVELS, (level) => (
-        <TouchableOpacity
-          key={level}
-          onPress={() => setDifficulty(level as 'easy' | 'medium' | 'hard')}
-          style={[styles.optionButton, difficulty === level && styles.optionSelected]}
-        >
-          <Text style={[styles.optionText, difficulty === level && styles.optionTextSelected]}>
-            {_.capitalize(level)}
-          </Text>
-        </TouchableOpacity>
-      ))}
-
-      <TouchableOpacity style={styles.excludeButton} onPress={() => setShowExcludeMenu(true)}>
-        <Text style={styles.excludeButtonText}>
-          Excluded Exercises {excludedExercises.length > 0 ? `(${excludedExercises.length})` : ''}
-        </Text>
-      </TouchableOpacity>
-      <View style={styles.buttonRow}>
-        <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
-        <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
-      </View>
-    </View>
-  );
 
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, showExcludeMenu && styles.excludeModalContent]}>
-          {showExcludeMenu ? (
-            <View style={styles.excludeContainer}>
-              <TouchableOpacity style={styles.backButton} onPress={() => setShowExcludeMenu(false)}>
-                <View style={styles.backButtonContent}>
-                  <ArrowLeft size={24} color={theme.colors.primary} />
-                  <Text style={styles.backText}>Back</Text>
-                </View>
-              </TouchableOpacity>
+        <View style={styles.modalContent}>
+          <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              <Text style={styles.modalTitle}>Settings</Text>
 
-              <Text style={styles.excludeTitle}>Exclude Exercises</Text>
+              <Text style={styles.sectionTitle}>Select Equipment:</Text>
+              <View style={styles.equipmentContainer}>
+                {_.map(EQUIPMENT_OPTIONS, (item) => (
+                  <TouchableOpacity
+                    key={item}
+                    onPress={() => toggleEquipment(item)}
+                    style={[
+                      styles.equipmentButton,
+                      _.includes(equipment, item) && styles.optionSelected,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.optionText,
+                        _.includes(equipment, item) && styles.optionTextSelected,
+                      ]}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-              <Text style={styles.helpText}>
-                Toggle off exercises you don't want to include in your workouts.
-              </Text>
+              <Text style={styles.sectionTitle}>Difficulty:</Text>
+              <View style={styles.dropdownContainer}>
+                <TouchableOpacity
+                  style={styles.dropdownButton}
+                  onPress={() => setShowDifficultyDropdown(!showDifficultyDropdown)}
+                >
+                  <Text style={styles.dropdownText}>{_.capitalize(difficulty)}</Text>
+                  <ChevronDown size={20} color={theme.colors.text} />
+                </TouchableOpacity>
 
-              <ScrollView style={styles.exercisesScrollView}>
+                {showDifficultyDropdown && (
+                  <View style={styles.dropdownMenu}>
+                    {_.map(DIFFICULTY_LEVELS, (level) => (
+                      <TouchableOpacity
+                        key={level}
+                        style={[
+                          styles.dropdownOption,
+                          level === difficulty && styles.dropdownOptionSelected,
+                        ]}
+                        onPress={() => {
+                          setDifficulty(level as 'easy' | 'medium' | 'hard');
+                          setShowDifficultyDropdown(false);
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.dropdownOptionText,
+                            level === difficulty && styles.dropdownOptionTextSelected,
+                          ]}
+                        >
+                          {_.capitalize(level)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+              </View>
+
+              <View style={styles.excludedExercisesSection}>
+                <Text style={styles.sectionTitle}>
+                  Excluded Exercises{' '}
+                  {excludedExercises.length > 0 ? `(${excludedExercises.length})` : ''}:
+                </Text>
+                <Text style={styles.helpText}>
+                  Toggle off exercises you don't want to include in your workouts.
+                </Text>
+
                 {_.map(_.toPairs(exercisesByCategory), ([categoryKey, categoryExercises]) => {
                   const category = categoryKey as CategoryKey;
 
@@ -307,16 +335,14 @@ export default function SettingsModal({
                     </View>
                   );
                 })}
-              </ScrollView>
-
-              <View style={styles.buttonRow}>
-                <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
-                <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
               </View>
-            </View>
-          ) : (
-            mainSettingsContent
-          )}
+            </ScrollView>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
+            <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
+          </View>
         </View>
       </View>
     </Modal>
