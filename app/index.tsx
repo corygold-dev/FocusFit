@@ -1,12 +1,15 @@
+import { useInterval } from '@/app/hooks/useInterval';
+import ConfirmationDialog from '@/components/ConfirmationDialog';
 import SettingsModal from '@/components/SettingsModal';
+import { cleanupTimerResources } from '@/utils/cleanupTimerResources';
 import { DEFAULT_MINUTES, ONE_SECOND, PRESET_MINUTES, SLIDER } from '@/utils/constants';
 import { formatTime } from '@/utils/formatTime';
-import { cancelNotification, scheduleTimerNotification } from '@/utils/notifications';
+import { scheduleTimerNotification } from '@/utils/notifications';
 import Slider from '@react-native-community/slider';
-import { Href, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Settings } from 'lucide-react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, Button, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSounds } from './providers/SoundProvider';
@@ -18,6 +21,7 @@ export default function TimerScreen() {
   const [secondsLeft, setSecondsLeft] = useState(duration);
   const [isRunning, setIsRunning] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   const { settings, updateSettings } = useUserSettings();
 
@@ -27,6 +31,8 @@ export default function TimerScreen() {
 
   const { playEndSound } = useSounds();
 
+  const progress = useMemo(() => 1 - secondsLeft / duration, [secondsLeft, duration]);
+
   const startTimer = async (newDuration?: number) => {
     const time = newDuration ?? secondsLeft;
     endTimeRef.current = Date.now() + time * ONE_SECOND;
@@ -35,22 +41,18 @@ export default function TimerScreen() {
 
     if (endTimeRef.current) {
       const triggerDate = new Date(endTimeRef.current);
-      notificationIdRef.current = await scheduleTimerNotification(triggerDate);
+      try {
+        notificationIdRef.current = await scheduleTimerNotification(triggerDate);
+      } catch (error) {
+        console.error('Failed to schedule notification:', error);
+      }
     }
   };
 
   const pauseTimer = async () => {
     setIsRunning(false);
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    if (notificationIdRef.current) {
-      await cancelNotification(notificationIdRef.current);
-      notificationIdRef.current = null;
-    }
+    await cleanupTimerResources(intervalRef, notificationIdRef);
 
     if (endTimeRef.current) {
       const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
@@ -64,54 +66,73 @@ export default function TimerScreen() {
     setSecondsLeft(duration);
     endTimeRef.current = null;
 
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-
-    if (notificationIdRef.current) {
-      await cancelNotification(notificationIdRef.current);
-      notificationIdRef.current = null;
-    }
+    await cleanupTimerResources(intervalRef, notificationIdRef);
   };
-
-  useEffect(() => {
-    if (!isRunning || !endTimeRef.current) return;
-
-    intervalRef.current = setInterval(() => {
-      if (!endTimeRef.current) return;
-
-      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
-      setSecondsLeft(remaining);
-
-      if (remaining <= 0) {
-        clearInterval(intervalRef.current!);
-        intervalRef.current = null;
-        setIsRunning(false);
-        playEndSound();
-        router.push('/exercise' as Href);
-      }
-    }, ONE_SECOND);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [isRunning, playEndSound, router]);
 
   const toggleTimer = () => {
     if (isRunning) pauseTimer();
     else startTimer();
   };
 
-  const progress = 1 - secondsLeft / duration;
+  const skipToExercise = async () => {
+    if (isRunning) {
+      setIsRunning(false);
+      await cleanupTimerResources(intervalRef, notificationIdRef);
+    }
+
+    if (Platform.OS === 'web') {
+      setShowConfirmDialog(true);
+    } else {
+      Alert.alert(
+        'Skip Timer',
+        'Are you sure you want to skip the timer and go directly to exercises?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Skip',
+            onPress: () => router.push('/exercise'),
+          },
+        ],
+      );
+    }
+  };
+
+  const handleSkipConfirm = () => {
+    setShowConfirmDialog(false);
+    router.push('/exercise');
+  };
+
+  useInterval(
+    () => {
+      if (!endTimeRef.current) return;
+
+      const remaining = Math.max(Math.ceil((endTimeRef.current - Date.now()) / ONE_SECOND), 0);
+      setSecondsLeft(remaining);
+
+      if (remaining <= 0) {
+        setIsRunning(false);
+        playEndSound();
+        router.push('/exercise');
+      }
+    },
+    isRunning ? ONE_SECOND : null,
+  );
+
+  useEffect(() => {
+    return () => {
+      cleanupTimerResources(intervalRef, notificationIdRef);
+    };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView edges={['top']} style={styles.header}>
-        <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.cogButton}>
+        <TouchableOpacity
+          onPress={() => setShowSettings(true)}
+          style={styles.cogButton}
+          accessibilityLabel="Open settings"
+          accessibilityRole="button"
+        >
           <Settings size={32} color="#2575fc" />
         </TouchableOpacity>
       </SafeAreaView>
@@ -130,9 +151,12 @@ export default function TimerScreen() {
 
       <View style={styles.presets}>
         {PRESET_MINUTES.map((min) => (
-          <Text
+          <TouchableOpacity
             key={min}
-            style={[styles.presetButton, isRunning && { opacity: 0.4, color: '#aaa' }]}
+            style={[styles.presetButton, isRunning && styles.presetButtonDisabled]}
+            disabled={isRunning}
+            accessibilityLabel={`Set timer to ${min} minutes`}
+            accessibilityRole="button"
             onPress={() => {
               if (!isRunning) {
                 setDuration(min * 60);
@@ -141,8 +165,10 @@ export default function TimerScreen() {
               }
             }}
           >
-            {min} min
-          </Text>
+            <Text style={[styles.presetButtonText, isRunning && styles.presetButtonTextDisabled]}>
+              {min} min
+            </Text>
+          </TouchableOpacity>
         ))}
       </View>
 
@@ -163,12 +189,21 @@ export default function TimerScreen() {
         minimumTrackTintColor={isRunning ? '#ccc' : '#2575fc'}
         maximumTrackTintColor={isRunning ? '#eee' : '#eee'}
         disabled={isRunning}
+        accessibilityLabel={`Adjust timer duration, currently ${Math.floor(secondsLeft / 60)} minutes`}
       />
 
       <View style={styles.buttonContainer}>
-        <Button title={isRunning ? 'Pause' : 'Start'} onPress={toggleTimer} />
-        <Button title="Reset" onPress={resetTimer} />
-        <Button title="Skip" onPress={() => router.push('/exercise' as Href)} />
+        <Button
+          title={isRunning ? 'Pause' : 'Start'}
+          onPress={toggleTimer}
+          accessibilityLabel={isRunning ? 'Pause timer' : 'Start timer'}
+        />
+        <Button title="Reset" onPress={resetTimer} accessibilityLabel="Reset timer" />
+        <Button
+          title="Skip"
+          onPress={skipToExercise}
+          accessibilityLabel="Skip timer and go to exercises"
+        />
       </View>
 
       <SettingsModal
@@ -179,6 +214,16 @@ export default function TimerScreen() {
         onSave={({ equipment, difficulty }) => {
           updateSettings({ equipment, difficulty });
         }}
+      />
+
+      <ConfirmationDialog
+        visible={showConfirmDialog}
+        title="Skip Timer"
+        message="Are you sure you want to skip the timer and go directly to exercises?"
+        confirmText="Skip"
+        cancelText="Cancel"
+        onConfirm={handleSkipConfirm}
+        onCancel={() => setShowConfirmDialog(false)}
       />
     </SafeAreaView>
   );
@@ -204,5 +249,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   presets: { flexDirection: 'row', gap: 20, marginVertical: 20 },
-  presetButton: { fontSize: 18, color: '#2575fc', fontWeight: '600' },
+  presetButton: {
+    padding: 10,
+    borderRadius: 8,
+  },
+  presetButtonDisabled: {
+    opacity: 0.4,
+  },
+  presetButtonText: {
+    fontSize: 18,
+    color: '#2575fc',
+    fontWeight: '600',
+  },
+  presetButtonTextDisabled: {
+    color: '#aaa',
+  },
 });

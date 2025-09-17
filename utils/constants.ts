@@ -6,6 +6,8 @@ export const PRESET_MINUTES = [15, 25, 50];
 
 export const DIFFICULTY_LEVELS = ['easy', 'medium', 'hard'];
 
+export const USER_SETTINGS_STORAGE_KEY = 'userSettings';
+
 export const EQUIPMENT_OPTIONS = ['TRX', 'Kettlebell', 'Pull-up Bar', 'Resistance Band'];
 
 export const SLIDER = {

@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { USER_SETTINGS_STORAGE_KEY } from '@/utils/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import _ from 'lodash';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Settings = {
   difficulty: 'easy' | 'medium' | 'hard';
@@ -9,6 +11,7 @@ type Settings = {
 type UserSettingsContextType = {
   settings: Settings;
   updateSettings: (newSettings: Partial<Settings>) => void;
+  isLoading: boolean;
 };
 
 const defaultSettings: Settings = {
@@ -20,22 +23,40 @@ const UserSettingsContext = createContext<UserSettingsContextType | undefined>(u
 
 export const UserSettingsProvider = ({ children }: { children: React.ReactNode }) => {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const saved = await AsyncStorage.getItem('userSettings');
-      if (saved) setSettings(JSON.parse(saved));
-    })();
+    const loadSettings = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(USER_SETTINGS_STORAGE_KEY);
+        if (saved) {
+          setSettings(JSON.parse(saved));
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadSettings();
   }, []);
+
+  const saveSettings = _.debounce(async (settingsToSave: Settings) => {
+    try {
+      await AsyncStorage.setItem(USER_SETTINGS_STORAGE_KEY, JSON.stringify(settingsToSave));
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
+  }, 300);
 
   const updateSettings = (newSettings: Partial<Settings>) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
-    AsyncStorage.setItem('userSettings', JSON.stringify(updated));
+    saveSettings(updated);
   };
 
   return (
-    <UserSettingsContext.Provider value={{ settings, updateSettings }}>
+    <UserSettingsContext.Provider value={{ settings, updateSettings, isLoading }}>
       {children}
     </UserSettingsContext.Provider>
   );

@@ -6,7 +6,7 @@ export async function scheduleTimerNotification(triggerDate: Date) {
       content: {
         title: 'Focus Timer Finished',
         body: 'Time to Move!',
-        sound: 'finish-sound.wav', // custom sound
+        sound: 'finish-sound.wav',
       },
       trigger: {
         type: 'date',

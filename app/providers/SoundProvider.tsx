@@ -1,5 +1,5 @@
-import React, { createContext, useContext } from 'react';
 import { useAudioPlayer } from 'expo-audio';
+import React, { createContext, useCallback, useContext } from 'react';
 import endSoundFile from '../../assets/audio/finish-sound.wav';
 import smallBeepFile from '../../assets/audio/short-beep.wav';
 import finalBeepFile from '../../assets/audio/short-ping.mp3';
@@ -17,20 +17,32 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const finalBeep = useAudioPlayer(finalBeepFile);
   const endSound = useAudioPlayer(endSoundFile);
 
-  const playSmallBeep = () => {
-    smallBeep.seekTo(0);
-    smallBeep.play();
-  };
+  const playSmallBeep = useCallback(() => {
+    try {
+      smallBeep.seekTo(0);
+      smallBeep.play();
+    } catch (error) {
+      console.error('Error playing small beep:', error);
+    }
+  }, [smallBeep]);
 
-  const playFinalBeep = () => {
-    finalBeep.seekTo(0);
-    finalBeep.play();
-  };
+  const playFinalBeep = useCallback(() => {
+    try {
+      finalBeep.seekTo(0);
+      finalBeep.play();
+    } catch (error) {
+      console.error('Error playing final beep:', error);
+    }
+  }, [finalBeep]);
 
-  const playEndSound = () => {
-    endSound.seekTo(0);
-    endSound.play();
-  };
+  const playEndSound = useCallback(() => {
+    try {
+      endSound.seekTo(0);
+      endSound.play();
+    } catch (error) {
+      console.error('Error playing end sound:', error);
+    }
+  }, [endSound]);
 
   return (
     <SoundContext.Provider value={{ playSmallBeep, playFinalBeep, playEndSound }}>
