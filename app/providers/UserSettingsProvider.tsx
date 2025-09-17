@@ -6,6 +6,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 type Settings = {
   difficulty: 'easy' | 'medium' | 'hard';
   equipment: string[];
+  excludedExercises: string[];
 };
 
 type UserSettingsContextType = {
@@ -17,6 +18,7 @@ type UserSettingsContextType = {
 const defaultSettings: Settings = {
   difficulty: 'medium',
   equipment: [],
+  excludedExercises: [],
 };
 
 const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);

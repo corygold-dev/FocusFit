@@ -211,8 +211,9 @@ export default function TimerScreen() {
         onClose={() => setShowSettings(false)}
         initialEquipment={settings.equipment}
         initialDifficulty={settings.difficulty}
-        onSave={({ equipment, difficulty }) => {
-          updateSettings({ equipment, difficulty });
+        initialExcludedExercises={settings.excludedExercises}
+        onSave={({ equipment, difficulty, excludedExercises }) => {
+          updateSettings({ equipment, difficulty, excludedExercises });
         }}
       />
 
