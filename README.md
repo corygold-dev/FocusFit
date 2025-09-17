@@ -1,50 +1,123 @@
-# Welcome to your Expo app 👋
+# 2min.fit
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A minimalist workout app that helps you stay fit with quick, effective exercise routines that adapt to your equipment and preferences.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Focus Timer**: Customizable countdown timer to prepare for your workout
+- **Adaptive Workouts**: Exercises tailored to available equipment and difficulty preference
+- **Multiple Difficulty Levels**: Easy, medium, and hard options to match your fitness level
+- **Equipment Selection**: Support for TRX, kettlebells, resistance bands, and more
+- **Dark/Light Themes**: Choose your preferred theme or match your system settings
+- **Sound Notifications**: Audio cues to guide your workout progress
 
+## Screenshots
+
+<p align="center">
+  <img src="assets/images/screenshot1.png" alt="Timer Screen" width="250"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/screenshot2.png" alt="Exercise Screen" width="250"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/screenshot3.png" alt="Settings Modal" width="250"/>
+</p>
+
+<p align="center">
+  <img src="assets/images/screenshot4.png" alt="Settings Modal" width="250"/>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="assets/images/screenshot5.png" alt="Settings Modal" width="250"/>
+</p>
+
+## Installation
+
+1. Clone the repository:
+   ```bash
+   git clone git@github.com:corygold-dev/2min.fit-app.git
+   cd 2min.fit-app
+   ```
+
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. Start the app:
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+## Running on Devices
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- **iOS Simulator**: Press `i` in the terminal after starting the app
+- **Android Emulator**: Press `a` in the terminal after starting the app
+- **Physical Device**: Scan the QR code with the Expo Go app
+- **Web Browser**: Press `w` in the terminal after starting the app
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Tech Stack
 
-## Get a fresh project
+- **Framework**: React Native with Expo
+- **Navigation**: Expo Router with file-based routing
+- **State Management**: React Context API
+- **Styling**: React Native StyleSheet
+- **Audio**: Expo Audio
 
-When you're ready, run:
+## Project Structure
 
-```bash
-npm run reset-project
+```
+2min.fit-app/
+├── app/                 # Main screens and application logic
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Core application libraries
+│   └── providers/       # React Context providers
+├── assets/              # Images, audio, and other static files
+├── components/          # UI components organized by feature
+│   ├── exerciseScreen/  # Exercise-related components
+│   ├── settingsModal/   # Settings-related components
+│   ├── timerScreen/     # Timer-related components
+│   └── ui/              # Shared UI components
+├── styles/              # Global styles and theme configuration
+└── utils/               # Helper functions and constants
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Development
 
-## Learn more
+### Key Files
 
-To learn more about developing your project with Expo, look at the following resources:
+- `app/index.tsx`: Main timer screen
+- `app/exercise.tsx`: Exercise workflow screen
+- `utils/constants.ts`: App-wide constants and types
+- `components/settingsModal/SettingsModal.tsx`: User preferences interface
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Customizing Exercises
 
-## Join the community
+Add new exercises in `app/lib/exercises.ts` following the existing structure:
 
-Join our community of developers creating universal apps.
+```typescript
+{
+  name: "Exercise Name",
+  duration: 30, // in seconds
+  difficulty: ["easy", "medium", "hard"], // difficulty levels the exercise is suitable for
+  category: "upper", // upper, lower, full, or mobility
+  equipment: ["TRX"] // optional
+}
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- [Expo](https://expo.dev) - The React Native framework used
+- [React Native Community](https://reactnative.dev/community/overview) - For their amazing components and tools
+
+---
+
+*Built with ❤️ for fitness/tech enthusiasts*
