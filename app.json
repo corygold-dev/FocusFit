@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "2-minute-fit",
-    "slug": "2-minute-fit",
+    "slug": "2minutefit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,7 +10,14 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleResources": ["assets/audio/finish-sound.wav"]
+      "bundleResources": [
+        "assets/audio/finish-sound.wav",
+        "assets/audio/finish-sound.wav"
+      ],
+      "bundleIdentifier": "com.corygold.2minutefit",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +27,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.corygold.twominutefit"
     },
     "web": {
       "output": "static",
@@ -39,11 +47,19 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "1fd6126a-4eb8-4f4b-a278-1d5c2ded5ba0"
+      }
+    },
+    "owner": "corygold"
   }
 }

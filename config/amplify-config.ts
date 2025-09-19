@@ -15,17 +15,17 @@ export function configureAmplify() {
           loginWith: {
             email: true,
             username: true,
-          }
-        }
+          },
+        },
       },
       Storage: {
         S3: {
           bucket: '2minfit-videos',
           region: 'us-east-1',
-        }
-      }
+        },
+      },
     });
-    
+
     console.log('Configured Amplify for web');
   } else {
     // Mobile configuration

@@ -4,6 +4,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { getTheme, Theme } from '@/styles/theme';
 import { THEME_MODE_STORAGE_KEY } from '../utils/constants';
+import * as Font from 'expo-font';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -26,6 +33,23 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
 
   useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          'Inter-Regular': Inter_400Regular,
+          'Inter-Medium': Inter_500Medium,
+          'Inter-SemiBold': Inter_600SemiBold,
+          'Inter-Bold': Inter_700Bold,
+        });
+      } catch (error) {
+        console.error('Failed to load fonts', error);
+      }
+    }
+
+    loadFonts();
+  }, []);
+
+  useEffect(() => {
     const loadThemePreference = async () => {
       try {
         const savedTheme = await AsyncStorage.getItem(THEME_MODE_STORAGE_KEY);
@@ -41,7 +65,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   const isDark = themeMode === 'dark' || (themeMode === 'system' && systemColorScheme === 'dark');
-
   const theme = getTheme(isDark);
 
   const updateThemeMode = (mode: ThemeMode) => {

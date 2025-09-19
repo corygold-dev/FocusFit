@@ -20,7 +20,8 @@ export const loginFormStyles = (theme: Theme) =>
       marginBottom: 16,
     },
     title: {
-      fontSize: 28,
+      fontFamily: theme.fonts.bold,
+      fontSize: theme.fontSizes.xxl,
       fontWeight: 'bold',
       color: theme.colors.text,
       marginBottom: 8,
