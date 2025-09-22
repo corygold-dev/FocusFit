@@ -1,0 +1,21 @@
+diff --git a/node_modules/@aws-amplify/react-native/AmplifyRTNCore.podspec b/node_modules/@aws-amplify/react-native/AmplifyRTNCore.podspec
+index 7690560..3f7ef40 100644
+--- a/node_modules/@aws-amplify/react-native/AmplifyRTNCore.podspec
++++ b/node_modules/@aws-amplify/react-native/AmplifyRTNCore.podspec
+@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
+   s.source_files = "ios/**/*.{h,m,mm,swift,c}"
+ 
+   s.dependency "React-Core"
+-
++  s.dependency "RCT-Folly", "2021.07.22.00"
+   # Don't install the dependencies when we run `pod install` in the old architecture.
+   if ENV['RCT_NEW_ARCH_ENABLED'] == '1' then
+     s.compiler_flags = folly_compiler_flags + " -DRCT_NEW_ARCH_ENABLED=1"
+@@ -27,7 +27,6 @@ Pod::Spec.new do |s|
+         "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+     }
+     s.dependency "React-Codegen"
+-    s.dependency "RCT-Folly"
+     s.dependency "RCTRequired"
+     s.dependency "RCTTypeSafety"
+     s.dependency "ReactCommon/turbomodule/core"
