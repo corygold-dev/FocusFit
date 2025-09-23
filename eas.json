@@ -10,13 +10,21 @@
       "ios": {
         "resourceClass": "m-medium"
       },
-      "prebuildCommand": "./eas-build-pre-install.sh"
+      "buildHooks": {
+        "preBuild": "bash ./eas-build-pre-install.sh"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "buildHooks": {
+        "preBuild": "bash ./eas-build-pre-install.sh"
+      }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "buildHooks": {
+        "preBuild": "bash ./eas-build-pre-install.sh"
+      }
     }
   },
   "submit": {
