@@ -10,10 +10,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleResources": [
-        "assets/audio/finish-sound.wav",
-        "assets/audio/finish-sound.wav"
-      ],
+      "bundleResources": ["assets/audio/finish-sound.wav"],
       "bundleIdentifier": "com.corygold.2minutefit",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -36,20 +33,25 @@
     },
     "plugins": [
       "expo-router",
+      "expo-splash-screen",
+      "expo-font",
       [
-        "expo-splash-screen",
+        "expo-build-properties",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
-          "dark": {
-            "backgroundColor": "#000000"
+          "ios": {
+            "useFrameworks": "static",
+            "extraPods": {
+              "RCT-Folly": {
+                "podspec": "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
+              }
+            }
           }
         }
-      ],
-      "expo-font"
+      ]
     ],
+    "splash": {
+      "backgroundColor": "#ffffff"
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
