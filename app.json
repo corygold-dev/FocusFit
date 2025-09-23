@@ -44,6 +44,10 @@
               {
                 "name": "RCT-Folly",
                 "podspec": "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
+              },
+              {
+                "name": "fast_float",
+                "version": "8.0.0"
               }
             ],
             "podfileProperties": {
