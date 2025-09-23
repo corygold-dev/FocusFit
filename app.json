@@ -40,11 +40,12 @@
         {
           "ios": {
             "useFrameworks": "static",
-            "extraPods": {
-              "RCT-Folly": {
-                "podspec": "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
+            "extraPods": [
+              {
+                "name": "RCT-Folly",
+                "path": "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
               }
-            }
+            ]
           }
         }
       ]
