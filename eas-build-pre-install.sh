@@ -1,14 +1,15 @@
 #!/bin/bash
 
-# Fix RCT-Folly dependencies
-echo "Running pre-install script for EAS build..."
+set -e
 
-# Apply patches
-echo "Applying patches..."
-npx patch-package
+echo "🚀 Running pre-install script for EAS build..."
 
-# Force pod repo update to get latest specs
-echo "Updating CocoaPods repos..."
+# Apply patches (if you use patch-package)
+echo "📦 Applying patch-package fixes..."
+npx patch-package || true
+
+# Update CocoaPods repo to make sure we get latest podspecs
+echo "🔄 Updating CocoaPods repos..."
 pod repo update
 
-echo "Pre-install script completed"
+echo "✅ Pre-install script completed"
