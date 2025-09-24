@@ -1,4 +1,3 @@
-// components/authScreen/RegisterForm.tsx
 import { useAuth } from '@/src/providers/AuthProvider';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';

@@ -1,8 +1,4 @@
 import { configureAmplify } from '@/config/amplify-config';
-import { SplashScreen, Stack } from 'expo-router';
-import React, { useEffect } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useNotificationsSetup } from '../src/hooks';
 import {
   AuthProvider,
   SoundProvider,
@@ -11,6 +7,10 @@ import {
   UserSettingsProvider,
   useAuth,
 } from '@/src/providers';
+import { SplashScreen, Stack } from 'expo-router';
+import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { useNotificationsSetup } from '../src/hooks';
 
 configureAmplify();
 
@@ -51,24 +51,21 @@ function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
 
   if (isLoading) {
-    return null; // or a loading indicator
+    return null;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      {/* Public screens - accessible when not authenticated */}
       <Stack.Protected guard={!isAuthenticated}>
         <Stack.Screen name="sign-in" />
         <Stack.Screen name="sign-up" />
         <Stack.Screen name="confirm" />
       </Stack.Protected>
 
-      {/* Protected screens - accessible when authenticated */}
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(app)" />
       </Stack.Protected>
 
-      {/* Default redirect */}
       <Stack.Screen name="index" redirect />
     </Stack>
   );

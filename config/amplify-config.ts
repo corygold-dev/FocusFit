@@ -1,11 +1,9 @@
-// config/amplify-config.ts
 import { Platform } from 'react-native';
 import { configureMobileAmplify } from './amplify-mobile-config';
 import { Amplify } from 'aws-amplify';
 
 export function configureAmplify() {
   if (Platform.OS === 'web') {
-    // Web configuration
     Amplify.configure({
       Auth: {
         Cognito: {
@@ -28,7 +26,6 @@ export function configureAmplify() {
 
     console.log('Configured Amplify for web');
   } else {
-    // Mobile configuration
     configureMobileAmplify();
     console.log('Configured Amplify for mobile');
   }

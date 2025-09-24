@@ -1,10 +1,8 @@
-// components/authScreen/styles/registerForm.styles.ts
 import { Theme } from '@/styles/theme';
 import { StyleSheet } from 'react-native';
 
 export const registerFormStyles = (theme: Theme) =>
   StyleSheet.create({
-    // Same styles as loginForm with minor adjustments
     container: {
       flex: 1,
       alignItems: 'center',

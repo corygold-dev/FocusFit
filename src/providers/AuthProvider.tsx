@@ -136,7 +136,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setError(err.message || 'Failed to sign in. Please try again.');
         }
       } else {
-        // Handle as a generic error
         const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
         setError(errorMessage);
       }

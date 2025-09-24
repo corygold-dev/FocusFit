@@ -1,4 +1,3 @@
-// models/subscription.ts
 export type SubscriptionTier = 'free' | 'premium';
 
 export interface SubscriptionDetails {

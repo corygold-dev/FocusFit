@@ -40,7 +40,6 @@ const fontFamily = {
   bold: 'Inter-Bold',
 };
 
-// Font sizes used throughout the app
 const fontSizes = {
   xs: 12,
   sm: 14,

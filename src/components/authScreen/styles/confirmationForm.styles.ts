@@ -1,4 +1,3 @@
-// components/authScreen/styles/confirmationForm.styles.ts
 import { Theme } from '@/styles/theme';
 import { StyleSheet } from 'react-native';
 

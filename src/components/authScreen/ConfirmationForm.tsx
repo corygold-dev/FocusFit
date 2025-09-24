@@ -1,4 +1,3 @@
-// components/authScreen/ConfirmationForm.tsx
 import { useTheme } from '@/src/providers';
 import { useAuth } from '@/src/providers/AuthProvider';
 import React, { useState } from 'react';
