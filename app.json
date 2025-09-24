@@ -5,12 +5,10 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "2minutefit",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleResources": ["assets/audio/finish-sound.wav"],
       "bundleIdentifier": "com.corygold.2minutefit",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
@@ -19,17 +17,14 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
       "package": "com.corygold.twominutefit"
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
@@ -44,10 +39,6 @@
               {
                 "name": "RCT-Folly",
                 "podspec": "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
-              },
-              {
-                "name": "fast_float",
-                "version": "8.0.0"
               }
             ],
             "podfileProperties": {
@@ -55,7 +46,10 @@
             }
           }
         }
-      ]
+      ],
+      "expo-audio",
+      "expo-video",
+      "expo-web-browser"
     ],
     "splash": {
       "backgroundColor": "#ffffff"
