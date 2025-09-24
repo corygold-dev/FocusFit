@@ -48,8 +48,8 @@ A comprehensive productivity and fitness app that combines focused work sessions
 1. Clone the repository:
 
    ```bash
-   git clone git@github.com:corygold-dev/focusfit-app.git
-   cd focusfit-app
+   git clone git@github.com:corygold-dev/FocusFit.git
+   cd FocusFit
    ```
 
 2. Install dependencies:
@@ -92,7 +92,7 @@ A comprehensive productivity and fitness app that combines focused work sessions
 ## Project Structure
 
 ```
-focusfit-app/
+FocusFit/
 ├── app/                    # Expo Router screens
 │   ├── (app)/             # Protected app screens
 │   │   ├── index.tsx      # Main timer screen
