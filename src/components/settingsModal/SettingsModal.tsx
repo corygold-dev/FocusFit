@@ -15,6 +15,7 @@ import {
 import DifficultySelector from './DifficultySelector';
 import EquipmentSelector from './EquipmentSelector';
 import ExerciseExclusionList from './ExerciseExclusionList';
+import NotificationSettings from './NotificationSettings';
 import ThemeSelector from './ThemeSelector';
 import { settingsModalStyles } from './styles';
 
@@ -81,6 +82,9 @@ export default function SettingsModal({
               <Text style={styles.sectionTitle}>Theme:</Text>
               <ThemeSelector currentTheme={themeMode} onThemeChange={setThemeMode} />
 
+              <Text style={styles.sectionTitle}>Daily Reminders:</Text>
+              <NotificationSettings />
+
               <Text style={styles.sectionTitle}>Select Equipment:</Text>
               <EquipmentSelector
                 equipment={equipment}
@@ -103,7 +107,7 @@ export default function SettingsModal({
               />
 
               <View style={styles.logoutSection}>
-                <Text style={styles.sectionTitle}>Account</Text>
+                <Text style={styles.sectionTitle}>Account:</Text>
                 <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                   <Text style={styles.logoutText}>Log Out</Text>
                 </TouchableOpacity>

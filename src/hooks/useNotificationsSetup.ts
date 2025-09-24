@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import { useEffect } from 'react';
 import { Platform } from 'react-native';
 
 export function useNotificationsSetup() {
@@ -15,13 +15,34 @@ export function useNotificationsSetup() {
 
     const setup = async () => {
       try {
-        if (Platform.OS === 'ios') {
-          await Notifications.requestPermissionsAsync();
-        } else if (Platform.OS === 'android') {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+          console.warn('Notification permissions not granted');
+          return;
+        }
+
+        if (Platform.OS === 'android') {
           await Notifications.setNotificationChannelAsync('default', {
-            name: 'Default',
+            name: 'FocusFit Notifications',
             importance: Notifications.AndroidImportance.HIGH,
             sound: 'finish_sound',
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF6B35',
+          });
+
+          await Notifications.setNotificationChannelAsync('daily_reminders', {
+            name: 'Daily Reminders',
+            importance: Notifications.AndroidImportance.HIGH,
+            sound: 'short_beep',
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: '#FF6B35',
           });
         }
       } catch (error) {
