@@ -1,14 +1,14 @@
 import {
-  signIn,
-  signUp,
   confirmSignUp,
-  signOut,
-  getCurrentUser,
   fetchAuthSession,
+  getCurrentUser,
+  signIn,
+  signOut,
+  signUp,
   type AuthUser,
+  type ConfirmSignUpOutput,
   type SignInOutput,
   type SignUpOutput,
-  type ConfirmSignUpOutput,
 } from 'aws-amplify/auth';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
@@ -78,7 +78,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
       setUser(null);
     } catch {
-      console.log('No authenticated user found');
       setUser(null);
     }
   };
@@ -100,7 +99,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       clearError();
-      console.log(`Login attempt for: ${email}`);
 
       const signInResult: SignInOutput = await signIn({
         username: email,
@@ -108,14 +106,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
 
       if (signInResult.isSignedIn) {
-        console.log('Sign in successful');
         const currentUser = await getCurrentUser();
         setUser(currentUser);
         return currentUser;
       }
 
       if (signInResult.nextStep) {
-        console.log('Additional sign-in steps required:', signInResult.nextStep.signInStep);
         throw new Error(`Additional sign-in steps required: ${signInResult.nextStep.signInStep}`);
       }
 
@@ -161,7 +157,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         },
       });
 
-      console.log('Registration successful, confirmation required');
       return result;
     } catch (err: unknown) {
       console.error('Registration error:', err);
@@ -200,8 +195,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (result.isSignUpComplete) {
         try {
           await refreshAuthState();
-        } catch (e) {
-          console.log('Auto-login after confirmation failed', e);
+        } catch {
+          // Ignore auto-login errors after confirmation
         }
       }
 
@@ -236,7 +231,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       clearError();
 
       await signOut();
-      console.log('Signed out successfully');
       setUser(null);
     } catch (err: unknown) {
       console.error('Logout error:', err);

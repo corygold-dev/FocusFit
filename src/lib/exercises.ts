@@ -1,4 +1,4 @@
-export type Difficulty = 'easy' | 'medium' | 'hard';
+import { Difficulty } from '@/src/utils/constants';
 
 export type Exercise = {
   name: string;

@@ -9,7 +9,7 @@ export default function LoadingState() {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={theme.colors.primary} />
+      <ActivityIndicator size="large" color={theme.colors.secondary} />
       <Text style={styles.loadingText}>Loading your workout...</Text>
     </View>
   );

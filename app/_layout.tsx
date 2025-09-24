@@ -1,9 +1,11 @@
 import { configureAmplify } from '@/config/amplify-config';
+import { ErrorBoundary } from '@/src/components';
 import {
   AuthProvider,
   SoundProvider,
   SubscriptionProvider,
   ThemeProvider,
+  TimerProvider,
   UserSettingsProvider,
   useAuth,
 } from '@/src/providers';
@@ -30,20 +32,24 @@ export default function RootLayout() {
   useNotificationsSetup();
 
   return (
-    <AuthProvider>
-      <SubscriptionProvider>
-        <SafeAreaProvider>
-          <ThemeProvider>
-            <UserSettingsProvider>
-              <SoundProvider>
-                <SplashScreenController />
-                <RootNavigator />
-              </SoundProvider>
-            </UserSettingsProvider>
-          </ThemeProvider>
-        </SafeAreaProvider>
-      </SubscriptionProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <SubscriptionProvider>
+          <SafeAreaProvider>
+            <ThemeProvider>
+              <UserSettingsProvider>
+                <TimerProvider>
+                  <SoundProvider>
+                    <SplashScreenController />
+                    <RootNavigator />
+                  </SoundProvider>
+                </TimerProvider>
+              </UserSettingsProvider>
+            </ThemeProvider>
+          </SafeAreaProvider>
+        </SubscriptionProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

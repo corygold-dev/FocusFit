@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import { Theme } from '@/styles/theme';
+import { StyleSheet } from 'react-native';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -9,5 +9,11 @@ export const createStyles = (theme: Theme) =>
       alignItems: 'center',
       gap: 30,
       backgroundColor: theme.colors.background,
+    },
+    timeButtonContainer: {
+      marginVertical: 20,
+    },
+    timeButton: {
+      minWidth: 200,
     },
   });

@@ -12,7 +12,7 @@ interface TimerSliderProps {
 }
 
 export default function TimerSlider({ value, isRunning, onChange }: TimerSliderProps) {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const styles = timerSliderStyles(theme);
 
   return (
@@ -29,7 +29,7 @@ export default function TimerSlider({ value, isRunning, onChange }: TimerSliderP
           }
         }}
         minimumTrackTintColor={isRunning ? theme.colors.textSecondary : theme.colors.primary}
-        maximumTrackTintColor={isDark ? theme.colors.surfaceVariant : '#E1E8F0'}
+        maximumTrackTintColor={theme.colors.surfaceVariant}
         thumbTintColor={theme.colors.primaryLight}
         disabled={isRunning}
         accessibilityLabel={`Adjust timer duration, currently ${Math.floor(value / 60)} minutes`}

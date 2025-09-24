@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "2-minute-fit",
-    "slug": "2minutefit",
+    "name": "FocusFit",
+    "slug": "focusfit",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

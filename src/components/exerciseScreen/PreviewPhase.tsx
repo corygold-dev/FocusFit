@@ -14,18 +14,33 @@ export default function PreviewPhase({ exerciseName, onStart }: PreviewPhaseProp
   const styles = previewPhaseStyles(theme);
 
   return (
-    <>
-      <Text style={styles.title}>Next up:</Text>
-      <View style={styles.videoPlaceholder}>
-        <Text style={styles.videoText}>Video Preview</Text>
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Ready to Move?</Text>
+        <Text style={styles.subtitle}>Get ready for your next exercise</Text>
       </View>
-      <Text style={styles.exercise}>{exerciseName}</Text>
-      <Button
-        title="Start exercise"
-        variant="primary"
-        onPress={onStart}
-        accessibilityLabel={`Start ${exerciseName} exercise`}
-      />
-    </>
+
+      <View style={styles.exerciseSection}>
+        <Text style={styles.exerciseLabel}>Next Exercise:</Text>
+        <Text style={styles.exercise}>{exerciseName}</Text>
+      </View>
+
+      <View style={styles.mediaContainer}>
+        <View style={styles.videoPlaceholder}>
+          <Text style={styles.videoText}>Exercise Preview</Text>
+          <Text style={styles.videoSubtext}>Watch the movement</Text>
+        </View>
+      </View>
+
+      <View style={styles.actionSection}>
+        <Button
+          title="Start Exercise"
+          variant="primary"
+          onPress={onStart}
+          accessibilityLabel={`Start ${exerciseName} exercise`}
+          style={[styles.startButton, { backgroundColor: theme.colors.secondary }]}
+        />
+      </View>
+    </View>
   );
 }

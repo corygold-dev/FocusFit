@@ -1,10 +1,10 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
-import { useTheme } from '@/src/providers/ThemeProvider';
+import { useTimer } from '@/src/hooks';
+import { useTheme, useTimerContext } from '@/src/providers';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useTimer } from '../../src/hooks';
 
 import {
   ConfirmationDialog,
@@ -12,26 +12,36 @@ import {
   SettingsModal,
   TimerControls,
   TimerDisplay,
-  TimerPresets,
-  TimerSlider,
 } from '@/src/components';
+import TimeModal from '@/src/components/timerScreen/TimeModal';
+import Button from '@/src/components/ui/Button';
 import { useUserSettings } from '@/src/providers/UserSettingsProvider';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
   const styles = timerScreenStyles(theme);
   const router = useRouter();
+  const { shouldAutoStart, clearAutoStart, selectedFocusTime } = useTimerContext();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showTimeModal, setShowTimeModal] = useState(false);
 
   const { settings, updateSettings } = useUserSettings();
 
   const { secondsLeft, isRunning, progress, resetTimer, toggleTimer, setCustomDuration } = useTimer(
     {
       onComplete: () => router.push('/exercise'),
+      initialDuration: selectedFocusTime ? selectedFocusTime * 60 : undefined,
     },
   );
+
+  useEffect(() => {
+    if (shouldAutoStart && !isRunning) {
+      toggleTimer();
+      clearAutoStart();
+    }
+  }, [shouldAutoStart, isRunning, toggleTimer, clearAutoStart]);
 
   const skipToExercise = async () => {
     if (isRunning) {
@@ -63,9 +73,18 @@ export default function TimerScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <SettingsButton onPress={() => setShowSettings(true)} />
-      <TimerDisplay title="Focus Timer" progress={progress} secondsLeft={secondsLeft} />
-      <TimerPresets isRunning={isRunning} onSelectPreset={setCustomDuration} />
-      <TimerSlider value={secondsLeft} isRunning={isRunning} onChange={setCustomDuration} />
+      <TimerDisplay title="Focus" progress={progress} secondsLeft={secondsLeft} />
+
+      <View style={styles.timeButtonContainer}>
+        <Button
+          title="Change focus time"
+          variant="secondary"
+          onPress={() => setShowTimeModal(true)}
+          style={[styles.timeButton, { opacity: isRunning ? 0 : 1 }]}
+          disabled={isRunning}
+        />
+      </View>
+
       <TimerControls
         isRunning={isRunning}
         onToggle={toggleTimer}
@@ -91,6 +110,14 @@ export default function TimerScreen() {
         cancelText="Cancel"
         onConfirm={handleSkipConfirm}
         onCancel={() => setShowConfirmDialog(false)}
+      />
+
+      <TimeModal
+        visible={showTimeModal}
+        onClose={() => setShowTimeModal(false)}
+        secondsLeft={secondsLeft}
+        isRunning={isRunning}
+        onChange={setCustomDuration}
       />
     </SafeAreaView>
   );

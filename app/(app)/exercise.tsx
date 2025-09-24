@@ -1,7 +1,3 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { View } from 'react-native';
-import { useWorkout } from '../../src/hooks';
 import {
   ActivePhase,
   CompletedPhase,
@@ -11,7 +7,11 @@ import {
   PreviewPhase,
 } from '@/src/components';
 import { exerciseScreenStyles } from '@/src/components/exerciseScreen/styles';
+import { useWorkout } from '@/src/hooks';
 import { useTheme, useUserSettings } from '@/src/providers';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { View } from 'react-native';
 
 export default function ExerciseScreen() {
   const router = useRouter();
@@ -19,10 +19,19 @@ export default function ExerciseScreen() {
   const { theme } = useTheme();
   const styles = exerciseScreenStyles(theme);
 
-  const { phase, currentExercise, secondsLeft, progress, isLoading, error, startCountdown } =
-    useWorkout({
-      settings,
-    });
+  const {
+    phase,
+    currentExercise,
+    secondsLeft,
+    progress,
+    isLoading,
+    error,
+    startCountdown,
+    skipExercise,
+    restartExercise,
+  } = useWorkout({
+    settings,
+  });
 
   if (isLoading) {
     return <LoadingState />;
@@ -41,7 +50,13 @@ export default function ExerciseScreen() {
       {phase === 'countdown' && <CountdownPhase secondsLeft={secondsLeft} />}
 
       {phase === 'active' && (
-        <ActivePhase exerciseName={currentExercise} secondsLeft={secondsLeft} progress={progress} />
+        <ActivePhase
+          exerciseName={currentExercise}
+          secondsLeft={secondsLeft}
+          progress={progress}
+          onSkip={skipExercise}
+          onRestart={restartExercise}
+        />
       )}
 
       {phase === 'completed' && <CompletedPhase onReturnHome={() => router.replace('/')} />}

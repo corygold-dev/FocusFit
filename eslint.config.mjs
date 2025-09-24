@@ -1,8 +1,8 @@
 import js from '@eslint/js';
-import ts from 'typescript-eslint';
+import prettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
-import prettier from 'eslint-plugin-prettier';
+import ts from 'typescript-eslint';
 
 export default [
   js.configs.recommended,
@@ -15,10 +15,10 @@ export default [
     },
     rules: {
       'prettier/prettier': 'warn',
-      'react/react-in-jsx-scope': 'off', // Expo/React Native doesn’t need React import
+      'react/react-in-jsx-scope': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      'newline-per-chained-call': ['error', { ignoreChainWithDepth: 1 }],
+      'newline-per-chained-call': 'off',
     },
     languageOptions: {
       parserOptions: {

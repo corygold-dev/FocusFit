@@ -1,5 +1,6 @@
 import { useAuth, useTheme } from '@/src/providers';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/src/utils/constants';
+import { UserSettings } from '@/src/utils/exerciseUtils';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -17,18 +18,14 @@ import ExerciseExclusionList from './ExerciseExclusionList';
 import ThemeSelector from './ThemeSelector';
 import { settingsModalStyles } from './styles';
 
-type Props = {
+interface SettingsModalProps {
   visible: boolean;
   onClose: () => void;
   initialEquipment: string[];
-  initialDifficulty: 'easy' | 'medium' | 'hard';
+  initialDifficulty: UserSettings['difficulty'];
   initialExcludedExercises: string[];
-  onSave: (settings: {
-    equipment: string[];
-    difficulty: 'easy' | 'medium' | 'hard';
-    excludedExercises: string[];
-  }) => void;
-};
+  onSave: (settings: UserSettings) => void;
+}
 
 export default function SettingsModal({
   visible,
@@ -37,13 +34,13 @@ export default function SettingsModal({
   initialDifficulty,
   initialExcludedExercises = [],
   onSave,
-}: Props) {
+}: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
   const { logout } = useAuth();
   const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
-  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>(initialDifficulty);
+  const [difficulty, setDifficulty] = useState<UserSettings['difficulty']>(initialDifficulty);
   const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
 
   useEffect(() => {

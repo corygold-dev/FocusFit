@@ -1,9 +1,9 @@
+import { Exercise, exercises } from '@/src/lib/exercises';
 import _ from 'lodash';
 import { Difficulty } from './constants';
-import { Exercise, exercises } from '@/src/lib/exercises';
 
-type UserSettings = {
-  difficulty: 'easy' | 'medium' | 'hard';
+export type UserSettings = {
+  difficulty: Difficulty;
   equipment: string[];
   excludedExercises: string[];
 };

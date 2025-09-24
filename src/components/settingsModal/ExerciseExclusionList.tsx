@@ -81,7 +81,7 @@ export default function ExerciseExclusionList({
                       onValueChange={() => toggleExerciseExclusion(exercise.name)}
                       trackColor={{
                         false: theme.colors.error,
-                        true: theme.colors.success,
+                        true: theme.colors.accent,
                       }}
                       thumbColor={theme.colors.switchThumb}
                     />

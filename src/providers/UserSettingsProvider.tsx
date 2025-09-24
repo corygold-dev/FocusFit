@@ -2,20 +2,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import _ from 'lodash';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { USER_SETTINGS_STORAGE_KEY } from '../utils/constants';
-
-type Settings = {
-  difficulty: 'easy' | 'medium' | 'hard';
-  equipment: string[];
-  excludedExercises: string[];
-};
+import { UserSettings } from '../utils/exerciseUtils';
 
 type UserSettingsContextType = {
-  settings: Settings;
-  updateSettings: (newSettings: Partial<Settings>) => void;
+  settings: UserSettings;
+  updateSettings: (newSettings: Partial<UserSettings>) => void;
   isLoading: boolean;
 };
 
-const defaultSettings: Settings = {
+const defaultSettings: UserSettings = {
   difficulty: 'medium',
   equipment: [],
   excludedExercises: [],
@@ -24,7 +19,7 @@ const defaultSettings: Settings = {
 const UserSettingsContext = createContext<UserSettingsContextType | undefined>(undefined);
 
 export const UserSettingsProvider = ({ children }: { children: React.ReactNode }) => {
-  const [settings, setSettings] = useState<Settings>(defaultSettings);
+  const [settings, setSettings] = useState<UserSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +38,7 @@ export const UserSettingsProvider = ({ children }: { children: React.ReactNode }
     loadSettings();
   }, []);
 
-  const saveSettings = _.debounce(async (settingsToSave: Settings) => {
+  const saveSettings = _.debounce(async (settingsToSave: UserSettings) => {
     try {
       await AsyncStorage.setItem(USER_SETTINGS_STORAGE_KEY, JSON.stringify(settingsToSave));
     } catch (error) {
@@ -51,7 +46,7 @@ export const UserSettingsProvider = ({ children }: { children: React.ReactNode }
     }
   }, 300);
 
-  const updateSettings = (newSettings: Partial<Settings>) => {
+  const updateSettings = (newSettings: Partial<UserSettings>) => {
     const updated = { ...settings, ...newSettings };
     setSettings(updated);
     saveSettings(updated);

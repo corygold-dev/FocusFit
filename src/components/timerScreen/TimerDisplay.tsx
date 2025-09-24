@@ -12,22 +12,29 @@ interface TimerDisplayProps {
 }
 
 export default function TimerDisplay({ title, progress, secondsLeft }: TimerDisplayProps) {
-  const { theme, isDark } = useTheme();
+  const { theme } = useTheme();
   const styles = timerDisplayStyles(theme);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
-      <Progress.Circle
-        progress={progress}
-        size={200}
-        showsText
-        formatText={() => formatTime(secondsLeft)}
-        thickness={12}
-        color={theme.colors.primary}
-        unfilledColor={isDark ? theme.colors.surfaceVariant : '#E1E8F0'}
-        textStyle={{ color: theme.colors.text }}
-      />
+
+      <View style={styles.progressContainer}>
+        <Progress.Circle
+          progress={progress}
+          size={220}
+          showsText
+          formatText={() => formatTime(secondsLeft)}
+          thickness={16}
+          color={theme.colors.primary}
+          unfilledColor={theme.colors.surfaceVariant}
+          textStyle={styles.timerText}
+          borderWidth={0}
+          strokeCap="round"
+        />
+
+        <View style={[styles.innerGlow, { opacity: progress * 0.3 }]} />
+      </View>
     </View>
   );
 }

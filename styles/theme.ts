@@ -1,10 +1,18 @@
 export const colors = {
-  primary: '#FF6B35',
-  primaryLight: '#FF9248',
-  secondary: '#3A86FF',
+  // Focus colors - deep navy for calm, trust, focus
+  primary: '#3B82F6', // Electric blue for focus
+  primaryLight: '#60A5FA',
+  primaryDark: '#1E40AF',
 
-  success: '#2DD881',
-  error: '#FF4E4E',
+  // Energy colors - orange for movement, warmth, energy
+  secondary: '#F97316', // Orange for fitness/energy
+  secondaryLight: '#FB923C',
+  secondaryDark: '#EA580C',
+
+  // Accent colors
+  accent: '#10B981', // Green for success
+  warning: '#F59E0B', // Amber for warnings
+  error: '#EF4444', // Red for errors
 
   light: {
     background: '#FFFDF7',
@@ -20,24 +28,38 @@ export const colors = {
   },
 
   dark: {
-    background: '#0F1115',
-    surface: '#1A1C22',
-    surfaceVariant: '#2B3140',
-    text: '#F8F9FA',
-    textSecondary: '#A0AEC0',
-    border: '#39414F',
-    switchThumb: '#E5E7EB',
-    buttonDisabled: '#6B7280',
-    modalBackground: '#1F1F1F',
-    card: '#1E1E1E',
+    background: '#0A0B0D', // Deepest dark
+    surface: '#111318', // Card surfaces
+    surfaceVariant: '#1A1D23', // Elevated surfaces
+    text: '#F8FAFC', // Primary text
+    textSecondary: '#94A3B8', // Secondary text
+    textTertiary: '#64748B', // Tertiary text
+    border: '#1E293B', // Borders
+    switchThumb: '#E2E8F0',
+    buttonDisabled: '#475569',
+    modalBackground: '#0F1419',
+    card: '#111318',
+
+    // Focus-specific colors
+    focusAccent: '#3B82F6', // Blue for focus mode
+    focusBackground: '#1E3A8A', // Dark blue background for focus
+
+    // Fit-specific colors
+    fitAccent: '#F97316', // Orange for fitness mode
+    fitBackground: '#9A3412', // Dark orange background for fit
   },
 };
 
 const fontFamily = {
+  // Inter for content - modern, serious, readable
   regular: 'Inter-Regular',
   medium: 'Inter-Medium',
   semiBold: 'Inter-SemiBold',
   bold: 'Inter-Bold',
+
+  // Poppins for titles - more playful, rounded
+  title: 'Poppins-Bold',
+  titleMedium: 'Poppins-SemiBold',
 };
 
 const fontSizes = {

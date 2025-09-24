@@ -1,16 +1,11 @@
+import { Exercise } from '@/src/lib/exercises';
+import { useSounds } from '@/src/providers';
+import { TIMER } from '@/src/utils/constants';
+import { pickWorkout, UserSettings } from '@/src/utils/exerciseUtils';
 import { useEffect, useMemo, useState } from 'react';
 import { useInterval } from '../timer';
-import { Exercise } from '@/src/lib/exercises';
-import { pickWorkout } from '@/src/utils/exerciseUtils';
-import { TIMER } from '@/src/utils/constants';
-import { useSounds } from '@/src/providers';
 
 type Phase = 'preview' | 'countdown' | 'active' | 'completed';
-type UserSettings = {
-  difficulty: 'easy' | 'medium' | 'hard';
-  equipment: string[];
-  excludedExercises: string[];
-};
 
 interface UseWorkoutProps {
   settings: UserSettings;
@@ -38,8 +33,8 @@ export function useWorkout({ settings }: UseWorkoutProps) {
         setError(null);
       }
     } catch (err) {
-      setError('Failed to load workout');
-      console.error('Workout error:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load workout';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -85,6 +80,22 @@ export function useWorkout({ settings }: UseWorkoutProps) {
     setPhase('countdown');
   };
 
+  const skipExercise = () => {
+    if (currentIndex < currentList.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      setPhase('preview');
+    } else {
+      setPhase('completed');
+    }
+  };
+
+  const restartExercise = () => {
+    const duration = currentList[currentIndex]?.duration || 30;
+    setSecondsLeft(duration);
+    setTotalDuration(duration);
+    setPhase('active');
+  };
+
   const currentExercise = useMemo(
     () => currentList[currentIndex]?.name ?? '',
     [currentList, currentIndex],
@@ -101,5 +112,7 @@ export function useWorkout({ settings }: UseWorkoutProps) {
     isLoading,
     error,
     startCountdown,
+    skipExercise,
+    restartExercise,
   };
 }
