@@ -35,16 +35,28 @@ export function pickWorkout(userSettings: UserSettings): Exercise[] {
   return [first, second, mobility].filter(Boolean);
 }
 
-export function getFilteredExercisesByCategory(difficulty: Difficulty) {
-  const difficultyFilteredExercises = _.filter(exercises, (exercise) =>
-    exercise.difficulty.includes(difficulty),
-  );
-  return _.groupBy(difficultyFilteredExercises, 'category');
+export function getFilteredExercisesByCategory(difficulty: Difficulty, equipment: string[] = []) {
+  const filteredExercises = _.filter(exercises, (exercise) => {
+    const difficultyMatches = exercise.difficulty.includes(difficulty);
+    const equipmentMatches =
+      !exercise.equipment || _.every(exercise.equipment, (eq) => equipment.includes(eq));
+    return difficultyMatches && equipmentMatches;
+  });
+  return _.groupBy(filteredExercises, 'category');
 }
 
-export function countExcludedExercises(excludedExercises: string[], difficulty: Difficulty) {
+export function countExcludedExercises(
+  excludedExercises: string[],
+  difficulty: Difficulty,
+  equipment: string[] = [],
+) {
   const availableExerciseNames = _.chain(exercises)
-    .filter((exercise) => exercise.difficulty.includes(difficulty))
+    .filter((exercise) => {
+      const difficultyMatches = exercise.difficulty.includes(difficulty);
+      const equipmentMatches =
+        !exercise.equipment || _.every(exercise.equipment, (eq) => equipment.includes(eq));
+      return difficultyMatches && equipmentMatches;
+    })
     .map('name')
     .value();
 

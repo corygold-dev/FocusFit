@@ -10,12 +10,14 @@ import { exerciseExclusionListStyles } from './styles';
 type ExerciseExclusionListProps = {
   excludedExercises: string[];
   difficulty: 'easy' | 'medium' | 'hard';
+  equipment: string[];
   onChange: (excludedExercises: string[]) => void;
 };
 
 export default function ExerciseExclusionList({
   excludedExercises,
   difficulty,
+  equipment,
   onChange,
 }: ExerciseExclusionListProps) {
   const { theme, isDark } = useTheme();
@@ -24,13 +26,13 @@ export default function ExerciseExclusionList({
   const [showExcludedExercises, setShowExcludedExercises] = useState(false);
 
   const filteredExercisesByCategory = useMemo(
-    () => getFilteredExercisesByCategory(difficulty),
-    [difficulty],
+    () => getFilteredExercisesByCategory(difficulty, equipment),
+    [difficulty, equipment],
   );
 
   const excludedExercisesCount = useMemo(
-    () => countExcludedExercises(excludedExercises, difficulty),
-    [excludedExercises, difficulty],
+    () => countExcludedExercises(excludedExercises, difficulty, equipment),
+    [excludedExercises, difficulty, equipment],
   );
 
   const toggleExerciseExclusion = (exerciseName: string) => {
@@ -62,7 +64,7 @@ export default function ExerciseExclusionList({
         <View style={styles.content}>
           <Text style={styles.helpText}>
             Toggle off exercises you don't want to include in your workouts. Only showing exercises
-            for {_.capitalize(difficulty)} difficulty.
+            for {_.capitalize(difficulty)} difficulty that match your selected equipment.
           </Text>
 
           {_.map(_.toPairs(filteredExercisesByCategory), ([categoryKey, categoryExercises]) => {

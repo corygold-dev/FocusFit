@@ -103,6 +103,7 @@ export default function SettingsModal({
               <ExerciseExclusionList
                 excludedExercises={excludedExercises}
                 difficulty={difficulty}
+                equipment={equipment}
                 onChange={setExcludedExercises}
               />
 
