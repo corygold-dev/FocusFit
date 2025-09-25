@@ -2,12 +2,12 @@ import { configureAmplify } from '@/config/amplify-config';
 import { ErrorBoundary } from '@/src/components';
 import {
   AuthProvider,
+  BackendDataProvider,
   NotificationProvider,
   SoundProvider,
   SubscriptionProvider,
   ThemeProvider,
   TimerProvider,
-  UserSettingsProvider,
   useAuth,
 } from '@/src/providers';
 import { setupGlobalErrorHandling } from '@/src/utils/crashReporting';
@@ -43,13 +43,13 @@ export default function RootLayout() {
     <ErrorBoundary>
       <AuthProvider>
         <ErrorBoundary>
-          <SubscriptionProvider>
+          <BackendDataProvider>
             <ErrorBoundary>
-              <SafeAreaProvider>
+              <SubscriptionProvider>
                 <ErrorBoundary>
-                  <ThemeProvider>
+                  <SafeAreaProvider>
                     <ErrorBoundary>
-                      <UserSettingsProvider>
+                      <ThemeProvider>
                         <ErrorBoundary>
                           <NotificationProvider>
                             <ErrorBoundary>
@@ -64,13 +64,13 @@ export default function RootLayout() {
                             </ErrorBoundary>
                           </NotificationProvider>
                         </ErrorBoundary>
-                      </UserSettingsProvider>
+                      </ThemeProvider>
                     </ErrorBoundary>
-                  </ThemeProvider>
+                  </SafeAreaProvider>
                 </ErrorBoundary>
-              </SafeAreaProvider>
+              </SubscriptionProvider>
             </ErrorBoundary>
-          </SubscriptionProvider>
+          </BackendDataProvider>
         </ErrorBoundary>
       </AuthProvider>
     </ErrorBoundary>

@@ -23,6 +23,14 @@ export function configureAmplify() {
             region: 'us-east-1',
           },
         },
+        API: {
+          GraphQL: {
+            endpoint:
+              'https://qu3alj6yybdyjlasujwjt5aaei.appsync-api.us-east-1.amazonaws.com/graphql',
+            region: 'us-east-1',
+            defaultAuthMode: 'userPool',
+          },
+        },
       });
 
       console.log('Configured Amplify for web');

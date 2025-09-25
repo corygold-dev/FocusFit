@@ -4,6 +4,8 @@ import { cognitoUserPoolsTokenProvider } from 'aws-amplify/auth/cognito';
 
 export function configureMobileAmplify() {
   try {
+    cognitoUserPoolsTokenProvider.setKeyValueStorage(AsyncStorage);
+
     Amplify.configure({
       Auth: {
         Cognito: {
@@ -22,9 +24,17 @@ export function configureMobileAmplify() {
           region: 'us-east-1',
         },
       },
+      API: {
+        GraphQL: {
+          endpoint:
+            'https://qu3alj6yybdyjlasujwjt5aaei.appsync-api.us-east-1.amazonaws.com/graphql',
+          region: 'us-east-1',
+          defaultAuthMode: 'userPool',
+        },
+      },
     });
 
-    cognitoUserPoolsTokenProvider.setKeyValueStorage(AsyncStorage);
+    console.log('Mobile Amplify configured with Cognito User Pool');
   } catch (error) {
     console.error('Failed to configure mobile Amplify:', error);
     throw error;

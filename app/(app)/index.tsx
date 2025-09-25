@@ -15,7 +15,7 @@ import {
 } from '@/src/components';
 import TimeModal from '@/src/components/timerScreen/TimeModal';
 import Button from '@/src/components/ui/Button';
-import { useUserSettings } from '@/src/providers/UserSettingsProvider';
+import { useUserSettings } from '@/src/providers';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
