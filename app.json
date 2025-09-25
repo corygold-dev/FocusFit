@@ -12,7 +12,8 @@
       "bundleIdentifier": "com.corygold.2minutefit",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "scheme": "focusfit"
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +21,8 @@
         "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.corygold.twominutefit"
+      "package": "com.corygold.twominutefit",
+      "scheme": "focusfit"
     },
     "web": {
       "output": "static",
