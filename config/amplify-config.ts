@@ -1,32 +1,36 @@
+import { Amplify } from 'aws-amplify';
 import { Platform } from 'react-native';
 import { configureMobileAmplify } from './amplify-mobile-config';
-import { Amplify } from 'aws-amplify';
 
 export function configureAmplify() {
-  if (Platform.OS === 'web') {
-    Amplify.configure({
-      Auth: {
-        Cognito: {
-          userPoolId: 'us-east-1_XxpLzVvNi',
-          userPoolClientId: '32rovkftbi8fcb2pu7b9f0rmjo',
-          identityPoolId: 'us-east-1:350f000d-8584-4ba8-b739-309e0df2594b',
-          loginWith: {
-            email: true,
-            username: true,
+  try {
+    if (Platform.OS === 'web') {
+      Amplify.configure({
+        Auth: {
+          Cognito: {
+            userPoolId: 'us-east-1_XxpLzVvNi',
+            userPoolClientId: '32rovkftbi8fcb2pu7b9f0rmjo',
+            identityPoolId: 'us-east-1:350f000d-8584-4ba8-b739-309e0df2594b',
+            loginWith: {
+              email: true,
+              username: true,
+            },
           },
         },
-      },
-      Storage: {
-        S3: {
-          bucket: '2minfit-videos',
-          region: 'us-east-1',
+        Storage: {
+          S3: {
+            bucket: '2minfit-videos',
+            region: 'us-east-1',
+          },
         },
-      },
-    });
+      });
 
-    console.log('Configured Amplify for web');
-  } else {
-    configureMobileAmplify();
-    console.log('Configured Amplify for mobile');
+      console.log('Configured Amplify for web');
+    } else {
+      configureMobileAmplify();
+      console.log('Configured Amplify for mobile');
+    }
+  } catch (error) {
+    console.error('Failed to configure Amplify:', error);
   }
 }

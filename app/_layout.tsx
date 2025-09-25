@@ -10,12 +10,19 @@ import {
   UserSettingsProvider,
   useAuth,
 } from '@/src/providers';
+import { setupGlobalErrorHandling } from '@/src/utils/crashReporting';
 import { SplashScreen, Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useNotificationsSetup } from '../src/hooks';
 
-configureAmplify();
+setupGlobalErrorHandling();
+
+try {
+  configureAmplify();
+} catch (error) {
+  console.error('Failed to configure Amplify on startup:', error);
+}
 
 function SplashScreenController() {
   const { isLoading } = useAuth();
@@ -35,22 +42,36 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <SubscriptionProvider>
-          <SafeAreaProvider>
-            <ThemeProvider>
-              <UserSettingsProvider>
-                <NotificationProvider>
-                  <TimerProvider>
-                    <SoundProvider>
-                      <SplashScreenController />
-                      <RootNavigator />
-                    </SoundProvider>
-                  </TimerProvider>
-                </NotificationProvider>
-              </UserSettingsProvider>
-            </ThemeProvider>
-          </SafeAreaProvider>
-        </SubscriptionProvider>
+        <ErrorBoundary>
+          <SubscriptionProvider>
+            <ErrorBoundary>
+              <SafeAreaProvider>
+                <ErrorBoundary>
+                  <ThemeProvider>
+                    <ErrorBoundary>
+                      <UserSettingsProvider>
+                        <ErrorBoundary>
+                          <NotificationProvider>
+                            <ErrorBoundary>
+                              <TimerProvider>
+                                <ErrorBoundary>
+                                  <SoundProvider>
+                                    <SplashScreenController />
+                                    <RootNavigator />
+                                  </SoundProvider>
+                                </ErrorBoundary>
+                              </TimerProvider>
+                            </ErrorBoundary>
+                          </NotificationProvider>
+                        </ErrorBoundary>
+                      </UserSettingsProvider>
+                    </ErrorBoundary>
+                  </ThemeProvider>
+                </ErrorBoundary>
+              </SafeAreaProvider>
+            </ErrorBoundary>
+          </SubscriptionProvider>
+        </ErrorBoundary>
       </AuthProvider>
     </ErrorBoundary>
   );

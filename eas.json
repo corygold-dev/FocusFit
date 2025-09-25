@@ -18,6 +18,13 @@
         "buildConfiguration": "Release"
       }
     },
+    "preview-debug": {
+      "distribution": "internal",
+      "ios": {
+        "resourceClass": "m-medium",
+        "buildConfiguration": "Debug"
+      }
+    },
     "production": {
       "ios": {
         "resourceClass": "m-medium",
