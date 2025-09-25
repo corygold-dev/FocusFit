@@ -51,7 +51,7 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-        <Text style={styles.title}>2 Minute Fit</Text>
+        <Text style={styles.title}>Focus Fit</Text>
         <Text style={styles.subtitle}>Quick workouts for busy people</Text>
       </View>
 
