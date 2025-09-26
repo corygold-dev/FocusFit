@@ -94,11 +94,30 @@ export default function TimerScreen() {
       <SettingsModal
         visible={showSettings}
         onClose={() => setShowSettings(false)}
-        initialEquipment={settings.equipment}
-        initialDifficulty={settings.difficulty}
-        initialExcludedExercises={settings.excludedExercises}
-        onSave={({ equipment, difficulty, excludedExercises }) => {
-          updateSettings({ equipment, difficulty, excludedExercises });
+        initialEquipment={settings?.equipment || []}
+        initialDifficulty={settings?.difficulty || 'medium'}
+        initialExcludedExercises={settings?.excludedExercises || []}
+        initialMorningReminders={settings?.morningReminders ?? true}
+        initialAfternoonReminders={settings?.afternoonReminders ?? true}
+        initialTimerEndNotifications={settings?.timerEndNotifications ?? true}
+        onSave={({
+          equipment,
+          difficulty,
+          excludedExercises,
+          theme,
+          morningReminders,
+          afternoonReminders,
+          timerEndNotifications,
+        }) => {
+          updateSettings({
+            equipment,
+            difficulty,
+            excludedExercises,
+            theme,
+            morningReminders,
+            afternoonReminders,
+            timerEndNotifications,
+          });
         }}
       />
 

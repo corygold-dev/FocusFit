@@ -5,10 +5,13 @@ export interface UserSettings {
   equipment: string[];
   excludedExercises: string[];
   theme?: string;
-  notifications?: boolean;
+  morningReminders?: boolean;
+  afternoonReminders?: boolean;
+  timerEndNotifications?: boolean;
 }
 
 export interface WorkoutSession {
+  userId: string;
   sessionId: string;
   exercises: string[];
   duration?: number;
@@ -33,6 +36,9 @@ const GET_USER_SETTINGS = `
       equipment
       excludedExercises
       theme
+      morningReminders
+      afternoonReminders
+      timerEndNotifications
       createdAt
       updatedAt
     }
@@ -47,6 +53,9 @@ const CREATE_USER_SETTINGS = `
       equipment
       excludedExercises
       theme
+      morningReminders
+      afternoonReminders
+      timerEndNotifications
       createdAt
       updatedAt
     }
@@ -61,6 +70,84 @@ const UPDATE_USER_SETTINGS = `
       equipment
       excludedExercises
       theme
+      morningReminders
+      afternoonReminders
+      timerEndNotifications
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const CREATE_WORKOUT_SESSION = `
+  mutation CreateWorkoutSession($input: CreateWorkoutSessionInput!) {
+    createWorkoutSession(input: $input) {
+      userId
+      sessionId
+      exercises
+      duration
+      completedAt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const LIST_WORKOUT_SESSIONS = `
+  query ListWorkoutSessions($userId: ID!, $limit: Int) {
+    listWorkoutSessions(userId: $userId, limit: $limit) {
+      items {
+        userId
+        sessionId
+        exercises
+        duration
+        completedAt
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+
+const GET_USER_PROGRESS = `
+  query GetUserProgress($userId: ID!) {
+    getUserProgress(userId: $userId) {
+      userId
+      totalWorkouts
+      totalDuration
+      streak
+      lastWorkoutDate
+      achievements
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const CREATE_USER_PROGRESS = `
+  mutation CreateUserProgress($input: CreateUserProgressInput!) {
+    createUserProgress(input: $input) {
+      userId
+      totalWorkouts
+      totalDuration
+      streak
+      lastWorkoutDate
+      achievements
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+const UPDATE_USER_PROGRESS = `
+  mutation UpdateUserProgress($input: UpdateUserProgressInput!) {
+    updateUserProgress(input: $input) {
+      userId
+      totalWorkouts
+      totalDuration
+      streak
+      lastWorkoutDate
+      achievements
       createdAt
       updatedAt
     }
@@ -76,7 +163,7 @@ export const UserDataService = {
       });
 
       if ('errors' in result && result.errors) {
-        console.error('GraphQL errors in getUserSettings:', result.errors);
+        return null;
       }
 
       const data = 'data' in result ? result.data : null;
@@ -88,10 +175,11 @@ export const UserDataService = {
         equipment: data.getUserSettings.equipment,
         excludedExercises: data.getUserSettings.excludedExercises,
         theme: data.getUserSettings.theme || undefined,
-        notifications: true,
+        morningReminders: data.getUserSettings.morningReminders || true,
+        afternoonReminders: data.getUserSettings.afternoonReminders || true,
+        timerEndNotifications: data.getUserSettings.timerEndNotifications || true,
       };
-    } catch (error) {
-      console.error('Error fetching user settings:', error);
+    } catch {
       return null;
     }
   },
@@ -110,6 +198,9 @@ export const UserDataService = {
               equipment: settings.equipment,
               excludedExercises: settings.excludedExercises,
               theme: settings.theme,
+              morningReminders: settings.morningReminders,
+              afternoonReminders: settings.afternoonReminders,
+              timerEndNotifications: settings.timerEndNotifications,
               updatedAt: new Date().toISOString(),
             },
           },
@@ -125,6 +216,9 @@ export const UserDataService = {
               equipment: settings.equipment,
               excludedExercises: settings.excludedExercises,
               theme: settings.theme,
+              morningReminders: settings.morningReminders,
+              afternoonReminders: settings.afternoonReminders,
+              timerEndNotifications: settings.timerEndNotifications,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             },
@@ -132,39 +226,162 @@ export const UserDataService = {
         });
         return !!('data' in result ? result.data?.createUserSettings : null);
       }
-    } catch (error) {
-      console.error('Error saving user settings:', error);
+    } catch {
       return false;
     }
   },
 
-  // Note: WorkoutSession and UserProgress operations would need their own schema
-  // For now, these will just return success for local storage
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async saveWorkoutSession(_session: WorkoutSession): Promise<boolean> {
-    // TODO: Implement when WorkoutSession schema is created
-    console.log('WorkoutSession save not implemented yet');
-    return true;
+  async saveWorkoutSession(session: WorkoutSession): Promise<boolean> {
+    try {
+      const result = await client.graphql({
+        query: CREATE_WORKOUT_SESSION,
+        variables: {
+          input: {
+            userId: session.userId,
+            sessionId: session.sessionId,
+            exercises: session.exercises,
+            duration: session.duration,
+            completedAt: session.completedAt?.toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      });
+
+      if ('errors' in result && result.errors) {
+        return false;
+      }
+
+      return !!('data' in result ? result.data?.createWorkoutSession : null);
+    } catch {
+      return false;
+    }
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getUserWorkoutHistory(_userId: string, _limit?: number): Promise<WorkoutSession[]> {
-    // TODO: Implement when WorkoutSession schema is created
-    console.log('WorkoutSession history not implemented yet');
-    return [];
+  async getUserWorkoutHistory(userId: string, limit: number = 50): Promise<WorkoutSession[]> {
+    try {
+      const result = await client.graphql({
+        query: LIST_WORKOUT_SESSIONS,
+        variables: {
+          userId,
+          limit,
+        },
+      });
+
+      if ('errors' in result && result.errors) {
+        return [];
+      }
+
+      const data = 'data' in result ? result.data : null;
+      const sessions = data?.listWorkoutSessions?.items || [];
+
+      return sessions.map(
+        (session: {
+          userId: string;
+          sessionId: string;
+          exercises: string[];
+          duration?: number;
+          completedAt?: string;
+        }) => ({
+          userId: session.userId,
+          sessionId: session.sessionId,
+          exercises: session.exercises,
+          duration: session.duration,
+          completedAt: session.completedAt ? new Date(session.completedAt) : undefined,
+        }),
+      );
+    } catch {
+      return [];
+    }
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getUserProgress(_userId: string): Promise<UserProgress | null> {
-    // TODO: Implement when UserProgress schema is created
-    console.log('UserProgress not implemented yet');
-    return null;
+  async getUserProgress(userId: string): Promise<UserProgress | null> {
+    try {
+      const result = await client.graphql({
+        query: GET_USER_PROGRESS,
+        variables: { userId },
+      });
+
+      if ('errors' in result && result.errors) {
+        return null;
+      }
+
+      const data = 'data' in result ? result.data : null;
+
+      if (!data?.getUserProgress) {
+        return null;
+      }
+
+      const progress = data.getUserProgress;
+
+      return {
+        totalWorkouts: progress.totalWorkouts,
+        totalDuration: progress.totalDuration,
+        streak: progress.streak,
+        lastWorkoutDate: progress.lastWorkoutDate ? new Date(progress.lastWorkoutDate) : undefined,
+        achievements: progress.achievements,
+      };
+    } catch {
+      return null;
+    }
   },
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async updateUserProgress(_userId: string, _progress: UserProgress): Promise<boolean> {
-    // TODO: Implement when UserProgress schema is created
-    console.log('UserProgress update not implemented yet');
-    return true;
+  async updateUserProgress(userId: string, progress: UserProgress): Promise<boolean> {
+    try {
+      const existing = await this.getUserProgress(userId);
+
+      if (existing) {
+        const updatedProgress = {
+          totalWorkouts: existing.totalWorkouts + progress.totalWorkouts,
+          totalDuration: existing.totalDuration + progress.totalDuration,
+          streak: existing.streak + progress.streak,
+          lastWorkoutDate: progress.lastWorkoutDate,
+          achievements: [...existing.achievements, ...progress.achievements],
+        };
+
+        const result = await client.graphql({
+          query: UPDATE_USER_PROGRESS,
+          variables: {
+            input: {
+              userId,
+              totalWorkouts: updatedProgress.totalWorkouts,
+              totalDuration: updatedProgress.totalDuration,
+              streak: updatedProgress.streak,
+              lastWorkoutDate: updatedProgress.lastWorkoutDate
+                ? updatedProgress.lastWorkoutDate instanceof Date
+                  ? updatedProgress.lastWorkoutDate.toISOString()
+                  : new Date(updatedProgress.lastWorkoutDate).toISOString()
+                : undefined,
+              achievements: updatedProgress.achievements,
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        });
+        return !!('data' in result ? result.data?.updateUserProgress : null);
+      } else {
+        const result = await client.graphql({
+          query: CREATE_USER_PROGRESS,
+          variables: {
+            input: {
+              userId,
+              totalWorkouts: progress.totalWorkouts,
+              totalDuration: progress.totalDuration,
+              streak: progress.streak,
+              lastWorkoutDate: progress.lastWorkoutDate
+                ? progress.lastWorkoutDate instanceof Date
+                  ? progress.lastWorkoutDate.toISOString()
+                  : new Date(progress.lastWorkoutDate).toISOString()
+                : undefined,
+              achievements: progress.achievements,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+          },
+        });
+        return !!('data' in result ? result.data?.createUserProgress : null);
+      }
+    } catch {
+      return false;
+    }
   },
 };

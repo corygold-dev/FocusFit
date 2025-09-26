@@ -30,7 +30,7 @@ export default function ExerciseScreen() {
     skipExercise,
     restartExercise,
   } = useWorkout({
-    settings,
+    settings: settings || { difficulty: 'medium', equipment: [], excludedExercises: [] },
   });
 
   if (isLoading) {

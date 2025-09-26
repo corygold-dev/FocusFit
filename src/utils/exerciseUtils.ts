@@ -6,6 +6,10 @@ export type UserSettings = {
   difficulty: Difficulty;
   equipment: string[];
   excludedExercises: string[];
+  theme?: string;
+  morningReminders?: boolean;
+  afternoonReminders?: boolean;
+  timerEndNotifications?: boolean;
 };
 
 export function pickWorkout(userSettings: UserSettings): Exercise[] {

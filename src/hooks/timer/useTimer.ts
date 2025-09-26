@@ -1,4 +1,4 @@
-import { useSounds } from '@/src/providers/SoundProvider';
+import { useBackendData, useSounds } from '@/src/providers';
 import { cleanupTimerResources } from '@/src/utils/cleanupTimerResources';
 import { TIMER } from '@/src/utils/constants';
 import { scheduleTimerNotification } from '@/src/utils/notifications';
@@ -23,6 +23,7 @@ export function useTimer({
   const endTimeRef = useRef<number | null>(null);
 
   const { playEndSound } = useSounds();
+  const { settings } = useBackendData();
 
   const progress = useMemo(() => 1 - secondsLeft / duration, [secondsLeft, duration]);
 
@@ -32,7 +33,7 @@ export function useTimer({
 
     setIsRunning(true);
 
-    if (endTimeRef.current) {
+    if (endTimeRef.current && settings?.timerEndNotifications) {
       const triggerDate = new Date(endTimeRef.current);
       try {
         notificationIdRef.current = await scheduleTimerNotification(triggerDate);

@@ -253,7 +253,7 @@ export const exercises: Exercise[] = [
   {
     name: 'Elephant Walks',
     category: 'mobility',
-    duration: 30,
+    duration: 60,
     videoUrl: null,
     equipment: null,
     difficulty: ['easy', 'medium', 'hard'],

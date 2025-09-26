@@ -195,9 +195,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (result.isSignUpComplete) {
         try {
           await refreshAuthState();
-        } catch {
-          // Ignore auto-login errors after confirmation
-        }
+        } catch {}
       }
 
       return result;

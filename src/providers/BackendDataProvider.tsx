@@ -71,16 +71,12 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
       const now = new Date();
       setLastSyncTime(now);
       await AsyncStorage.setItem(LOCAL_STORAGE_KEYS.LAST_SYNC, now.toISOString());
-
-      if (!hasSyncedThisSession) {
-        console.log('User data synced successfully');
-      }
-    } catch (error) {
-      console.error('Error syncing user data:', error);
+    } catch {
+      // Silent fail for sync errors
     } finally {
       setIsSyncing(false);
     }
-  }, [user?.userId, isSyncing, hasSyncedThisSession]);
+  }, [user?.userId, isSyncing]);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -99,18 +95,21 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
             equipment: [],
             excludedExercises: [],
             theme: 'system',
-            notifications: true,
+            morningReminders: true,
+            afternoonReminders: true,
+            timerEndNotifications: true,
           };
           setSettings(defaultSettings);
         }
-      } catch (error) {
-        console.error('Error loading user data:', error);
+      } catch {
         setSettings({
           difficulty: 'medium',
           equipment: [],
           excludedExercises: [],
           theme: 'system',
-          notifications: true,
+          morningReminders: true,
+          afternoonReminders: true,
+          timerEndNotifications: true,
         });
       } finally {
         setIsLoading(false);
@@ -142,8 +141,7 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
       }
 
       return true;
-    } catch (error) {
-      console.error('Error saving user settings:', error);
+    } catch {
       return false;
     }
   };
@@ -163,17 +161,23 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
       }
 
       return true;
-    } catch (error) {
-      console.error('Error saving user progress:', error);
+    } catch {
       return false;
     }
   };
 
   const updateSettings = async (newSettings: Partial<UserSettings>): Promise<boolean> => {
-    if (!settings) return false;
+    if (!settings) {
+      return false;
+    }
 
     try {
       const updatedSettings = { ...settings, ...newSettings };
+
+      if ('notifications' in updatedSettings) {
+        delete updatedSettings.notifications;
+      }
+
       setSettings(updatedSettings);
 
       await AsyncStorage.setItem(LOCAL_STORAGE_KEYS.USER_SETTINGS, JSON.stringify(updatedSettings));
@@ -189,8 +193,7 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
       }
 
       return true;
-    } catch (error) {
-      console.error('Error updating settings:', error);
+    } catch {
       return false;
     }
   };

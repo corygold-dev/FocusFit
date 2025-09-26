@@ -3,26 +3,12 @@ import {
   scheduleDailyReminder,
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-
-interface NotificationSettings {
-  dailyReminderEnabled: boolean;
-  dailyReminderTime: { hour: number; minute: number };
-  motivationalReminderEnabled: boolean;
-}
+import { useBackendData } from './BackendDataProvider';
 
 interface NotificationContextType {
-  settings: NotificationSettings;
-  updateSettings: (newSettings: Partial<NotificationSettings>) => void;
   isLoading: boolean;
 }
-
-const defaultSettings: NotificationSettings = {
-  dailyReminderEnabled: true,
-  dailyReminderTime: { hour: 9, minute: 0 },
-  motivationalReminderEnabled: true,
-};
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
@@ -30,47 +16,35 @@ interface NotificationProviderProps {
   children: ReactNode;
 }
 
-const NOTIFICATION_SETTINGS_KEY = 'notificationSettings';
-
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
   const [isLoading, setIsLoading] = useState(true);
+  const { settings: userSettings } = useBackendData();
 
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const saved = await AsyncStorage.getItem(NOTIFICATION_SETTINGS_KEY);
-        if (saved) {
-          const parsedSettings = JSON.parse(saved);
-          setSettings({ ...defaultSettings, ...parsedSettings });
-        }
+        setIsLoading(false);
       } catch (error) {
         console.error('Error loading notification settings:', error);
-      } finally {
         setIsLoading(false);
       }
     };
     loadSettings();
-  }, []);
+  }, [userSettings]);
 
   useEffect(() => {
     const setupNotifications = async () => {
-      if (isLoading) return;
+      if (isLoading || !userSettings) return;
 
       try {
-        // Cancel existing reminders
         await cancelAllDailyReminders();
 
-        // Schedule new reminders based on settings
-        if (settings.dailyReminderEnabled) {
-          await scheduleDailyReminder(
-            settings.dailyReminderTime.hour,
-            settings.dailyReminderTime.minute,
-          );
+        if (userSettings.morningReminders) {
+          await scheduleDailyReminder(9, 0); // 9 AM
         }
 
-        if (settings.motivationalReminderEnabled) {
-          await scheduleMotivationalReminder();
+        if (userSettings.afternoonReminders) {
+          await scheduleMotivationalReminder(); // 3 PM
         }
       } catch (error) {
         console.error('Error setting up notifications:', error);
@@ -78,23 +52,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
 
     setupNotifications();
-  }, [settings, isLoading]);
-
-  const updateSettings = async (newSettings: Partial<NotificationSettings>) => {
-    const updated = { ...settings, ...newSettings };
-    setSettings(updated);
-
-    try {
-      await AsyncStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify(updated));
-    } catch (error) {
-      console.error('Error saving notification settings:', error);
-    }
-  };
+  }, [userSettings, isLoading]);
 
   return (
-    <NotificationContext.Provider value={{ settings, updateSettings, isLoading }}>
-      {children}
-    </NotificationContext.Provider>
+    <NotificationContext.Provider value={{ isLoading }}>{children}</NotificationContext.Provider>
   );
 };
 

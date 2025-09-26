@@ -1,8 +1,8 @@
 import { Exercise } from '@/src/lib/exercises';
-import { useSounds } from '@/src/providers';
+import { useAuth, useBackendData, useSounds } from '@/src/providers';
 import { TIMER } from '@/src/utils/constants';
 import { pickWorkout, UserSettings } from '@/src/utils/exerciseUtils';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInterval } from '../timer';
 
 type Phase = 'preview' | 'countdown' | 'active' | 'completed';
@@ -19,8 +19,47 @@ export function useWorkout({ settings }: UseWorkoutProps) {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasSavedWorkoutRef = useRef(false);
 
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
+  const { user } = useAuth();
+  const { saveUserProgress } = useBackendData();
+
+  const saveWorkoutSession = useCallback(async () => {
+    if (!user?.userId || currentList.length === 0 || hasSavedWorkoutRef.current) return;
+
+    try {
+      hasSavedWorkoutRef.current = true;
+
+      const sessionId = `workout_${Date.now()}`;
+      const exercises = currentList.map((exercise) => exercise.name);
+      const duration = currentList.reduce(
+        (total, exercise) => total + (exercise.duration || 30),
+        0,
+      );
+
+      const { UserDataService } = await import('@/src/services/UserDataService');
+
+      await UserDataService.saveWorkoutSession({
+        userId: user.userId,
+        sessionId,
+        exercises,
+        duration,
+        completedAt: new Date(),
+      });
+
+      await saveUserProgress({
+        totalWorkouts: 1,
+        totalDuration: duration,
+        streak: 1,
+        lastWorkoutDate: new Date(),
+        achievements: [],
+      });
+    } catch (error) {
+      console.error('Error saving workout session:', error);
+      hasSavedWorkoutRef.current = false;
+    }
+  }, [user?.userId, currentList, saveUserProgress]);
 
   useEffect(() => {
     try {
@@ -31,6 +70,7 @@ export function useWorkout({ settings }: UseWorkoutProps) {
       } else {
         setCurrentList(workout);
         setError(null);
+        hasSavedWorkoutRef.current = false;
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load workout';
@@ -39,6 +79,12 @@ export function useWorkout({ settings }: UseWorkoutProps) {
       setIsLoading(false);
     }
   }, [settings]);
+
+  useEffect(() => {
+    if (phase === 'completed' && !hasSavedWorkoutRef.current) {
+      saveWorkoutSession();
+    }
+  }, [phase, saveWorkoutSession]);
 
   const isTimerActive = phase === 'countdown' || phase === 'active';
   useInterval(

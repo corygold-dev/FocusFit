@@ -14,7 +14,6 @@ import { setupGlobalErrorHandling } from '@/src/utils/crashReporting';
 import { SplashScreen, Stack } from 'expo-router';
 import React, { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { useNotificationsSetup } from '../src/hooks';
 
 setupGlobalErrorHandling();
 
@@ -37,8 +36,6 @@ function SplashScreenController() {
 }
 
 export default function RootLayout() {
-  useNotificationsSetup();
-
   return (
     <ErrorBoundary>
       <AuthProvider>

@@ -25,6 +25,9 @@ interface SettingsModalProps {
   initialEquipment: string[];
   initialDifficulty: UserSettings['difficulty'];
   initialExcludedExercises: string[];
+  initialMorningReminders?: boolean;
+  initialAfternoonReminders?: boolean;
+  initialTimerEndNotifications?: boolean;
   onSave: (settings: UserSettings) => void;
 }
 
@@ -34,6 +37,9 @@ export default function SettingsModal({
   initialEquipment,
   initialDifficulty,
   initialExcludedExercises = [],
+  initialMorningReminders = true,
+  initialAfternoonReminders = true,
+  initialTimerEndNotifications = true,
   onSave,
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
@@ -43,17 +49,41 @@ export default function SettingsModal({
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
   const [difficulty, setDifficulty] = useState<UserSettings['difficulty']>(initialDifficulty);
   const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
+  const [notifications, setNotifications] = useState({
+    morningReminders: initialMorningReminders,
+    afternoonReminders: initialAfternoonReminders,
+    timerEndNotifications: initialTimerEndNotifications,
+  });
 
   useEffect(() => {
     if (visible) {
       setEquipment(initialEquipment);
       setDifficulty(initialDifficulty);
       setExcludedExercises(initialExcludedExercises);
+      setNotifications({
+        morningReminders: initialMorningReminders,
+        afternoonReminders: initialAfternoonReminders,
+        timerEndNotifications: initialTimerEndNotifications,
+      });
     }
-  }, [visible, initialEquipment, initialDifficulty, initialExcludedExercises]);
+  }, [
+    visible,
+    initialEquipment,
+    initialDifficulty,
+    initialExcludedExercises,
+    initialMorningReminders,
+    initialAfternoonReminders,
+    initialTimerEndNotifications,
+  ]);
 
   const handleSave = () => {
-    onSave({ equipment, difficulty, excludedExercises });
+    onSave({
+      equipment,
+      difficulty,
+      excludedExercises,
+      theme: themeMode,
+      ...notifications,
+    });
     onClose();
   };
 
@@ -83,7 +113,12 @@ export default function SettingsModal({
               <ThemeSelector currentTheme={themeMode} onThemeChange={setThemeMode} />
 
               <Text style={styles.sectionTitle}>Daily Reminders:</Text>
-              <NotificationSettings />
+              <NotificationSettings
+                initialMorningReminders={notifications.morningReminders}
+                initialAfternoonReminders={notifications.afternoonReminders}
+                initialTimerEndNotifications={notifications.timerEndNotifications}
+                onNotificationChange={setNotifications}
+              />
 
               <Text style={styles.sectionTitle}>Select Equipment:</Text>
               <EquipmentSelector
