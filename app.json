@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.corygold.2minutefit",
+      "bundleIdentifier": "com.corygold.focusfit",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -21,7 +21,7 @@
         "foregroundImage": "./assets/images/icon.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.corygold.twominutefit",
+      "package": "com.corygold.focusfit",
       "scheme": "focusfit"
     },
     "web": {

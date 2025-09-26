@@ -21,7 +21,9 @@ interface BackendDataContextType {
   lastSyncTime: Date | null;
   syncUserData: () => Promise<void>;
   saveUserSettings: (settings: UserSettings) => Promise<boolean>;
-  saveUserProgress: (progress: Omit<UserProgress, 'streak'>) => Promise<boolean>;
+  saveUserProgress: (
+    progress: Omit<UserProgress, 'workoutStreak' | 'focusStreak'>,
+  ) => Promise<boolean>;
   settings: UserSettings | null;
   updateSettings: (newSettings: Partial<UserSettings>) => Promise<boolean>;
   isLoading: boolean;
@@ -141,7 +143,9 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
     }
   };
 
-  const saveUserProgress = async (progress: Omit<UserProgress, 'streak'>): Promise<boolean> => {
+  const saveUserProgress = async (
+    progress: Omit<UserProgress, 'workoutStreak' | 'focusStreak'>,
+  ): Promise<boolean> => {
     try {
       await AsyncStorage.setItem(LOCAL_STORAGE_KEYS.USER_PROGRESS, JSON.stringify(progress));
 

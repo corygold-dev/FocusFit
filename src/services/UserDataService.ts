@@ -21,9 +21,13 @@ export interface WorkoutSession {
 
 export interface UserProgress {
   totalWorkouts: number;
-  totalDuration: number;
-  streak: number;
+  totalWorkoutDuration: number;
+  workoutStreak: number;
   lastWorkoutDate?: Date;
+  totalFocusSessions: number;
+  totalFocusDuration: number;
+  focusStreak: number;
+  lastFocusSessionDate?: Date;
   achievements: string[];
 }
 
@@ -115,9 +119,13 @@ const GET_USER_PROGRESS = `
     getUserProgress(userId: $userId) {
       userId
       totalWorkouts
-      totalDuration
-      streak
+      totalWorkoutDuration
+      workoutStreak
       lastWorkoutDate
+      totalFocusSessions
+      totalFocusDuration
+      focusStreak
+      lastFocusSessionDate
       achievements
       createdAt
       updatedAt
@@ -130,9 +138,13 @@ const CREATE_USER_PROGRESS = `
     createUserProgress(input: $input) {
       userId
       totalWorkouts
-      totalDuration
-      streak
+      totalWorkoutDuration
+      workoutStreak
       lastWorkoutDate
+      totalFocusSessions
+      totalFocusDuration
+      focusStreak
+      lastFocusSessionDate
       achievements
       createdAt
       updatedAt
@@ -145,9 +157,13 @@ const UPDATE_USER_PROGRESS = `
     updateUserProgress(input: $input) {
       userId
       totalWorkouts
-      totalDuration
-      streak
+      totalWorkoutDuration
+      workoutStreak
       lastWorkoutDate
+      totalFocusSessions
+      totalFocusDuration
+      focusStreak
+      lastFocusSessionDate
       achievements
       createdAt
       updatedAt
@@ -317,9 +333,15 @@ export const UserDataService = {
 
       return {
         totalWorkouts: progress.totalWorkouts,
-        totalDuration: progress.totalDuration,
-        streak: progress.streak,
+        totalWorkoutDuration: progress.totalWorkoutDuration,
+        workoutStreak: progress.workoutStreak,
         lastWorkoutDate: progress.lastWorkoutDate ? new Date(progress.lastWorkoutDate) : undefined,
+        totalFocusSessions: progress.totalFocusSessions,
+        totalFocusDuration: progress.totalFocusDuration,
+        focusStreak: progress.focusStreak,
+        lastFocusSessionDate: progress.lastFocusSessionDate
+          ? new Date(progress.lastFocusSessionDate)
+          : undefined,
         achievements: progress.achievements,
       };
     } catch {
@@ -329,37 +351,62 @@ export const UserDataService = {
 
   async updateUserProgress(
     userId: string,
-    progress: Omit<UserProgress, 'streak'>,
+    progress: Omit<UserProgress, 'workoutStreak' | 'focusStreak'>,
   ): Promise<boolean> {
     try {
       const existing = await this.getUserProgress(userId);
 
       if (existing) {
         const currentDate = new Date();
+
         const lastWorkoutDate = existing.lastWorkoutDate
           ? new Date(existing.lastWorkoutDate)
           : null;
-
-        const daysDiff = lastWorkoutDate
+        const workoutDaysDiff = lastWorkoutDate
           ? Math.floor((currentDate.getTime() - lastWorkoutDate.getTime()) / (1000 * 60 * 60 * 24))
           : null;
 
-        let newStreak;
-        if (daysDiff === null) {
-          newStreak = 1;
-        } else if (daysDiff === 1) {
-          newStreak = existing.streak + 1;
-        } else if (daysDiff > 1) {
-          newStreak = 1;
+        let newWorkoutStreak;
+        if (workoutDaysDiff === null) {
+          newWorkoutStreak = 1;
+        } else if (workoutDaysDiff === 1) {
+          newWorkoutStreak = existing.workoutStreak + 1;
+        } else if (workoutDaysDiff > 1) {
+          newWorkoutStreak = 1;
         } else {
-          newStreak = existing.streak;
+          newWorkoutStreak = existing.workoutStreak;
+        }
+
+        const lastFocusSessionDate = existing.lastFocusSessionDate
+          ? new Date(existing.lastFocusSessionDate)
+          : null;
+        const focusDaysDiff = lastFocusSessionDate
+          ? Math.floor(
+              (currentDate.getTime() - lastFocusSessionDate.getTime()) / (1000 * 60 * 60 * 24),
+            )
+          : null;
+
+        let newFocusStreak;
+        if (focusDaysDiff === null) {
+          newFocusStreak = 1;
+        } else if (focusDaysDiff === 1) {
+          newFocusStreak = existing.focusStreak + 1;
+        } else if (focusDaysDiff > 1) {
+          newFocusStreak = 1;
+        } else {
+          newFocusStreak = existing.focusStreak;
         }
 
         const updatedProgress = {
-          totalWorkouts: existing.totalWorkouts + progress.totalWorkouts,
-          totalDuration: existing.totalDuration + progress.totalDuration,
-          streak: newStreak,
+          totalWorkouts: existing.totalWorkouts + (progress.totalWorkouts || 0),
+          totalWorkoutDuration:
+            existing.totalWorkoutDuration + (progress.totalWorkoutDuration || 0),
+          workoutStreak: newWorkoutStreak,
           lastWorkoutDate: progress.lastWorkoutDate,
+          totalFocusSessions: existing.totalFocusSessions + (progress.totalFocusSessions || 0),
+          totalFocusDuration: existing.totalFocusDuration + (progress.totalFocusDuration || 0),
+          focusStreak: newFocusStreak,
+          lastFocusSessionDate: progress.lastFocusSessionDate,
           achievements: _.union(existing.achievements, progress.achievements),
         };
 
@@ -369,12 +416,20 @@ export const UserDataService = {
             input: {
               userId,
               totalWorkouts: updatedProgress.totalWorkouts,
-              totalDuration: updatedProgress.totalDuration,
-              streak: updatedProgress.streak,
+              totalWorkoutDuration: updatedProgress.totalWorkoutDuration,
+              workoutStreak: updatedProgress.workoutStreak,
               lastWorkoutDate: updatedProgress.lastWorkoutDate
                 ? updatedProgress.lastWorkoutDate instanceof Date
                   ? updatedProgress.lastWorkoutDate.toISOString()
                   : new Date(updatedProgress.lastWorkoutDate).toISOString()
+                : undefined,
+              totalFocusSessions: updatedProgress.totalFocusSessions,
+              totalFocusDuration: updatedProgress.totalFocusDuration,
+              focusStreak: updatedProgress.focusStreak,
+              lastFocusSessionDate: updatedProgress.lastFocusSessionDate
+                ? updatedProgress.lastFocusSessionDate instanceof Date
+                  ? updatedProgress.lastFocusSessionDate.toISOString()
+                  : new Date(updatedProgress.lastFocusSessionDate).toISOString()
                 : undefined,
               achievements: updatedProgress.achievements,
               updatedAt: new Date().toISOString(),
@@ -388,13 +443,21 @@ export const UserDataService = {
           variables: {
             input: {
               userId,
-              totalWorkouts: progress.totalWorkouts,
-              totalDuration: progress.totalDuration,
-              streak: 1,
+              totalWorkouts: progress.totalWorkouts || 0,
+              totalWorkoutDuration: progress.totalWorkoutDuration || 0,
+              workoutStreak: 1,
               lastWorkoutDate: progress.lastWorkoutDate
                 ? progress.lastWorkoutDate instanceof Date
                   ? progress.lastWorkoutDate.toISOString()
                   : new Date(progress.lastWorkoutDate).toISOString()
+                : undefined,
+              totalFocusSessions: progress.totalFocusSessions || 0,
+              totalFocusDuration: progress.totalFocusDuration || 0,
+              focusStreak: 1,
+              lastFocusSessionDate: progress.lastFocusSessionDate
+                ? progress.lastFocusSessionDate instanceof Date
+                  ? progress.lastFocusSessionDate.toISOString()
+                  : new Date(progress.lastFocusSessionDate).toISOString()
                 : undefined,
               achievements: progress.achievements,
               createdAt: new Date().toISOString(),

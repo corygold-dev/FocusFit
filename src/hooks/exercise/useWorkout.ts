@@ -50,8 +50,11 @@ export function useWorkout({ settings }: UseWorkoutProps) {
 
       await saveUserProgress({
         totalWorkouts: 1,
-        totalDuration: duration,
+        totalWorkoutDuration: duration,
         lastWorkoutDate: new Date(),
+        totalFocusSessions: 0,
+        totalFocusDuration: 0,
+        lastFocusSessionDate: undefined,
         achievements: [],
       });
     } catch (error) {

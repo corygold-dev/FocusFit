@@ -1,8 +1,8 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
-import { useTheme, useTimerContext } from '@/src/providers';
+import { useBackendData, useTheme, useTimerContext } from '@/src/providers';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -28,13 +28,52 @@ export default function TimerScreen() {
   const [showTimeModal, setShowTimeModal] = useState(false);
 
   const { settings, updateSettings } = useUserSettings();
+  const { saveUserProgress } = useBackendData();
+  const hasSavedFocusRef = useRef(false);
+  const focusStartTimeRef = useRef<number | null>(null);
+
+  const saveFocusSession = useCallback(async () => {
+    if (hasSavedFocusRef.current) return;
+
+    try {
+      hasSavedFocusRef.current = true;
+
+      const actualFocusDuration = focusStartTimeRef.current
+        ? Math.max(0, Math.floor((Date.now() - focusStartTimeRef.current) / 1000))
+        : 0;
+
+      await saveUserProgress({
+        totalWorkouts: 0,
+        totalWorkoutDuration: 0,
+        lastWorkoutDate: undefined,
+        totalFocusSessions: 1,
+        totalFocusDuration: actualFocusDuration,
+        lastFocusSessionDate: new Date(),
+        achievements: [],
+      });
+    } catch (error) {
+      console.error('Error saving focus session:', error);
+      hasSavedFocusRef.current = false;
+    }
+  }, [saveUserProgress]);
+
+  const handleFocusComplete = useCallback(async () => {
+    await saveFocusSession();
+    router.push('/exercise');
+  }, [saveFocusSession, router]);
 
   const { secondsLeft, isRunning, progress, resetTimer, toggleTimer, setCustomDuration } = useTimer(
     {
-      onComplete: () => router.push('/exercise'),
+      onComplete: handleFocusComplete,
       initialDuration: selectedFocusTime ? selectedFocusTime * 60 : undefined,
     },
   );
+
+  const handleResetTimer = async () => {
+    await resetTimer();
+    focusStartTimeRef.current = null;
+    hasSavedFocusRef.current = false;
+  };
 
   useEffect(() => {
     if (shouldAutoStart && !isRunning) {
@@ -42,6 +81,13 @@ export default function TimerScreen() {
       clearAutoStart();
     }
   }, [shouldAutoStart, isRunning, toggleTimer, clearAutoStart]);
+
+  useEffect(() => {
+    if (isRunning) {
+      hasSavedFocusRef.current = false;
+      focusStartTimeRef.current = Date.now();
+    }
+  }, [isRunning]);
 
   const skipToExercise = async () => {
     if (isRunning) {
@@ -56,10 +102,7 @@ export default function TimerScreen() {
         'Are you sure you want to skip the timer and go directly to exercises?',
         [
           { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Skip',
-            onPress: () => router.push('/exercise'),
-          },
+          { text: 'Skip', onPress: handleFocusComplete },
         ],
       );
     }
@@ -67,7 +110,7 @@ export default function TimerScreen() {
 
   const handleSkipConfirm = () => {
     setShowConfirmDialog(false);
-    router.push('/exercise');
+    handleFocusComplete();
   };
 
   return (
@@ -88,7 +131,7 @@ export default function TimerScreen() {
       <TimerControls
         isRunning={isRunning}
         onToggle={toggleTimer}
-        onReset={resetTimer}
+        onReset={handleResetTimer}
         onSkip={skipToExercise}
       />
       <SettingsModal
