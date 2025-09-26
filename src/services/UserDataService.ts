@@ -133,6 +133,19 @@ const GET_USER_PROGRESS = `
   }
 `;
 
+const CREATE_FOCUS_SESSION = `
+  mutation CreateFocusSession($input: CreateFocusSessionInput!) {
+    createFocusSession(input: $input) {
+      userId
+      sessionId
+      duration
+      completedAt
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 const CREATE_USER_PROGRESS = `
   mutation CreateUserProgress($input: CreateUserProgressInput!) {
     createUserProgress(input: $input) {
@@ -331,7 +344,7 @@ export const UserDataService = {
 
       const progress = data.getUserProgress;
 
-      return {
+      const parsedProgress = {
         totalWorkouts: progress.totalWorkouts,
         totalWorkoutDuration: progress.totalWorkoutDuration,
         workoutStreak: progress.workoutStreak,
@@ -344,8 +357,36 @@ export const UserDataService = {
           : undefined,
         achievements: progress.achievements,
       };
+      return parsedProgress;
     } catch {
       return null;
+    }
+  },
+
+  async saveFocusSession(
+    userId: string,
+    sessionId: string,
+    duration: number,
+    completedAt: Date,
+  ): Promise<boolean> {
+    try {
+      const result = await client.graphql({
+        query: CREATE_FOCUS_SESSION,
+        variables: {
+          input: {
+            userId,
+            sessionId,
+            duration,
+            completedAt: completedAt.toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        },
+      });
+      const success = !!('data' in result ? result.data?.createFocusSession : null);
+      return success;
+    } catch {
+      return false;
     }
   },
 
@@ -402,11 +443,17 @@ export const UserDataService = {
           totalWorkoutDuration:
             existing.totalWorkoutDuration + (progress.totalWorkoutDuration || 0),
           workoutStreak: newWorkoutStreak,
-          lastWorkoutDate: progress.lastWorkoutDate,
+          lastWorkoutDate:
+            progress.lastWorkoutDate !== undefined
+              ? progress.lastWorkoutDate
+              : existing.lastWorkoutDate,
           totalFocusSessions: existing.totalFocusSessions + (progress.totalFocusSessions || 0),
           totalFocusDuration: existing.totalFocusDuration + (progress.totalFocusDuration || 0),
           focusStreak: newFocusStreak,
-          lastFocusSessionDate: progress.lastFocusSessionDate,
+          lastFocusSessionDate:
+            progress.lastFocusSessionDate !== undefined
+              ? progress.lastFocusSessionDate
+              : existing.lastFocusSessionDate,
           achievements: _.union(existing.achievements, progress.achievements),
         };
 
@@ -465,7 +512,8 @@ export const UserDataService = {
             },
           },
         });
-        return !!('data' in result ? result.data?.createUserProgress : null);
+        const success = !!('data' in result ? result.data?.createUserProgress : null);
+        return success;
       }
     } catch {
       return false;

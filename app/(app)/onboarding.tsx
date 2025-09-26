@@ -79,7 +79,7 @@ export default function OnboardingScreen() {
         </Animated.View>
 
         <Animated.View style={[styles.timeSelection, { opacity: timeSelectionOpacity }]}>
-          <Text style={styles.timeLabel}>How long would you like to focus for?</Text>
+          <Text style={styles.timeLabel}>How long would you like to focus?</Text>
           <View style={styles.presetGrid}>
             {TIMER.PRESET_MINUTES.map((preset) => (
               <Button

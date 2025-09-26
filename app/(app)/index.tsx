@@ -1,6 +1,6 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
-import { useBackendData, useTheme, useTimerContext } from '@/src/providers';
+import { useAuth, useBackendData, useTheme, useTimerContext } from '@/src/providers';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
@@ -22,6 +22,7 @@ export default function TimerScreen() {
   const styles = timerScreenStyles(theme);
   const router = useRouter();
   const { shouldAutoStart, clearAutoStart, selectedFocusTime } = useTimerContext();
+  const { user } = useAuth();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -42,20 +43,31 @@ export default function TimerScreen() {
         ? Math.max(0, Math.floor((Date.now() - focusStartTimeRef.current) / 1000))
         : 0;
 
+      const { UserDataService } = await import('@/src/services/UserDataService');
+      const sessionId = `focus_${Date.now()}`;
+      const completedAt = new Date();
+
+      await UserDataService.saveFocusSession(
+        user?.userId || '',
+        sessionId,
+        actualFocusDuration,
+        completedAt,
+      );
+
       await saveUserProgress({
         totalWorkouts: 0,
         totalWorkoutDuration: 0,
         lastWorkoutDate: undefined,
         totalFocusSessions: 1,
         totalFocusDuration: actualFocusDuration,
-        lastFocusSessionDate: new Date(),
+        lastFocusSessionDate: completedAt,
         achievements: [],
       });
     } catch (error) {
       console.error('Error saving focus session:', error);
       hasSavedFocusRef.current = false;
     }
-  }, [saveUserProgress]);
+  }, [saveUserProgress, user?.userId]);
 
   const handleFocusComplete = useCallback(async () => {
     await saveFocusSession();
