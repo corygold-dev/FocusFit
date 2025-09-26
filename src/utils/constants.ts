@@ -31,3 +31,9 @@ export const CATEGORY_LABELS: Record<CategoryKey, string> = {
   full: 'Full Body',
   mobility: 'Mobility',
 };
+
+export const LOCAL_STORAGE_KEYS = {
+  USER_SETTINGS: 'userSettings',
+  USER_PROGRESS: 'userProgress',
+  LAST_SYNC: 'lastSyncTime',
+};

@@ -13,6 +13,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { LOCAL_STORAGE_KEYS } from '../utils/constants';
 
 interface BackendDataContextType {
   isOnline: boolean;
@@ -20,7 +21,7 @@ interface BackendDataContextType {
   lastSyncTime: Date | null;
   syncUserData: () => Promise<void>;
   saveUserSettings: (settings: UserSettings) => Promise<boolean>;
-  saveUserProgress: (progress: UserProgress) => Promise<boolean>;
+  saveUserProgress: (progress: Omit<UserProgress, 'streak'>) => Promise<boolean>;
   settings: UserSettings | null;
   updateSettings: (newSettings: Partial<UserSettings>) => Promise<boolean>;
   isLoading: boolean;
@@ -31,12 +32,6 @@ const BackendDataContext = createContext<BackendDataContextType | undefined>(und
 interface BackendDataProviderProps {
   children: ReactNode;
 }
-
-const LOCAL_STORAGE_KEYS = {
-  USER_SETTINGS: 'userSettings',
-  USER_PROGRESS: 'userProgress',
-  LAST_SYNC: 'lastSyncTime',
-};
 
 export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
@@ -146,7 +141,7 @@ export const BackendDataProvider: React.FC<BackendDataProviderProps> = ({ childr
     }
   };
 
-  const saveUserProgress = async (progress: UserProgress): Promise<boolean> => {
+  const saveUserProgress = async (progress: Omit<UserProgress, 'streak'>): Promise<boolean> => {
     try {
       await AsyncStorage.setItem(LOCAL_STORAGE_KEYS.USER_PROGRESS, JSON.stringify(progress));
 

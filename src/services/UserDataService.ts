@@ -1,4 +1,5 @@
 import { generateClient } from 'aws-amplify/api';
+import _ from 'lodash';
 
 export interface UserSettings {
   difficulty: 'easy' | 'medium' | 'hard';
@@ -326,17 +327,40 @@ export const UserDataService = {
     }
   },
 
-  async updateUserProgress(userId: string, progress: UserProgress): Promise<boolean> {
+  async updateUserProgress(
+    userId: string,
+    progress: Omit<UserProgress, 'streak'>,
+  ): Promise<boolean> {
     try {
       const existing = await this.getUserProgress(userId);
 
       if (existing) {
+        const currentDate = new Date();
+        const lastWorkoutDate = existing.lastWorkoutDate
+          ? new Date(existing.lastWorkoutDate)
+          : null;
+
+        const daysDiff = lastWorkoutDate
+          ? Math.floor((currentDate.getTime() - lastWorkoutDate.getTime()) / (1000 * 60 * 60 * 24))
+          : null;
+
+        let newStreak;
+        if (daysDiff === null) {
+          newStreak = 1;
+        } else if (daysDiff === 1) {
+          newStreak = existing.streak + 1;
+        } else if (daysDiff > 1) {
+          newStreak = 1;
+        } else {
+          newStreak = existing.streak;
+        }
+
         const updatedProgress = {
           totalWorkouts: existing.totalWorkouts + progress.totalWorkouts,
           totalDuration: existing.totalDuration + progress.totalDuration,
-          streak: existing.streak + progress.streak,
+          streak: newStreak,
           lastWorkoutDate: progress.lastWorkoutDate,
-          achievements: [...existing.achievements, ...progress.achievements],
+          achievements: _.union(existing.achievements, progress.achievements),
         };
 
         const result = await client.graphql({
@@ -366,7 +390,7 @@ export const UserDataService = {
               userId,
               totalWorkouts: progress.totalWorkouts,
               totalDuration: progress.totalDuration,
-              streak: progress.streak,
+              streak: 1,
               lastWorkoutDate: progress.lastWorkoutDate
                 ? progress.lastWorkoutDate instanceof Date
                   ? progress.lastWorkoutDate.toISOString()

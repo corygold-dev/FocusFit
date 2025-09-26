@@ -51,7 +51,6 @@ export function useWorkout({ settings }: UseWorkoutProps) {
       await saveUserProgress({
         totalWorkouts: 1,
         totalDuration: duration,
-        streak: 1,
         lastWorkoutDate: new Date(),
         achievements: [],
       });

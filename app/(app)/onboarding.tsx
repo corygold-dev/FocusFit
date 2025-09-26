@@ -23,22 +23,22 @@ export default function OnboardingScreen() {
     Animated.sequence([
       Animated.timing(titleOpacity, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
       Animated.timing(welcomeOpacity, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
       Animated.timing(subtitleOpacity, {
         toValue: 1,
-        duration: 1500,
+        duration: 1000,
         useNativeDriver: true,
       }),
       Animated.timing(timeSelectionOpacity, {
         toValue: 1,
-        duration: 1000,
+        duration: 800,
         useNativeDriver: true,
       }),
     ]).start();
