@@ -16,6 +16,7 @@ import {
 import TimeModal from '@/src/components/timerScreen/TimeModal';
 import Button from '@/src/components/ui/Button';
 import { useUserSettings } from '@/src/providers';
+import { MIN_FOCUS_DURATION } from '@/src/utils/constants';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
@@ -42,6 +43,8 @@ export default function TimerScreen() {
       const actualFocusDuration = focusStartTimeRef.current
         ? Math.max(0, Math.floor((Date.now() - focusStartTimeRef.current) / 1000))
         : 0;
+
+      if (actualFocusDuration < MIN_FOCUS_DURATION) return;
 
       const { UserDataService } = await import('@/src/services/UserDataService');
       const sessionId = `focus_${Date.now()}`;

@@ -13,6 +13,8 @@ export const TIMER = {
   ],
 };
 
+export const MIN_FOCUS_DURATION = 30;
+
 export const DIFFICULTY_LEVELS: Difficulty[] = ['easy', 'medium', 'hard'];
 export const USER_SETTINGS_STORAGE_KEY = 'userSettings';
 export const EQUIPMENT_OPTIONS = ['TRX', 'Kettlebell', 'Pull-up Bar', 'Resistance Band'];
