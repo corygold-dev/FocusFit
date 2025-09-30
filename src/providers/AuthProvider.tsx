@@ -219,6 +219,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       try {
         await firebaseDataService.updateUserProgress(user, progress);
+
+        if (progress.lastWorkoutDate) {
+          await firebaseDataService.updateStreaks(user, 'workout');
+        }
+        if (progress.lastFocusSessionDate) {
+          await firebaseDataService.updateStreaks(user, 'focus');
+        }
       } catch (err) {
         console.error('💾 AuthProvider: Failed to save user progress:', err);
         throw err;
@@ -255,12 +262,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           userId: user.uid,
         };
         await firebaseDataService.saveFocusSession(user, fullSession);
-
-        await firebaseDataService.updateUserProgress(user, {
-          totalFocusSessions: 1,
-          totalFocusDuration: session.duration,
-          lastFocusSessionDate: session.completedAt,
-        });
       } catch (err) {
         console.error('💾 AuthProvider: Failed to save focus session:', err);
         throw err;

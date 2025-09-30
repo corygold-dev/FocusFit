@@ -8,7 +8,9 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore';
+import { Alert } from 'react-native';
 import { db } from '../config/firebase';
+import { checkAchievements, getAchievementById, UserProgressData } from '../utils/achievements';
 import { AuthUser } from './FirebaseAuthService';
 
 export interface UserSettings {
@@ -110,17 +112,94 @@ export class FirebaseDataService {
 
   async updateUserProgress(user: AuthUser, progress: Partial<UserProgress>): Promise<void> {
     try {
-      const progressRef = doc(db, 'userProgress', user.uid);
-      const progressData = {
+      const currentProgress = await this.getUserProgress(user);
+      const updatedProgress = {
+        ...currentProgress,
         ...progress,
         userId: user.uid,
         updatedAt: serverTimestamp(),
       };
 
-      await setDoc(progressRef, progressData, { merge: true });
+      const newAchievements = checkAchievements(
+        updatedProgress as UserProgressData,
+        currentProgress?.achievements || [],
+      );
+
+      if (newAchievements.length > 0) {
+        updatedProgress.achievements = [
+          ...(currentProgress?.achievements || []),
+          ...newAchievements,
+        ];
+
+        const firstAchievement = getAchievementById(newAchievements[0]);
+        const achievementText =
+          newAchievements.length === 1
+            ? `${firstAchievement?.emoji} ${firstAchievement?.name}`
+            : `${firstAchievement?.emoji} ${firstAchievement?.name} +${newAchievements.length - 1} more`;
+
+        Alert.alert('🏆 Achievement Unlocked!', achievementText, [
+          { text: 'Awesome!', style: 'default' },
+        ]);
+      }
+
+      const progressRef = doc(db, 'userProgress', user.uid);
+      await setDoc(progressRef, updatedProgress, { merge: true });
     } catch (error) {
       console.error('Error updating user progress:', error);
       throw error;
+    }
+  }
+
+  async updateStreaks(user: AuthUser, activityType: 'workout' | 'focus'): Promise<void> {
+    try {
+      const currentProgress = await this.getUserProgress(user);
+      if (!currentProgress) return;
+
+      const lastActivityDate =
+        activityType === 'workout'
+          ? currentProgress.lastWorkoutDate
+          : currentProgress.lastFocusSessionDate;
+
+      const currentStreak =
+        activityType === 'workout'
+          ? currentProgress.workoutStreak || 0
+          : currentProgress.focusStreak || 0;
+
+      const newStreak = this.calculateStreak(lastActivityDate, currentStreak);
+
+      const updateData =
+        activityType === 'workout' ? { workoutStreak: newStreak } : { focusStreak: newStreak };
+
+      await this.updateUserProgress(user, updateData);
+    } catch (error) {
+      console.error('Error updating streaks:', error);
+      throw error;
+    }
+  }
+
+  private calculateStreak(
+    lastActivityDate: Date | null | undefined,
+    currentStreak: number,
+  ): number {
+    if (!lastActivityDate) return 1; // First activity
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const lastActivity = new Date(lastActivityDate);
+    lastActivity.setHours(0, 0, 0, 0);
+
+    const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysDiff === 1) {
+      // Last activity was yesterday, increment streak
+      return currentStreak + 1;
+    } else if (daysDiff === 0) {
+      // Last activity was today, maintain current streak
+      return currentStreak;
+    } else {
+      // Last activity was 2+ days ago, reset to 1
+      return 1;
     }
   }
 
@@ -171,11 +250,11 @@ export class FirebaseDataService {
 
   async saveFocusSession(user: AuthUser, session: FocusSession): Promise<boolean> {
     try {
-      const sessionRef = doc(db, 'focusSessions', `${user.uid}_${session.sessionId}`);
+      const sessionRef = doc(db, 'focusSession', `${user.uid}_${session.sessionId}`);
       const sessionData = {
         ...session,
         userId: user.uid,
-        completedAt: session.completedAt.toISOString(),
+        completedAt: serverTimestamp(),
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       };
@@ -190,7 +269,7 @@ export class FirebaseDataService {
 
   async getUserFocusHistory(user: AuthUser, limit: number = 50): Promise<FocusSession[]> {
     try {
-      const sessionsRef = collection(db, 'focusSessions');
+      const sessionsRef = collection(db, 'focusSession');
       const q = query(sessionsRef, where('userId', '==', user.uid));
 
       const querySnapshot = await getDocs(q);

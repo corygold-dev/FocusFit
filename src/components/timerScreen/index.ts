@@ -1,4 +1,4 @@
-export { default as SettingsButton } from './SettingsButton';
+export { default as modalButton } from './ModalButton';
 export { default as TimeModal } from './TimeModal';
 export { default as TimerControls } from './TimerControls';
 export { default as TimerDisplay } from './TimerDisplay';

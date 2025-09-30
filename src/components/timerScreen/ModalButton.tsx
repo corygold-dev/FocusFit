@@ -1,27 +1,34 @@
 import { useTheme } from '@/src/providers';
-import { Settings } from 'lucide-react-native';
 import React from 'react';
 import { TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { settingsButtonStyles } from './styles';
+import { modalButtonStyles } from './styles';
 
-interface SettingsButtonProps {
+interface ModalButtonProps {
   onPress: () => void;
+  icon: React.ReactNode;
+  accessibilityLabel: string;
+  position?: 'left' | 'right';
 }
 
-export default function SettingsButton({ onPress }: SettingsButtonProps) {
+export default function ModalButton({
+  onPress,
+  icon,
+  accessibilityLabel,
+  position = 'right',
+}: ModalButtonProps) {
   const { theme } = useTheme();
-  const styles = settingsButtonStyles();
+  const styles = modalButtonStyles(theme, position);
 
   return (
     <SafeAreaView edges={['top']} style={styles.header}>
       <TouchableOpacity
         onPress={onPress}
-        style={styles.cogButton}
-        accessibilityLabel="Open settings"
+        style={styles.button}
+        accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
       >
-        <Settings size={32} color={theme.colors.primary} />
+        {icon}
       </TouchableOpacity>
     </SafeAreaView>
   );

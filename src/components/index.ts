@@ -1,3 +1,4 @@
+export * from './analyticsModal';
 export * from './exerciseScreen';
 export * from './settingsModal';
 export * from './timerScreen';

@@ -2,17 +2,19 @@ import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
 import { useBackendData, useTheme, useTimerContext } from '@/src/providers';
 import { useRouter } from 'expo-router';
+import { BarChart3, Settings } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
+  AnalyticsModal,
   ConfirmationDialog,
-  SettingsButton,
   SettingsModal,
   TimerControls,
   TimerDisplay,
 } from '@/src/components';
+import ModalButton from '@/src/components/timerScreen/ModalButton';
 import TimeModal from '@/src/components/timerScreen/TimeModal';
 import Button from '@/src/components/ui/Button';
 import { useUserSettings } from '@/src/providers';
@@ -25,6 +27,7 @@ export default function TimerScreen() {
   const { shouldAutoStart, clearAutoStart, selectedFocusTime } = useTimerContext();
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
 
@@ -137,7 +140,18 @@ export default function TimerScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <SettingsButton onPress={() => setShowSettings(true)} />
+      <ModalButton
+        onPress={() => setShowAnalytics(true)}
+        icon={<BarChart3 size={32} color={theme.colors.primary} />}
+        accessibilityLabel="Open analytics"
+        position="left"
+      />
+      <ModalButton
+        onPress={() => setShowSettings(true)}
+        icon={<Settings size={32} color={theme.colors.primary} />}
+        accessibilityLabel="Open settings"
+        position="right"
+      />
       <TimerDisplay title="Focus" progress={progress} secondsLeft={secondsLeft} />
 
       <View style={styles.timeButtonContainer}>
@@ -156,6 +170,8 @@ export default function TimerScreen() {
         onReset={handleResetTimer}
         onSkip={skipToExercise}
       />
+      <AnalyticsModal visible={showAnalytics} onClose={() => setShowAnalytics(false)} />
+
       <SettingsModal
         visible={showSettings}
         onClose={() => setShowSettings(false)}
