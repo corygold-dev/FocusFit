@@ -63,4 +63,22 @@ export const registerFormStyles = (theme: Theme) =>
       color: theme.colors.error,
       marginBottom: 15,
     },
+    socialButton: {
+      marginBottom: 10,
+    },
+    dividerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 20,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.colors.border,
+    },
+    dividerText: {
+      marginHorizontal: 15,
+      color: theme.colors.text + '80',
+      fontSize: 14,
+    },
   });

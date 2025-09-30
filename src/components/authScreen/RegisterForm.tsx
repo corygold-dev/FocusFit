@@ -1,3 +1,4 @@
+import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -5,13 +6,9 @@ import { registerFormStyles } from './styles';
 
 interface RegisterFormProps {
   onNavigateToLogin: () => void;
-  onNavigateToConfirmation: (email: string) => void;
 }
 
-export default function RegisterForm({
-  onNavigateToLogin,
-  onNavigateToConfirmation,
-}: RegisterFormProps) {
+export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -45,7 +42,8 @@ export default function RegisterForm({
     setIsSubmitting(true);
     try {
       await register(email, password);
-      onNavigateToConfirmation(email);
+      Alert.alert('Success', 'Account created successfully! You can now sign in.');
+      onNavigateToLogin();
     } catch (err) {
       const errorObj = err as Error;
       Alert.alert('Registration Error', errorObj.message || 'Failed to register');
@@ -130,27 +128,27 @@ export default function RegisterForm({
           )}
         </TouchableOpacity>
 
-        <Text style={styles.linkText}>or</Text>
+        <View style={styles.dividerContainer}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>or</Text>
+          <View style={styles.dividerLine} />
+        </View>
 
-        <TouchableOpacity
-          style={styles.button}
+        <Button
+          title="Continue with Google"
+          variant="secondary"
           onPress={handleGoogleSignIn}
           disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Continue with Google</Text>
-          )}
-        </TouchableOpacity>
+          style={styles.socialButton}
+        />
 
-        <TouchableOpacity style={styles.button} onPress={handleAppleSignIn} disabled={isSubmitting}>
-          {isSubmitting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Continue with Apple</Text>
-          )}
-        </TouchableOpacity>
+        <Button
+          title="Continue with Apple"
+          variant="secondary"
+          onPress={handleAppleSignIn}
+          disabled={isSubmitting}
+          style={styles.socialButton}
+        />
 
         <TouchableOpacity onPress={handleNavigateToLogin} disabled={isSubmitting}>
           <Text style={styles.linkText}>Already have an account? Log In</Text>

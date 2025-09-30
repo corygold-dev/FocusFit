@@ -49,6 +49,7 @@ interface AuthContextType {
   saveFocusSession: (session: Omit<FocusSession, 'userId'>) => Promise<void>;
   getUserWorkoutHistory: () => Promise<WorkoutSession[]>;
   getUserFocusHistory: () => Promise<FocusSession[]>;
+  getUserProgress: () => Promise<UserProgress | null>;
 
   // Subscription
   subscription: 'free' | 'premium' | null;
@@ -278,6 +279,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return firebaseDataService.getUserFocusHistory(user);
   }, [user]);
 
+  const getUserProgress = useCallback(async (): Promise<UserProgress | null> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getUserProgress(user);
+  }, [user]);
+
   // ============================================================================
   // SUBSCRIPTION METHODS
   // ============================================================================
@@ -361,6 +367,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       saveFocusSession,
       getUserWorkoutHistory,
       getUserFocusHistory,
+      getUserProgress,
 
       // Subscription
       subscription,
@@ -392,6 +399,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       saveFocusSession,
       getUserWorkoutHistory,
       getUserFocusHistory,
+      getUserProgress,
       refreshSubscription,
       upgradeToPremium,
     ],
@@ -430,6 +438,7 @@ export const useBackendData = () => {
     saveFocusSession: auth.saveFocusSession,
     getUserWorkoutHistory: auth.getUserWorkoutHistory,
     getUserFocusHistory: auth.getUserFocusHistory,
+    getUserProgress: auth.getUserProgress,
   };
 };
 

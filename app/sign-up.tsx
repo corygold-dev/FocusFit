@@ -12,19 +12,9 @@ export default function SignUp() {
     router.push('/sign-in');
   };
 
-  const navigateToConfirm = (username: string) => {
-    router.push({
-      pathname: '/confirm',
-      params: { username },
-    });
-  };
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <RegisterForm
-        onNavigateToLogin={navigateToSignIn}
-        onNavigateToConfirmation={navigateToConfirm}
-      />
+      <RegisterForm onNavigateToLogin={navigateToSignIn} />
     </View>
   );
 }

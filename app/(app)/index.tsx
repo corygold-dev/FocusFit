@@ -1,6 +1,6 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
-import { useAuth, useBackendData, useTheme, useTimerContext } from '@/src/providers';
+import { useBackendData, useTheme, useTimerContext } from '@/src/providers';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
@@ -23,7 +23,6 @@ export default function TimerScreen() {
   const styles = timerScreenStyles(theme);
   const router = useRouter();
   const { shouldAutoStart, clearAutoStart, selectedFocusTime } = useTimerContext();
-  const { user } = useAuth();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -38,7 +37,11 @@ export default function TimerScreen() {
       router.replace('/(app)/onboarding');
     }
   }, [needsOnboarding, router]);
-  const { saveUserProgress, saveFocusSession: saveFocusSessionToDB } = useBackendData();
+  const {
+    saveUserProgress,
+    saveFocusSession: saveFocusSessionToDB,
+    getUserProgress,
+  } = useBackendData();
   const hasSavedFocusRef = useRef(false);
   const focusStartTimeRef = useRef<number | null>(null);
 
@@ -62,25 +65,19 @@ export default function TimerScreen() {
         duration: actualFocusDuration,
         completedAt,
       });
-
-      await saveUserProgress({
-        id: '',
-        userId: user?.uid || '',
-        totalWorkouts: 0,
-        totalWorkoutDuration: 0,
-        lastWorkoutDate: undefined,
-        totalFocusSessions: 1,
-        totalFocusDuration: actualFocusDuration,
-        lastFocusSessionDate: completedAt,
-        achievements: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      const currentProgress = await getUserProgress();
+      if (currentProgress) {
+        await saveUserProgress({
+          totalFocusSessions: currentProgress.totalFocusSessions + 1,
+          totalFocusDuration: currentProgress.totalFocusDuration + actualFocusDuration,
+          lastFocusSessionDate: completedAt,
+        });
+      }
     } catch (error) {
       console.error('Error saving focus session:', error);
       hasSavedFocusRef.current = false;
     }
-  }, [saveFocusSessionToDB, saveUserProgress, user?.uid]);
+  }, [saveFocusSessionToDB, saveUserProgress, getUserProgress]);
 
   const handleFocusComplete = useCallback(async () => {
     await saveFocusSession();

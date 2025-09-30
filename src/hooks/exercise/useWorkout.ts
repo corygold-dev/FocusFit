@@ -23,7 +23,7 @@ export function useWorkout({ settings }: UseWorkoutProps) {
 
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
   const { user } = useAuth();
-  const { saveUserProgress, saveWorkoutSession } = useBackendData();
+  const { saveUserProgress, saveWorkoutSession, getUserProgress } = useBackendData();
 
   const saveWorkoutData = useCallback(async () => {
     if (!user?.uid || currentList.length === 0 || hasSavedWorkoutRef.current) return;
@@ -38,7 +38,6 @@ export function useWorkout({ settings }: UseWorkoutProps) {
         0,
       );
 
-      // Save workout session using Firebase
       await saveWorkoutSession({
         sessionId,
         exercises,
@@ -46,20 +45,19 @@ export function useWorkout({ settings }: UseWorkoutProps) {
         completedAt: new Date(),
       });
 
-      await saveUserProgress({
-        totalWorkouts: 1,
-        totalWorkoutDuration: duration,
-        lastWorkoutDate: new Date(),
-        totalFocusSessions: 0,
-        totalFocusDuration: 0,
-        lastFocusSessionDate: null,
-        achievements: [],
-      });
+      const currentProgress = await getUserProgress();
+      if (currentProgress) {
+        await saveUserProgress({
+          totalWorkouts: currentProgress.totalWorkouts + 1,
+          totalWorkoutDuration: currentProgress.totalWorkoutDuration + duration,
+          lastWorkoutDate: new Date(),
+        });
+      }
     } catch (error) {
       console.error('Error saving workout session:', error);
       hasSavedWorkoutRef.current = false;
     }
-  }, [user?.uid, currentList, saveUserProgress, saveWorkoutSession]);
+  }, [user?.uid, currentList, saveUserProgress, saveWorkoutSession, getUserProgress]);
 
   useEffect(() => {
     try {
