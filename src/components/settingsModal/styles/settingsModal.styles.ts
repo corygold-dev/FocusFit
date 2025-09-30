@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import { Theme } from '@/styles/theme';
+import { StyleSheet } from 'react-native';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -64,6 +64,25 @@ export const createStyles = (theme: Theme) =>
     },
     logoutText: {
       color: theme.colors.error,
+      fontWeight: '600',
+      fontSize: 16,
+    },
+    setupSection: {
+      marginTop: 16,
+      marginBottom: 16,
+    },
+    setupButton: {
+      backgroundColor: theme.colors.secondary + '15',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginTop: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.secondary,
+      alignItems: 'center',
+    },
+    setupText: {
+      color: theme.colors.secondary,
       fontWeight: '600',
       fontSize: 16,
     },

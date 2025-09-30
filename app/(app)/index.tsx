@@ -30,6 +30,14 @@ export default function TimerScreen() {
   const [showTimeModal, setShowTimeModal] = useState(false);
 
   const { settings, saveUserSettings } = useUserSettings();
+
+  const needsOnboarding = !settings?.lastFocusTime;
+
+  useEffect(() => {
+    if (needsOnboarding) {
+      router.replace('/(app)/onboarding');
+    }
+  }, [needsOnboarding, router]);
   const { saveUserProgress, saveFocusSession: saveFocusSessionToDB } = useBackendData();
   const hasSavedFocusRef = useRef(false);
   const focusStartTimeRef = useRef<number | null>(null);
@@ -196,7 +204,12 @@ export default function TimerScreen() {
         onClose={() => setShowTimeModal(false)}
         secondsLeft={secondsLeft}
         isRunning={isRunning}
-        onChange={setCustomDuration}
+        onChange={async (minutes: number) => {
+          setCustomDuration(minutes);
+          if (settings) {
+            await saveUserSettings({ lastFocusTime: minutes * 60 });
+          }
+        }}
       />
     </SafeAreaView>
   );

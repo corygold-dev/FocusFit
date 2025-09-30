@@ -1,6 +1,7 @@
 import { useAuth, useTheme } from '@/src/providers';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/src/utils/constants';
 import { UserSettings } from '@/src/utils/exerciseUtils';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -44,6 +45,7 @@ export default function SettingsModal({
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
   const { logout } = useAuth();
+  const router = useRouter();
   const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
@@ -146,6 +148,19 @@ export default function SettingsModal({
                 <Text style={styles.sectionTitle}>Account:</Text>
                 <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                   <Text style={styles.logoutText}>Log Out</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.setupSection}>
+                <Text style={styles.sectionTitle}>Setup:</Text>
+                <TouchableOpacity
+                  style={styles.setupButton}
+                  onPress={() => {
+                    onClose();
+                    router.push('/(app)/onboarding');
+                  }}
+                >
+                  <Text style={styles.setupText}>Onboarding Screen</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>

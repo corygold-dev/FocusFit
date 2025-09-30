@@ -8,7 +8,7 @@ import {
 } from '@/src/components';
 import { exerciseScreenStyles } from '@/src/components/exerciseScreen/styles';
 import { useWorkout } from '@/src/hooks';
-import { useTheme, useUserSettings } from '@/src/providers';
+import { useTheme, useTimerContext, useUserSettings } from '@/src/providers';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
@@ -17,6 +17,7 @@ export default function ExerciseScreen() {
   const router = useRouter();
   const { settings } = useUserSettings();
   const { theme } = useTheme();
+  const { setSelectedFocusTime } = useTimerContext();
   const styles = exerciseScreenStyles(theme);
 
   const {
@@ -34,6 +35,18 @@ export default function ExerciseScreen() {
   });
 
   const handleExitWorkout = () => {
+    if (settings?.lastFocusTime) {
+      const minutes = settings.lastFocusTime / 60;
+      setSelectedFocusTime(minutes);
+    }
+    router.replace('/');
+  };
+
+  const handleReturnToFocus = () => {
+    if (settings?.lastFocusTime) {
+      const minutes = settings.lastFocusTime / 60;
+      setSelectedFocusTime(minutes);
+    }
     router.replace('/');
   };
 
@@ -68,7 +81,13 @@ export default function ExerciseScreen() {
         />
       )}
 
-      {phase === 'completed' && <CompletedPhase onReturnHome={() => router.replace('/')} />}
+      {phase === 'completed' && (
+        <CompletedPhase
+          onReturnHome={handleReturnToFocus}
+          onSetFocusTime={setSelectedFocusTime}
+          previousFocusTime={settings?.lastFocusTime ? settings.lastFocusTime / 60 : undefined}
+        />
+      )}
     </View>
   );
 }

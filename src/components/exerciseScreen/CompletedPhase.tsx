@@ -6,9 +6,15 @@ import { completedPhaseStyles } from './styles';
 
 interface CompletedPhaseProps {
   onReturnHome: () => void;
+  onSetFocusTime?: (time: number) => void;
+  previousFocusTime?: number;
 }
 
-export default function CompletedPhase({ onReturnHome }: CompletedPhaseProps) {
+export default function CompletedPhase({
+  onReturnHome,
+  onSetFocusTime,
+  previousFocusTime,
+}: CompletedPhaseProps) {
   const { theme } = useTheme();
   const styles = completedPhaseStyles(theme);
 
@@ -19,7 +25,12 @@ export default function CompletedPhase({ onReturnHome }: CompletedPhaseProps) {
       <Button
         title="Time to Focus"
         variant="primary"
-        onPress={onReturnHome}
+        onPress={() => {
+          if (onSetFocusTime && previousFocusTime) {
+            onSetFocusTime(previousFocusTime);
+          }
+          onReturnHome();
+        }}
         accessibilityLabel="Return to timer screen"
         style={styles.returnButton}
       />

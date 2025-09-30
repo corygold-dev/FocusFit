@@ -21,6 +21,7 @@ export interface UserSettings {
   morningReminders?: boolean;
   afternoonReminders?: boolean;
   timerEndNotifications?: boolean;
+  lastFocusTime?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -227,6 +228,7 @@ export class FirebaseDataService {
           morningReminders: true,
           afternoonReminders: true,
           timerEndNotifications: true,
+          lastFocusTime: 1500,
           createdAt: new Date().toISOString(),
         });
       }

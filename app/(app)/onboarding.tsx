@@ -1,6 +1,6 @@
 import { createStyles } from '@/src/components/onboardingScreen/styles/onboarding.styles';
 import Button from '@/src/components/ui/Button';
-import { useTheme, useTimerContext } from '@/src/providers';
+import { useTheme, useTimerContext, useUserSettings } from '@/src/providers';
 import { TIMER } from '@/src/utils/constants';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -11,6 +11,7 @@ export default function OnboardingScreen() {
   const router = useRouter();
   const { theme } = useTheme();
   const { setShouldAutoStart, setSelectedFocusTime } = useTimerContext();
+  const { saveUserSettings } = useUserSettings();
   const [selectedTime, setSelectedTime] = useState<number | null>(null);
   const [buttonOpacity] = useState(new Animated.Value(0));
   const [titleOpacity] = useState(new Animated.Value(0));
@@ -53,10 +54,11 @@ export default function OnboardingScreen() {
     }).start();
   };
 
-  const handleStart = () => {
+  const handleStart = async () => {
     if (selectedTime) {
       setSelectedFocusTime(selectedTime);
       setShouldAutoStart(true);
+      await saveUserSettings({ lastFocusTime: selectedTime * 60 });
       router.replace('/(app)');
     }
   };
