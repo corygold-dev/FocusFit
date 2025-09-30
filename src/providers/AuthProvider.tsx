@@ -172,8 +172,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsSyncing(true);
 
     try {
-      // Set default values without Firestore
-      setSettings(null);
+      // Load user settings from Firestore
+      const userSettings = await firebaseDataService.getUserSettings(userToSync);
+      setSettings(userSettings);
+
+      // Load user progress from Firestore
+      const userProgress = await firebaseDataService.getUserProgress(userToSync);
+      if (userProgress) {
+        // Update progress if needed
+      }
+
+      // Set subscription (default to free for now)
       setSubscription('free');
       setLastSyncTime(new Date());
 
@@ -245,6 +254,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           userId: user.uid,
         };
         await firebaseDataService.saveFocusSession(user, fullSession);
+
+        await firebaseDataService.updateUserProgress(user, {
+          totalFocusSessions: 1,
+          totalFocusDuration: session.duration,
+          lastFocusSessionDate: session.completedAt,
+        });
       } catch (err) {
         console.error('💾 AuthProvider: Failed to save focus session:', err);
         throw err;

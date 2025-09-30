@@ -38,8 +38,6 @@ export interface FocusSession {
   sessionId: string;
   duration: number;
   completedAt: Date;
-  focusType?: 'meditation' | 'breathing' | 'mindfulness' | 'other';
-  notes?: string;
 }
 
 export interface UserProgress {
@@ -48,11 +46,11 @@ export interface UserProgress {
   totalWorkouts: number;
   totalWorkoutDuration: number;
   workoutStreak: number;
-  lastWorkoutDate?: Date;
+  lastWorkoutDate?: Date | null;
   totalFocusSessions: number;
   totalFocusDuration: number;
   focusStreak: number;
-  lastFocusSessionDate?: Date;
+  lastFocusSessionDate?: Date | null;
   achievements: string[];
   createdAt: string;
   updatedAt: string;
@@ -204,8 +202,6 @@ export class FirebaseDataService {
           sessionId: data.sessionId,
           duration: data.duration,
           completedAt: new Date(data.completedAt),
-          focusType: data.focusType,
-          notes: data.notes,
         });
       });
 
@@ -242,12 +238,12 @@ export class FirebaseDataService {
         await this.updateUserProgress(user, {
           totalWorkouts: 0,
           totalWorkoutDuration: 0,
+          lastWorkoutDate: null,
           workoutStreak: 0,
-          lastWorkoutDate: undefined,
           totalFocusSessions: 0,
           totalFocusDuration: 0,
+          lastFocusSessionDate: null,
           focusStreak: 0,
-          lastFocusSessionDate: undefined,
           achievements: [],
           createdAt: new Date().toISOString(),
         });

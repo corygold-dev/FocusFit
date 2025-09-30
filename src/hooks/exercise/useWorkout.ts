@@ -52,7 +52,7 @@ export function useWorkout({ settings }: UseWorkoutProps) {
         lastWorkoutDate: new Date(),
         totalFocusSessions: 0,
         totalFocusDuration: 0,
-        lastFocusSessionDate: undefined,
+        lastFocusSessionDate: null,
         achievements: [],
       });
     } catch (error) {
