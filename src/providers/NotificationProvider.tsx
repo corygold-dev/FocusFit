@@ -1,5 +1,7 @@
 import {
   cancelAllDailyReminders,
+  checkNotificationPermissions,
+  requestNotificationPermissions,
   scheduleDailyReminder,
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
@@ -35,10 +37,23 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       if (isLoading) return;
 
       try {
+        // Check and request notification permissions
+        let hasPermission = await checkNotificationPermissions();
+        if (!hasPermission) {
+          console.log('📱 Requesting notification permissions...');
+          hasPermission = await requestNotificationPermissions();
+        }
+
+        if (!hasPermission) {
+          console.log('📱 Notification permissions not granted');
+          return;
+        }
+
         await cancelAllDailyReminders();
         // Get user settings from AuthProvider when needed
         await scheduleDailyReminder(9, 0);
         await scheduleMotivationalReminder(15, 0);
+        console.log('📱 Notifications scheduled successfully');
       } catch (error) {
         console.error('Error setting up notifications:', error);
       }
