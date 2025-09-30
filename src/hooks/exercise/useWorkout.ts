@@ -23,10 +23,10 @@ export function useWorkout({ settings }: UseWorkoutProps) {
 
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
   const { user } = useAuth();
-  const { saveUserProgress } = useBackendData();
+  const { saveUserProgress, saveWorkoutSession } = useBackendData();
 
-  const saveWorkoutSession = useCallback(async () => {
-    if (!user?.userId || currentList.length === 0 || hasSavedWorkoutRef.current) return;
+  const saveWorkoutData = useCallback(async () => {
+    if (!user?.uid || currentList.length === 0 || hasSavedWorkoutRef.current) return;
 
     try {
       hasSavedWorkoutRef.current = true;
@@ -38,10 +38,8 @@ export function useWorkout({ settings }: UseWorkoutProps) {
         0,
       );
 
-      const { UserDataService } = await import('@/src/services/UserDataService');
-
-      await UserDataService.saveWorkoutSession({
-        userId: user.userId,
+      // Save workout session using Firebase
+      await saveWorkoutSession({
         sessionId,
         exercises,
         duration,
@@ -61,7 +59,7 @@ export function useWorkout({ settings }: UseWorkoutProps) {
       console.error('Error saving workout session:', error);
       hasSavedWorkoutRef.current = false;
     }
-  }, [user?.userId, currentList, saveUserProgress]);
+  }, [user?.uid, currentList, saveUserProgress, saveWorkoutSession]);
 
   useEffect(() => {
     try {
@@ -84,9 +82,9 @@ export function useWorkout({ settings }: UseWorkoutProps) {
 
   useEffect(() => {
     if (phase === 'completed' && !hasSavedWorkoutRef.current) {
-      saveWorkoutSession();
+      saveWorkoutData();
     }
-  }, [phase, saveWorkoutSession]);
+  }, [phase, saveWorkoutData]);
 
   const isTimerActive = phase === 'countdown' || phase === 'active';
   useInterval(

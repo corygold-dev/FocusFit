@@ -4,7 +4,7 @@ import {
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { useBackendData } from './BackendDataProvider';
+// NotificationProvider no longer depends on auth data to avoid circular dependencies
 
 interface NotificationContextType {
   isLoading: boolean;
@@ -18,7 +18,6 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const { settings: userSettings } = useBackendData();
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -30,29 +29,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       }
     };
     loadSettings();
-  }, [userSettings]);
+  }, []);
 
   useEffect(() => {
     const setupNotifications = async () => {
-      if (isLoading || !userSettings) return;
+      if (isLoading) return;
 
       try {
         await cancelAllDailyReminders();
-
-        if (userSettings.morningReminders) {
-          await scheduleDailyReminder(9, 0); // 9 AM
-        }
-
-        if (userSettings.afternoonReminders) {
-          await scheduleMotivationalReminder(); // 3 PM
-        }
+        // TODO: Get user settings from AuthProvider when needed
+        // For now, set up basic notifications
+        await scheduleDailyReminder(9, 0); // 9 AM
+        await scheduleMotivationalReminder(); // 3 PM
       } catch (error) {
         console.error('Error setting up notifications:', error);
       }
     };
 
     setupNotifications();
-  }, [userSettings, isLoading]);
+  }, [isLoading]);
 
   return (
     <NotificationContext.Provider value={{ isLoading }}>{children}</NotificationContext.Provider>

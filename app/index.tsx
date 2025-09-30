@@ -5,6 +5,7 @@ import { useAuth } from '@/src/providers';
 export default function Index() {
   const { isAuthenticated, isLoading } = useAuth();
   if (isLoading) {
+    //TODO Create loading spinner
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Text>Loading...</Text>

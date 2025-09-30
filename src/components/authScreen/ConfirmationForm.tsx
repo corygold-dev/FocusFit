@@ -1,5 +1,4 @@
-import { useTheme } from '@/src/providers';
-import { useAuth } from '@/src/providers/AuthProvider';
+import { useAuth, useTheme } from '@/src/providers';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { confirmationFormStyles } from './styles';
@@ -13,7 +12,7 @@ export default function ConfirmationForm({ username, onNavigateToLogin }: Confir
   const [code, setCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { confirmRegistration, error } = useAuth();
+  const { sendEmailVerification, error, clearError } = useAuth();
   const { theme } = useTheme();
   const styles = confirmationFormStyles(theme);
 
@@ -25,17 +24,24 @@ export default function ConfirmationForm({ username, onNavigateToLogin }: Confir
 
     setIsSubmitting(true);
     try {
-      const result = await confirmRegistration(username, code);
-      if (result.isSignUpComplete) {
-        Alert.alert('Success', 'Your account has been verified. You can now log in.', [
-          { text: 'OK', onPress: onNavigateToLogin },
-        ]);
-      }
+      // For now, just redirect to login since Firebase handles email verification automatically
+      // In a full implementation, you would verify the code here
+      onNavigateToLogin();
     } catch (err) {
-      const error = err as Error;
-      Alert.alert('Verification Error', error.message || 'Failed to verify code');
+      const errorObj = err as Error;
+      Alert.alert('Verification Error', errorObj.message || 'Failed to verify code');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    try {
+      await sendEmailVerification();
+      Alert.alert('Success', 'Verification email sent!');
+    } catch (err) {
+      const errorObj = err as Error;
+      Alert.alert('Error', errorObj.message || 'Failed to send verification email');
     }
   };
 

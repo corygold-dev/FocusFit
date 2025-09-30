@@ -11,7 +11,22 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.corygold.focusfit",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "focusfit",
+            "CFBundleURLSchemes": ["focusfit"]
+          },
+          {
+            "CFBundleURLName": "google",
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob"
+            ]
+          }
+        ]
+      },
+      "entitlements": {
+        "com.apple.developer.applesignin": ["Default"]
       },
       "scheme": "focusfit"
     },
@@ -58,6 +73,13 @@
           "icon": "./assets/images/icon.png",
           "color": "#ffffff",
           "defaultChannel": "default"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob",
+          "iosClientId": "912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob.apps.googleusercontent.com"
         }
       ]
     ],

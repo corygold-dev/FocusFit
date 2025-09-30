@@ -58,11 +58,10 @@ A comprehensive productivity and fitness app that combines focused work sessions
    npm install
    ```
 
-3. Configure AWS Amplify (for user data and authentication):
+3. Configure Firebase (for user data and authentication):
 
    ```bash
-   npx amplify configure
-   npx amplify push
+   # Firebase setup (see Firebase Console for configuration)
    ```
 
 4. Start the app:
@@ -119,7 +118,7 @@ FocusFit/
 │   ├── hooks/             # Custom React hooks
 │   ├── utils/             # Helper functions and constants
 │   └── styles/            # Global theme and styling
-├── amplify/              # AWS Amplify configuration
+├── src/config/           # Firebase configuration
 │   └── data/              # Database schema
 ├── assets/               # Images, audio, and static files
 └── config/               # App configuration
@@ -135,7 +134,7 @@ FocusFit/
 - `src/providers/UserDataProvider.tsx`: Unified user data and settings management
 - `src/services/UserDataService.ts`: Database operations and user profile management
 - `src/utils/notifications.ts`: Daily reminder system
-- `amplify/data/resource.ts`: DynamoDB schema for user data
+- `src/config/firebase.ts`: Firebase configuration and initialization
 
 ### Key Features Implementation
 
@@ -169,7 +168,7 @@ This software is protected under copyright law and international treaties. No pa
 ## Acknowledgments
 
 - [Expo](https://expo.dev) - The React Native framework used
-- [AWS Amplify](https://aws.amazon.com/amplify/) - Backend services and authentication
+- [Firebase](https://firebase.google.com/) - Backend services and authentication
 - [React Native Community](https://reactnative.dev/community/overview) - For their amazing components and tools
 
 ---

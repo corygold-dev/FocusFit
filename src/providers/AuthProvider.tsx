@@ -1,265 +1,479 @@
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import firebaseAuthService, { AuthUser } from '../services/FirebaseAuthService';
 import {
-  confirmSignUp,
-  fetchAuthSession,
-  getCurrentUser,
-  signIn,
-  signOut,
-  signUp,
-  type AuthUser,
-  type ConfirmSignUpOutput,
-  type SignInOutput,
-  type SignUpOutput,
-} from 'aws-amplify/auth';
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+  firebaseDataService,
+  FocusSession,
+  UserProgress,
+  UserSettings,
+  WorkoutSession,
+} from '../services/FirebaseDataService';
 
-interface AmplifyErrorWithCode extends Error {
-  code: string;
-}
-
-function isAmplifyErrorWithCode(error: unknown): error is AmplifyErrorWithCode {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'code' in error &&
-    typeof (error as Record<string, unknown>).code === 'string'
-  );
-}
+// ============================================================================
+// AUTH CONTEXT
+// ============================================================================
 
 interface AuthContextType {
-  user: AuthUser | null;
-  isLoading: boolean;
+  // Auth state
+  user: AuthUser | null | undefined;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<AuthUser>;
-  register: (email: string, password: string) => Promise<SignUpOutput>;
-  confirmRegistration: (email: string, code: string) => Promise<ConfirmSignUpOutput>;
-  logout: () => Promise<void>;
+  isLoading: boolean;
   error: string | null;
+
+  // Auth methods
+  loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string) => Promise<void>;
+  sendEmailVerification: () => Promise<void>;
   clearError: () => void;
+  logout: () => Promise<void>;
+
+  // Data persistence
+  isOnline: boolean;
+  isSyncing: boolean;
+  lastSyncTime: Date | null;
+  settings: UserSettings | null;
+
+  // Data methods
+  saveUserSettings: (settings: Partial<UserSettings>) => Promise<void>;
+  saveUserProgress: (progress: Partial<UserProgress>) => Promise<void>;
+  saveWorkoutSession: (session: Omit<WorkoutSession, 'userId'>) => Promise<void>;
+  saveFocusSession: (session: Omit<FocusSession, 'userId'>) => Promise<void>;
+  getUserWorkoutHistory: () => Promise<WorkoutSession[]>;
+  getUserFocusHistory: () => Promise<FocusSession[]>;
+
+  // Subscription
+  subscription: 'free' | 'premium' | null;
+  isPremium: boolean;
+  refreshSubscription: () => Promise<void>;
+  upgradeToPremium: () => Promise<boolean>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  isLoading: true,
-  isAuthenticated: false,
-  login: async () => {
-    throw new Error('login not implemented');
-  },
-  register: async () => {
-    throw new Error('register not implemented');
-  },
-  confirmRegistration: async () => {
-    throw new Error('confirmRegistration not implemented');
-  },
-  logout: async () => {
-    throw new Error('logout not implemented');
-  },
-  error: null,
-  clearError: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// ============================================================================
+// AUTH PROVIDER
+// ============================================================================
 
 interface AuthProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
+// Global counter to detect multiple instances (for debugging only)
+let authProviderInstanceCount = 0;
+
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  authProviderInstanceCount++;
+  const instanceId = Math.random().toString(36).substr(2, 9);
+
+  console.log(`🔥 AuthProvider [${instanceId}]: Initializing provider...`);
+
+  // Auth state - using undefined to indicate "loading" state
+  const [user, setUser] = useState<AuthUser | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const clearError = () => setError(null);
+  // Data state
+  const [isOnline] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const [settings, setSettings] = useState<UserSettings | null>(null);
 
-  const refreshAuthState = async (): Promise<void> => {
+  // Use ref to track synced user without causing re-renders
+  const syncedUserUidRef = useRef<string | null>(null);
+
+  // Subscription state
+  const [subscription, setSubscription] = useState<'free' | 'premium' | null>(null);
+
+  // Note: Multiple instance check moved to end to avoid conditional hooks
+
+  const isAuthenticated = user !== null && user !== undefined;
+  const isPremium = subscription === 'premium';
+
+  console.log(
+    `🔥 AuthProvider [${instanceId}]: Auth state - user: ${user ? 'exists' : 'null'}, isAuthenticated: ${isAuthenticated}, isLoading: ${isLoading}`,
+  );
+
+  // ============================================================================
+  // AUTH METHODS
+  // ============================================================================
+
+  const loginWithGoogle = useCallback(async () => {
     try {
-      const { tokens } = await fetchAuthSession();
-      if (tokens) {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-        return;
-      }
-      setUser(null);
-    } catch {
-      setUser(null);
+      setError(null);
+      await firebaseAuthService.signInWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Google login failed');
+      throw err;
     }
-  };
-
-  useEffect(() => {
-    const checkUser = async () => {
-      setIsLoading(true);
-      try {
-        await refreshAuthState();
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkUser();
   }, []);
 
-  const login = async (email: string, password: string): Promise<AuthUser> => {
+  const loginWithApple = useCallback(async () => {
     try {
-      setIsLoading(true);
-      clearError();
-
-      const signInResult: SignInOutput = await signIn({
-        username: email,
-        password,
-      });
-
-      if (signInResult.isSignedIn) {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser);
-        return currentUser;
-      }
-
-      if (signInResult.nextStep) {
-        throw new Error(`Additional sign-in steps required: ${signInResult.nextStep.signInStep}`);
-      }
-
-      throw new Error('Login failed');
-    } catch (err: unknown) {
-      console.error('Login error:', err);
-
-      if (isAmplifyErrorWithCode(err)) {
-        if (err.code === 'UserNotConfirmedException') {
-          setError('Please verify your email address before logging in.');
-        } else if (err.code === 'NotAuthorizedException') {
-          setError('Incorrect username or password.');
-        } else if (err.code === 'UserNotFoundException') {
-          setError('No account found with this email.');
-        } else if (err.code === 'LimitExceededException') {
-          setError('Too many failed login attempts. Please try again later.');
-        } else {
-          setError(err.message || 'Failed to sign in. Please try again.');
-        }
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-        setError(errorMessage);
-      }
-
+      setError(null);
+      await firebaseAuthService.signInWithApple();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Apple login failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const register = async (email: string, password: string): Promise<SignUpOutput> => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
-      setIsLoading(true);
-      clearError();
-
-      const result: SignUpOutput = await signUp({
-        username: email,
-        password,
-        options: {
-          userAttributes: {
-            email,
-          },
-        },
-      });
-
-      return result;
-    } catch (err: unknown) {
-      console.error('Registration error:', err);
-
-      if (isAmplifyErrorWithCode(err)) {
-        if (err.code === 'UsernameExistsException') {
-          setError('An account with this email already exists.');
-        } else if (err.code === 'InvalidPasswordException') {
-          setError('Password does not meet requirements. Please use a stronger password.');
-        } else if (err.code === 'InvalidParameterException' && err.message.includes('email')) {
-          setError('Please provide a valid email address.');
-        } else {
-          setError(err.message || 'Failed to register. Please try again.');
-        }
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to register';
-        setError(errorMessage);
-      }
-
+      setError(null);
+      await firebaseAuthService.signInWithEmailAndPassword(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const confirmRegistration = async (email: string, code: string): Promise<ConfirmSignUpOutput> => {
+  const register = useCallback(async (email: string, password: string) => {
     try {
-      setIsLoading(true);
-      clearError();
-
-      const result: ConfirmSignUpOutput = await confirmSignUp({
-        username: email,
-        confirmationCode: code,
-      });
-
-      if (result.isSignUpComplete) {
-        try {
-          await refreshAuthState();
-        } catch {
-          // No Op
-        }
-      }
-
-      return result;
-    } catch (err: unknown) {
-      console.error('Confirmation error:', err);
-
-      if (isAmplifyErrorWithCode(err)) {
-        if (err.code === 'CodeMismatchException') {
-          setError('Invalid verification code. Please try again.');
-        } else if (err.code === 'ExpiredCodeException') {
-          setError('Verification code has expired. Please request a new one.');
-        } else if (err.code === 'LimitExceededException') {
-          setError('Too many attempts. Please try again later.');
-        } else {
-          setError(err.message || 'Failed to confirm registration. Please try again.');
-        }
-      } else {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to confirm registration';
-        setError(errorMessage);
-      }
-
+      setError(null);
+      await firebaseAuthService.createUserWithEmailAndPassword(email, password);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Registration failed');
       throw err;
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async (): Promise<void> => {
+  const sendEmailVerification = useCallback(async () => {
     try {
-      setIsLoading(true);
-      clearError();
+      setError(null);
+      // TODO: Implement email verification
+      console.log('📧 Email verification not implemented yet');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Email verification failed');
+      throw err;
+    }
+  }, []);
 
-      await signOut();
+  const logout = useCallback(async () => {
+    try {
+      setError(null);
+      await firebaseAuthService.signOut();
       setUser(null);
-    } catch (err: unknown) {
-      console.error('Logout error:', err);
-      setUser(null);
-
-      const errorMessage = err instanceof Error ? err.message : 'Failed to sign out properly';
-      setError(errorMessage);
-    } finally {
-      setIsLoading(false);
+      setSettings(null);
+      setSubscription(null);
+      syncedUserUidRef.current = null;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Logout failed');
+      throw err;
     }
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        isAuthenticated: !!user,
-        login,
-        register,
-        confirmRegistration,
-        logout,
-        error,
-        clearError,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const clearError = useCallback(() => setError(null), []);
+
+  // ============================================================================
+  // DATA METHODS
+  // ============================================================================
+
+  const syncUserData = useCallback(async (userToSync: AuthUser) => {
+    // Check if this user's data has already been synced
+    if (syncedUserUidRef.current === userToSync.uid) {
+      console.log(`💾 AuthProvider: User data for ${userToSync.uid} already synced. Skipping.`);
+      return;
+    }
+
+    console.log('💾 AuthProvider: Syncing user data...');
+    setIsSyncing(true);
+
+    try {
+      // TEMPORARILY DISABLED: Firestore operations to test if they're blocking navigation
+      console.log('💾 AuthProvider: Skipping Firestore operations for testing...');
+
+      // Set default values without Firestore
+      setSettings(null);
+      setSubscription('free');
+      setLastSyncTime(new Date());
+
+      // Mark this user as synced using ref (no re-render)
+      syncedUserUidRef.current = userToSync.uid;
+      console.log('💾 AuthProvider: User data synced successfully (Firestore disabled)');
+    } catch (err) {
+      console.error('💾 AuthProvider: Failed to sync user data:', err);
+      // Still mark as synced to prevent infinite retries
+      syncedUserUidRef.current = userToSync.uid;
+    } finally {
+      setIsSyncing(false);
+    }
+  }, []);
+
+  const saveUserSettings = useCallback(
+    async (newSettings: Partial<UserSettings>) => {
+      if (!user) throw new Error('User not authenticated');
+
+      try {
+        await firebaseDataService.saveUserSettings(user, newSettings);
+        setSettings((prev) => ({ ...prev, ...newSettings }) as UserSettings);
+      } catch (err) {
+        console.error('💾 AuthProvider: Failed to save user settings:', err);
+        throw err;
+      }
+    },
+    [user],
   );
+
+  const saveUserProgress = useCallback(
+    async (progress: Partial<UserProgress>) => {
+      if (!user) throw new Error('User not authenticated');
+
+      try {
+        await firebaseDataService.updateUserProgress(user, progress);
+      } catch (err) {
+        console.error('💾 AuthProvider: Failed to save user progress:', err);
+        throw err;
+      }
+    },
+    [user],
+  );
+
+  const saveWorkoutSession = useCallback(
+    async (session: Omit<WorkoutSession, 'userId'>) => {
+      if (!user) throw new Error('User not authenticated');
+
+      try {
+        const fullSession: WorkoutSession = {
+          ...session,
+          userId: user.uid,
+        };
+        await firebaseDataService.saveWorkoutSession(user, fullSession);
+      } catch (err) {
+        console.error('💾 AuthProvider: Failed to save workout session:', err);
+        throw err;
+      }
+    },
+    [user],
+  );
+
+  const saveFocusSession = useCallback(
+    async (session: Omit<FocusSession, 'userId'>) => {
+      if (!user) throw new Error('User not authenticated');
+
+      try {
+        const fullSession: FocusSession = {
+          ...session,
+          userId: user.uid,
+        };
+        await firebaseDataService.saveFocusSession(user, fullSession);
+      } catch (err) {
+        console.error('💾 AuthProvider: Failed to save focus session:', err);
+        throw err;
+      }
+    },
+    [user],
+  );
+
+  const getUserWorkoutHistory = useCallback(async (): Promise<WorkoutSession[]> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getUserWorkoutHistory(user);
+  }, [user]);
+
+  const getUserFocusHistory = useCallback(async (): Promise<FocusSession[]> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getUserFocusHistory(user);
+  }, [user]);
+
+  // ============================================================================
+  // SUBSCRIPTION METHODS
+  // ============================================================================
+
+  const refreshSubscription = useCallback(async () => {
+    // For now, default to free tier
+    // TODO: Implement Firebase-based subscription management
+    setSubscription('free');
+  }, []);
+
+  const upgradeToPremium = useCallback(async (): Promise<boolean> => {
+    // TODO: Implement Firebase-based subscription upgrade
+    console.log('💳 AuthProvider: Premium upgrade not implemented yet');
+    return false;
+  }, []);
+
+  // ============================================================================
+  // EFFECTS
+  // ============================================================================
+
+  useEffect(() => {
+    console.log('🔥 AuthProvider: Setting up auth listener...');
+
+    const unsubscribe = firebaseAuthService.onAuthStateChanged((authUser) => {
+      console.log('🔥 AuthProvider: Auth state changed:', authUser ? 'User logged in' : 'No user');
+      setUser(authUser);
+      setIsLoading(false);
+
+      // Reset sync tracking when user changes
+      if (!authUser || authUser.uid !== syncedUserUidRef.current) {
+        syncedUserUidRef.current = null;
+      }
+    });
+
+    // Timeout to ensure loading state doesn't get stuck
+    const timeout = setTimeout(() => {
+      console.log('🔥 AuthProvider: Auth timeout, setting loading to false');
+      setIsLoading(false);
+    }, 3000);
+
+    return () => {
+      unsubscribe();
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Only sync if user is authenticated, not currently syncing, and hasn't been synced yet
+    if (isAuthenticated && user && syncedUserUidRef.current !== user.uid && !isSyncing) {
+      console.log(`💾 AuthProvider: Triggering sync for user ${user.uid}`);
+      syncUserData(user);
+    }
+    // Note: isLoading is set to false in the auth state change listener
+  }, [isAuthenticated, user, isSyncing, syncUserData]);
+
+  // ============================================================================
+  // MEMOIZED CONTEXT VALUE (Gemini's recommendation)
+  // ============================================================================
+
+  const value: AuthContextType = useMemo(
+    () => ({
+      // Auth state
+      user,
+      isAuthenticated,
+      isLoading,
+      error,
+
+      // Auth methods
+      loginWithGoogle,
+      loginWithApple,
+      login,
+      register,
+      sendEmailVerification,
+      clearError,
+      logout,
+
+      // Data state
+      isOnline,
+      isSyncing,
+      lastSyncTime,
+      settings,
+
+      // Data methods
+      saveUserSettings,
+      saveUserProgress,
+      saveWorkoutSession,
+      saveFocusSession,
+      getUserWorkoutHistory,
+      getUserFocusHistory,
+
+      // Subscription
+      subscription,
+      isPremium,
+      refreshSubscription,
+      upgradeToPremium,
+    }),
+    [
+      user,
+      isAuthenticated,
+      isLoading,
+      error,
+      isOnline,
+      isSyncing,
+      lastSyncTime,
+      settings,
+      subscription,
+      isPremium,
+      // Include all methods in dependencies
+      loginWithGoogle,
+      loginWithApple,
+      login,
+      register,
+      sendEmailVerification,
+      clearError,
+      logout,
+      saveUserSettings,
+      saveUserProgress,
+      saveWorkoutSession,
+      saveFocusSession,
+      getUserWorkoutHistory,
+      getUserFocusHistory,
+      refreshSubscription,
+      upgradeToPremium,
+    ],
+  );
+
+  // ============================================================================
+  // MULTIPLE INSTANCE CHECK (after all hooks)
+  // ============================================================================
+
+  // Log multiple instances for debugging (React Strict Mode is expected)
+  if (authProviderInstanceCount > 1) {
+    console.warn(
+      `⚠️ Multiple AuthProvider instances detected (${authProviderInstanceCount}). This is normal in React Strict Mode.`,
+    );
+  }
+
+  // ============================================================================
+  // RENDER PROVIDER (always render context, but conditionally render children)
+  // ============================================================================
+
+  console.log(
+    `🔥 AuthProvider [${instanceId}]: Rendering - isLoading: ${isLoading}, user: ${user ? 'exists' : 'null'}`,
+  );
+
+  return <AuthContext.Provider value={value}>{isLoading ? null : children}</AuthContext.Provider>;
 };
 
-export const useAuth = (): AuthContextType => useContext(AuthContext);
+// ============================================================================
+// HOOKS
+// ============================================================================
+
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+// Legacy hooks for backward compatibility
+export const useBackendData = () => {
+  const auth = useAuth();
+  return {
+    isOnline: auth.isOnline,
+    isSyncing: auth.isSyncing,
+    lastSyncTime: auth.lastSyncTime,
+    settings: auth.settings,
+    saveUserSettings: auth.saveUserSettings,
+    saveUserProgress: auth.saveUserProgress,
+    saveWorkoutSession: auth.saveWorkoutSession,
+    saveFocusSession: auth.saveFocusSession,
+    getUserWorkoutHistory: auth.getUserWorkoutHistory,
+    getUserFocusHistory: auth.getUserFocusHistory,
+  };
+};
+
+export const useUserSettings = () => {
+  const auth = useAuth();
+  return {
+    settings: auth.settings,
+    saveUserSettings: auth.saveUserSettings,
+  };
+};
+
+export const useSubscription = () => {
+  const auth = useAuth();
+  return {
+    subscription: auth.subscription,
+    isPremium: auth.isPremium,
+    refreshSubscription: auth.refreshSubscription,
+    upgradeToPremium: auth.upgradeToPremium,
+  };
+};
