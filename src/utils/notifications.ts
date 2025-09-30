@@ -47,7 +47,7 @@ export async function scheduleDailyReminder(hour: number = 9, minute: number = 0
   }
 }
 
-export async function scheduleMotivationalReminder() {
+export async function scheduleMotivationalReminder(hour: number = 15, minute: number = 0) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
@@ -58,8 +58,8 @@ export async function scheduleMotivationalReminder() {
       },
       trigger: {
         type: 'daily',
-        hour: 15,
-        minute: 0,
+        hour,
+        minute,
         repeats: true,
       } as Notifications.DailyTriggerInput,
     });

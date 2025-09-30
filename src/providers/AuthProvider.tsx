@@ -67,15 +67,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-// Global counter to detect multiple instances (for debugging only)
-let authProviderInstanceCount = 0;
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  authProviderInstanceCount++;
-  const instanceId = Math.random().toString(36).substr(2, 9);
-
-  console.log(`🔥 AuthProvider [${instanceId}]: Initializing provider...`);
-
   // Auth state - using undefined to indicate "loading" state
   const [user, setUser] = useState<AuthUser | null | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,10 +89,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = user !== null && user !== undefined;
   const isPremium = subscription === 'premium';
-
-  console.log(
-    `🔥 AuthProvider [${instanceId}]: Auth state - user: ${user ? 'exists' : 'null'}, isAuthenticated: ${isAuthenticated}, isLoading: ${isLoading}`,
-  );
 
   // ============================================================================
   // AUTH METHODS
@@ -149,8 +137,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const sendEmailVerification = useCallback(async () => {
     try {
       setError(null);
-      // TODO: Implement email verification
-      console.log('📧 Email verification not implemented yet');
+      // Email verification not implemented
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Email verification failed');
       throw err;
@@ -180,17 +167,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const syncUserData = useCallback(async (userToSync: AuthUser) => {
     // Check if this user's data has already been synced
     if (syncedUserUidRef.current === userToSync.uid) {
-      console.log(`💾 AuthProvider: User data for ${userToSync.uid} already synced. Skipping.`);
       return;
     }
-
-    console.log('💾 AuthProvider: Syncing user data...');
     setIsSyncing(true);
 
     try {
-      // TEMPORARILY DISABLED: Firestore operations to test if they're blocking navigation
-      console.log('💾 AuthProvider: Skipping Firestore operations for testing...');
-
       // Set default values without Firestore
       setSettings(null);
       setSubscription('free');
@@ -198,7 +179,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Mark this user as synced using ref (no re-render)
       syncedUserUidRef.current = userToSync.uid;
-      console.log('💾 AuthProvider: User data synced successfully (Firestore disabled)');
     } catch (err) {
       console.error('💾 AuthProvider: Failed to sync user data:', err);
       // Still mark as synced to prevent infinite retries
@@ -289,13 +269,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const refreshSubscription = useCallback(async () => {
     // For now, default to free tier
-    // TODO: Implement Firebase-based subscription management
+    // Default to free tier
     setSubscription('free');
   }, []);
 
   const upgradeToPremium = useCallback(async (): Promise<boolean> => {
-    // TODO: Implement Firebase-based subscription upgrade
-    console.log('💳 AuthProvider: Premium upgrade not implemented yet');
+    // Premium upgrade not implemented
     return false;
   }, []);
 
@@ -304,10 +283,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
-    console.log('🔥 AuthProvider: Setting up auth listener...');
-
     const unsubscribe = firebaseAuthService.onAuthStateChanged((authUser) => {
-      console.log('🔥 AuthProvider: Auth state changed:', authUser ? 'User logged in' : 'No user');
       setUser(authUser);
       setIsLoading(false);
 
@@ -319,7 +295,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Timeout to ensure loading state doesn't get stuck
     const timeout = setTimeout(() => {
-      console.log('🔥 AuthProvider: Auth timeout, setting loading to false');
       setIsLoading(false);
     }, 3000);
 
@@ -332,7 +307,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // Only sync if user is authenticated, not currently syncing, and hasn't been synced yet
     if (isAuthenticated && user && syncedUserUidRef.current !== user.uid && !isSyncing) {
-      console.log(`💾 AuthProvider: Triggering sync for user ${user.uid}`);
       syncUserData(user);
     }
     // Note: isLoading is set to false in the auth state change listener
@@ -390,7 +364,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       settings,
       subscription,
       isPremium,
-      // Include all methods in dependencies
       loginWithGoogle,
       loginWithApple,
       login,
@@ -410,23 +383,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   // ============================================================================
-  // MULTIPLE INSTANCE CHECK (after all hooks)
-  // ============================================================================
-
-  // Log multiple instances for debugging (React Strict Mode is expected)
-  if (authProviderInstanceCount > 1) {
-    console.warn(
-      `⚠️ Multiple AuthProvider instances detected (${authProviderInstanceCount}). This is normal in React Strict Mode.`,
-    );
-  }
-
-  // ============================================================================
   // RENDER PROVIDER (always render context, but conditionally render children)
   // ============================================================================
-
-  console.log(
-    `🔥 AuthProvider [${instanceId}]: Rendering - isLoading: ${isLoading}, user: ${user ? 'exists' : 'null'}`,
-  );
 
   return <AuthContext.Provider value={value}>{isLoading ? null : children}</AuthContext.Provider>;
 };

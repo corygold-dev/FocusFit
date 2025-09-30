@@ -9,22 +9,7 @@ interface AppProvidersProps {
   children: React.ReactNode;
 }
 
-/**
- * AppProviders - Single provider architecture
- *
- * Architecture:
- * 1. AuthProvider - Manages authentication, data persistence, and subscriptions
- * 2. Other providers - Independent services (theme, sound, notifications, timer)
- *
- * This pattern ensures:
- * - No circular dependencies
- * - Single source of truth for auth/data/subscription
- * - Clean separation of concerns
- * - Easy testing and maintenance
- */
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
-  const appProvidersId = Math.random().toString(36).substr(2, 9);
-  console.log(`🏗️ AppProviders [${appProvidersId}]: Rendering providers...`);
   return (
     <AuthProvider>
       <ThemeProvider>

@@ -65,7 +65,6 @@
         }
       ],
       "expo-audio",
-      "expo-video",
       "expo-web-browser",
       [
         "expo-notifications",

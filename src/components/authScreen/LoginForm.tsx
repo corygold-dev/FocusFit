@@ -30,21 +30,15 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   };
 
   const handleLogin = async () => {
-    console.log('🔐 LoginForm: Login button pressed');
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
-    console.log('🔐 LoginForm: Attempting login with email:', email);
     setIsSubmitting(true);
     try {
       await login(email, password);
-      console.log('🔐 LoginForm: Login successful');
-      // Manual navigation to main app
-      console.log('🔐 LoginForm: Navigating to main app');
       router.replace('/(app)');
     } catch (err) {
-      console.error('🔐 LoginForm: Login failed:', err);
       const errorObj = err as Error;
       Alert.alert('Login Error', errorObj.message || 'Failed to login');
     } finally {
@@ -57,13 +51,11 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   };
 
   const handleGoogleSignIn = async () => {
-    console.log('🔐 LoginForm: Google sign-in button pressed');
     setIsSubmitting(true);
     try {
       await loginWithGoogle();
-      console.log('🔐 LoginForm: Google sign-in successful');
+      router.replace('/(app)');
     } catch (err) {
-      console.error('🔐 LoginForm: Google sign-in failed:', err);
       const errorObj = err as Error;
       Alert.alert('Google Sign-In Error', errorObj.message || 'Failed to sign in with Google');
     } finally {
@@ -72,13 +64,11 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   };
 
   const handleAppleSignIn = async () => {
-    console.log('🔐 LoginForm: Apple sign-in button pressed');
     setIsSubmitting(true);
     try {
       await loginWithApple();
-      console.log('🔐 LoginForm: Apple sign-in successful');
+      router.replace('/(app)');
     } catch (err) {
-      console.error('🔐 LoginForm: Apple sign-in failed:', err);
       const errorObj = err as Error;
       Alert.alert('Apple Sign-In Error', errorObj.message || 'Failed to sign in with Apple');
     } finally {
