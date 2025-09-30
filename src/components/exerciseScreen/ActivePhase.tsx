@@ -11,6 +11,7 @@ interface ActivePhaseProps {
   progress: number;
   onSkip?: () => void;
   onRestart?: () => void;
+  onExit?: () => void;
 }
 
 export default function ActivePhase({
@@ -19,6 +20,7 @@ export default function ActivePhase({
   progress,
   onSkip,
   onRestart,
+  onExit,
 }: ActivePhaseProps) {
   const { theme } = useTheme();
   const styles = activePhaseStyles(theme);
@@ -65,6 +67,14 @@ export default function ActivePhase({
           <Text style={styles.primaryButtonText}>Skip</Text>
         </TouchableOpacity>
       </View>
+
+      {onExit && (
+        <View style={styles.exitButtonContainer}>
+          <TouchableOpacity style={styles.exitButton} onPress={onExit}>
+            <Text style={styles.exitButtonText}>Exit Workout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

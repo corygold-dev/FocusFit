@@ -33,6 +33,10 @@ export default function ExerciseScreen() {
     settings: settings || { difficulty: 'medium', equipment: [], excludedExercises: [] },
   });
 
+  const handleExitWorkout = () => {
+    router.replace('/');
+  };
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -44,7 +48,11 @@ export default function ExerciseScreen() {
   return (
     <View style={styles.container}>
       {phase === 'preview' && (
-        <PreviewPhase exerciseName={currentExercise} onStart={startCountdown} />
+        <PreviewPhase
+          exerciseName={currentExercise}
+          onStart={startCountdown}
+          onExit={handleExitWorkout}
+        />
       )}
 
       {phase === 'countdown' && <CountdownPhase secondsLeft={secondsLeft} />}
@@ -56,6 +64,7 @@ export default function ExerciseScreen() {
           progress={progress}
           onSkip={skipExercise}
           onRestart={restartExercise}
+          onExit={handleExitWorkout}
         />
       )}
 

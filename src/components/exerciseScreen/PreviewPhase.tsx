@@ -1,15 +1,16 @@
 import Button from '@/src/components/ui/Button';
 import { useTheme } from '@/src/providers';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { previewPhaseStyles } from './styles';
 
 interface PreviewPhaseProps {
   exerciseName: string;
   onStart: () => void;
+  onExit?: () => void;
 }
 
-export default function PreviewPhase({ exerciseName, onStart }: PreviewPhaseProps) {
+export default function PreviewPhase({ exerciseName, onStart, onExit }: PreviewPhaseProps) {
   const { theme } = useTheme();
   const styles = previewPhaseStyles(theme);
 
@@ -41,6 +42,14 @@ export default function PreviewPhase({ exerciseName, onStart }: PreviewPhaseProp
           style={[styles.startButton, { backgroundColor: theme.colors.secondary }]}
         />
       </View>
+
+      {onExit && (
+        <View style={styles.exitButtonContainer}>
+          <TouchableOpacity style={styles.exitButton} onPress={onExit}>
+            <Text style={styles.exitButtonText}>Exit Workout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   );
 }

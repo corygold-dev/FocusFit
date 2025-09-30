@@ -78,4 +78,22 @@ export const createStyles = (theme: Theme) =>
       height: 56,
       minWidth: 200,
     },
+    exitButtonContainer: {
+      marginTop: 24,
+      alignItems: 'center',
+    },
+    exitButton: {
+      paddingHorizontal: 24,
+      paddingVertical: 12,
+      borderRadius: 8,
+      backgroundColor: 'transparent',
+      borderWidth: 1,
+      borderColor: theme.colors.error,
+    },
+    exitButtonText: {
+      color: theme.colors.error,
+      fontSize: 14,
+      fontWeight: '500',
+      fontFamily: theme.fonts.medium,
+    },
   });

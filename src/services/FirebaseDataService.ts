@@ -126,7 +126,7 @@ export class FirebaseDataService {
   // Workout Sessions
   async saveWorkoutSession(user: AuthUser, session: WorkoutSession): Promise<boolean> {
     try {
-      const sessionRef = doc(db, 'workoutSessions', `${user.uid}_${session.sessionId}`);
+      const sessionRef = doc(db, 'workoutSession', `${user.uid}_${session.sessionId}`);
       const sessionData = {
         ...session,
         userId: user.uid,
@@ -144,7 +144,7 @@ export class FirebaseDataService {
 
   async getUserWorkoutHistory(user: AuthUser, limit: number = 50): Promise<WorkoutSession[]> {
     try {
-      const sessionsRef = collection(db, 'workoutSessions');
+      const sessionsRef = collection(db, 'workoutSession');
       const q = query(sessionsRef, where('userId', '==', user.uid));
 
       const querySnapshot = await getDocs(q);
