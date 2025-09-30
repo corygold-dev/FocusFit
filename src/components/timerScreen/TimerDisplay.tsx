@@ -22,10 +22,10 @@ export default function TimerDisplay({ title, progress, secondsLeft }: TimerDisp
       <View style={styles.progressContainer}>
         <Progress.Circle
           progress={progress}
-          size={220}
+          size={320}
           showsText
           formatText={() => formatTime(secondsLeft)}
-          thickness={16}
+          thickness={30}
           color={theme.colors.primary}
           unfilledColor={theme.colors.surfaceVariant}
           textStyle={styles.timerText}
@@ -33,7 +33,7 @@ export default function TimerDisplay({ title, progress, secondsLeft }: TimerDisp
           strokeCap="round"
         />
 
-        <View style={[styles.innerGlow, { opacity: progress * 0.3 }]} />
+        <View style={[styles.innerGlow, { opacity: progress * 0.4 }]} />
       </View>
     </View>
   );
