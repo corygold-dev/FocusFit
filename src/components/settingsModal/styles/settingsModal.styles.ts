@@ -37,6 +37,11 @@ export const createStyles = (theme: Theme) =>
       marginBottom: 10,
       color: theme.colors.text,
     },
+    sectionDivider: {
+      height: 1,
+      backgroundColor: theme.colors.border,
+      marginVertical: 20,
+    },
     buttonRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -64,25 +69,6 @@ export const createStyles = (theme: Theme) =>
     },
     logoutText: {
       color: theme.colors.error,
-      fontWeight: '600',
-      fontSize: 16,
-    },
-    setupSection: {
-      marginTop: 16,
-      marginBottom: 16,
-    },
-    setupButton: {
-      backgroundColor: theme.colors.secondary + '15',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 8,
-      marginTop: 8,
-      borderWidth: 1,
-      borderColor: theme.colors.secondary,
-      alignItems: 'center',
-    },
-    setupText: {
-      color: theme.colors.secondary,
       fontWeight: '600',
       fontSize: 16,
     },
