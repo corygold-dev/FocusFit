@@ -1,8 +1,10 @@
+import { exercises } from '@/src/lib/exercises';
 import { useTheme } from '@/src/providers';
 import { formatTime } from '@/src/utils/formatTime';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
+import ExerciseInstructions from './ExerciseInstructions';
 import { activePhaseStyles } from './styles';
 
 interface ActivePhaseProps {
@@ -25,6 +27,14 @@ export default function ActivePhase({
   const { theme } = useTheme();
   const styles = activePhaseStyles(theme);
 
+  const exercise = exercises.find((ex) => ex.name === exerciseName);
+  const instructions = exercise?.instructions || [
+    'Prepare for the exercise',
+    'Focus on proper form',
+    'Maintain controlled movement',
+    'Breathe steadily throughout',
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.titleSection}>
@@ -33,10 +43,7 @@ export default function ActivePhase({
       </View>
 
       <View style={styles.mediaContainer}>
-        <View style={styles.videoPlaceholder}>
-          <Text style={styles.videoText}>Exercise Demo</Text>
-          <Text style={styles.videoSubtext}>Follow the movement</Text>
-        </View>
+        <ExerciseInstructions exerciseName={exerciseName} steps={instructions} />
       </View>
 
       <View style={styles.timerSection}>

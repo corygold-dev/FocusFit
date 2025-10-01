@@ -29,8 +29,10 @@ export const createStyles = (theme: Theme) =>
       fontFamily: theme.fonts.regular,
     },
     mediaContainer: {
-      alignItems: 'center',
+      width: 350,
+      height: 300,
       marginBottom: 32,
+      alignSelf: 'center',
     },
     videoPlaceholder: {
       width: 320,
