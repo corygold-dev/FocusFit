@@ -50,12 +50,6 @@ interface AuthContextType {
   getUserWorkoutHistory: () => Promise<WorkoutSession[]>;
   getUserFocusHistory: () => Promise<FocusSession[]>;
   getUserProgress: () => Promise<UserProgress | null>;
-
-  // Subscription
-  subscription: 'free' | 'premium' | null;
-  isPremium: boolean;
-  refreshSubscription: () => Promise<void>;
-  upgradeToPremium: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -83,13 +77,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Use ref to track synced user without causing re-renders
   const syncedUserUidRef = useRef<string | null>(null);
 
-  // Subscription state
-  const [subscription, setSubscription] = useState<'free' | 'premium' | null>(null);
-
   // Note: Multiple instance check moved to end to avoid conditional hooks
 
   const isAuthenticated = user !== null && user !== undefined;
-  const isPremium = subscription === 'premium';
 
   // ============================================================================
   // AUTH METHODS
@@ -151,7 +141,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await firebaseAuthService.signOut();
       setUser(null);
       setSettings(null);
-      setSubscription(null);
       syncedUserUidRef.current = null;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Logout failed');
@@ -183,8 +172,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Update progress if needed
       }
 
-      // Set subscription (default to free for now)
-      setSubscription('free');
       setLastSyncTime(new Date());
 
       // Mark this user as synced using ref (no re-render)
@@ -218,13 +205,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!user) throw new Error('User not authenticated');
 
       try {
+        // Get current progress before updating
+        const currentProgress = await firebaseDataService.getUserProgress(user);
+
+        // Update the progress
         await firebaseDataService.updateUserProgress(user, progress);
 
+        // Calculate streaks using the NEW dates from the progress update
         if (progress.lastWorkoutDate) {
-          await firebaseDataService.updateStreaks(user, 'workout');
+          const newStreak = firebaseDataService.calculateStreak(
+            progress.lastWorkoutDate,
+            currentProgress?.workoutStreak || 0,
+          );
+          await firebaseDataService.updateUserProgress(user, { workoutStreak: newStreak });
         }
         if (progress.lastFocusSessionDate) {
-          await firebaseDataService.updateStreaks(user, 'focus');
+          const newStreak = firebaseDataService.calculateStreak(
+            progress.lastFocusSessionDate,
+            currentProgress?.focusStreak || 0,
+          );
+          await firebaseDataService.updateUserProgress(user, { focusStreak: newStreak });
         }
       } catch (err) {
         console.error('💾 AuthProvider: Failed to save user progress:', err);
@@ -284,21 +284,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (!user) throw new Error('User not authenticated');
     return firebaseDataService.getUserProgress(user);
   }, [user]);
-
-  // ============================================================================
-  // SUBSCRIPTION METHODS
-  // ============================================================================
-
-  const refreshSubscription = useCallback(async () => {
-    // For now, default to free tier
-    // Default to free tier
-    setSubscription('free');
-  }, []);
-
-  const upgradeToPremium = useCallback(async (): Promise<boolean> => {
-    // Premium upgrade not implemented
-    return false;
-  }, []);
 
   // ============================================================================
   // EFFECTS
@@ -369,12 +354,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       getUserWorkoutHistory,
       getUserFocusHistory,
       getUserProgress,
-
-      // Subscription
-      subscription,
-      isPremium,
-      refreshSubscription,
-      upgradeToPremium,
     }),
     [
       user,
@@ -385,8 +364,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isSyncing,
       lastSyncTime,
       settings,
-      subscription,
-      isPremium,
       loginWithGoogle,
       loginWithApple,
       login,
@@ -401,8 +378,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       getUserWorkoutHistory,
       getUserFocusHistory,
       getUserProgress,
-      refreshSubscription,
-      upgradeToPremium,
     ],
   );
 
@@ -448,15 +423,5 @@ export const useUserSettings = () => {
   return {
     settings: auth.settings,
     saveUserSettings: auth.saveUserSettings,
-  };
-};
-
-export const useSubscription = () => {
-  const auth = useAuth();
-  return {
-    subscription: auth.subscription,
-    isPremium: auth.isPremium,
-    refreshSubscription: auth.refreshSubscription,
-    upgradeToPremium: auth.upgradeToPremium,
   };
 };

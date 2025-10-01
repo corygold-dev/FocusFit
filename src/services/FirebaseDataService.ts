@@ -177,10 +177,7 @@ export class FirebaseDataService {
     }
   }
 
-  private calculateStreak(
-    lastActivityDate: Date | null | undefined,
-    currentStreak: number,
-  ): number {
+  calculateStreak(lastActivityDate: Date | null | undefined, currentStreak: number): number {
     if (!lastActivityDate) return 1; // First activity
 
     const today = new Date();

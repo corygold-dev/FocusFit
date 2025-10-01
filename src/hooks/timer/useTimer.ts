@@ -92,6 +92,7 @@ export function useTimer({
 
       if (remaining <= 0) {
         setIsRunning(false);
+        cleanupTimerResources(intervalRef, notificationIdRef);
         playEndSound();
         onComplete?.();
       }
