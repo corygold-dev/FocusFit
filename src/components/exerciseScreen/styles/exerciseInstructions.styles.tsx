@@ -4,10 +4,10 @@ import { StyleSheet } from 'react-native';
 export const exerciseInstructionsStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
-      flex: 1,
+      width: 350,
+      height: 300,
       backgroundColor: theme.colors.background,
       borderRadius: 12,
-      margin: 4,
       paddingTop: 20,
       paddingRight: 12,
       paddingLeft: 12,
@@ -26,7 +26,7 @@ export const exerciseInstructionsStyles = (theme: Theme) =>
       fontFamily: theme.fonts.semiBold,
     },
     scrollContainer: {
-      flex: 1,
+      height: 220,
       position: 'relative',
     },
     scrollContent: {

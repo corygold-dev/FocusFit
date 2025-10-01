@@ -30,7 +30,7 @@ export const createStyles = (theme: Theme) =>
     },
     exerciseSection: {
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: 48,
     },
     exerciseLabel: {
       fontSize: 16,
@@ -46,9 +46,10 @@ export const createStyles = (theme: Theme) =>
       fontFamily: theme.fonts.semiBold,
     },
     mediaContainer: {
-      flex: 1,
-      width: '100%',
-      marginBottom: 24,
+      width: 350,
+      height: 300,
+      marginBottom: 48,
+      alignSelf: 'center',
     },
     actionSection: {
       alignItems: 'center',
