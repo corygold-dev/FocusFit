@@ -15,6 +15,7 @@ import {
   UserSettings,
   WorkoutSession,
 } from '../services/FirebaseDataService';
+import { simpleOfflineService } from '../services/SimpleOfflineService';
 
 // ============================================================================
 // AUTH CONTEXT
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [error, setError] = useState<string | null>(null);
 
   // Data state
-  const [isOnline] = useState(true);
+  const [isOnline] = useState(true); // Simplified - assume online by default
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [settings, setSettings] = useState<UserSettings | null>(null);
@@ -194,23 +195,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (!user) throw new Error('User not authenticated');
 
       try {
+        // Try to save to backend first
         await firebaseDataService.saveUserSettings(user, newSettings);
         setSettings((prev) => ({ ...prev, ...newSettings }) as UserSettings);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save user settings:', err);
-        throw err;
+        console.error('💾 AuthProvider: Failed to save user settings, saving offline:', err);
+        // Fallback to offline storage
+        const fullSettings = { ...settings, ...newSettings } as UserSettings;
+        await simpleOfflineService.saveOfflineSettings(fullSettings);
+        setSettings(fullSettings);
+        console.log('💾 Settings saved offline, will sync when online');
       }
     },
-    [user],
+    [user, settings],
   );
 
   const saveUserProgress = useCallback(
     async (progress: Partial<UserProgress>) => {
       if (!user) throw new Error('User not authenticated');
 
+      let currentProgress: UserProgress | null = null;
+
       try {
         // Get current progress before updating
-        const currentProgress = await firebaseDataService.getUserProgress(user);
+        currentProgress = await firebaseDataService.getUserProgress(user);
 
         // Update the progress
         await firebaseDataService.updateUserProgress(user, progress);
@@ -231,8 +239,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await firebaseDataService.updateUserProgress(user, { focusStreak: newStreak });
         }
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save user progress:', err);
-        throw err;
+        console.error('💾 AuthProvider: Failed to save user progress, saving offline:', err);
+        // Fallback to offline storage
+        const fullProgress = { ...currentProgress, ...progress } as UserProgress;
+        await simpleOfflineService.saveOfflineProgress(fullProgress);
+        console.log('💾 Progress saved offline, will sync when online');
       }
     },
     [user],
@@ -249,8 +260,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         await firebaseDataService.saveWorkoutSession(user, fullSession);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save workout session:', err);
-        throw err;
+        console.error('💾 AuthProvider: Failed to save workout session, saving offline:', err);
+        // Fallback to offline storage
+        const fullSession: WorkoutSession = {
+          ...session,
+          userId: user.uid,
+        };
+        await simpleOfflineService.saveOfflineSession(fullSession);
+        console.log('💾 Workout session saved offline, will sync when online');
       }
     },
     [user],
@@ -267,8 +284,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         await firebaseDataService.saveFocusSession(user, fullSession);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save focus session:', err);
-        throw err;
+        console.error('💾 AuthProvider: Failed to save focus session, saving offline:', err);
+        // Fallback to offline storage
+        const fullSession: FocusSession = {
+          ...session,
+          userId: user.uid,
+        };
+        await simpleOfflineService.saveOfflineSession(fullSession);
+        console.log('💾 Focus session saved offline, will sync when online');
       }
     },
     [user],
@@ -342,6 +365,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
     // Note: isLoading is set to false in the auth state change listener
   }, [isAuthenticated, user, isSyncing, syncUserData]);
+
+  // Sync offline data when user is authenticated
+  const syncOfflineData = useCallback(async (userToSync: AuthUser) => {
+    try {
+      const hasOfflineData = await simpleOfflineService.hasOfflineData();
+      if (hasOfflineData) {
+        console.log('🔄 Syncing offline data...');
+        await simpleOfflineService.syncAllOfflineData(userToSync);
+        console.log('✅ Offline data synced successfully');
+      }
+    } catch (error) {
+      console.error('❌ Failed to sync offline data:', error);
+    }
+  }, []);
+
+  // Simple sync on app start
+  useEffect(() => {
+    if (isAuthenticated && user && !isSyncing) {
+      syncOfflineData(user);
+    }
+  }, [isAuthenticated, user, isSyncing, syncOfflineData]);
 
   // ============================================================================
   // MEMOIZED CONTEXT VALUE (Gemini's recommendation)
