@@ -57,6 +57,21 @@ export const createStyles = (theme: Theme) =>
       borderTopColor: theme.colors.border,
       paddingTop: 16,
     },
+    feedbackButton: {
+      backgroundColor: theme.colors.primary + '15',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginTop: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      alignItems: 'center',
+    },
+    feedbackButtonText: {
+      color: theme.colors.primary,
+      fontWeight: '600',
+      fontSize: 16,
+    },
     logoutButton: {
       backgroundColor: theme.colors.error + '15',
       paddingVertical: 12,

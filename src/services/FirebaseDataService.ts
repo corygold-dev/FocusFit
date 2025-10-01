@@ -11,7 +11,7 @@ import {
 import { Alert } from 'react-native';
 import { db } from '../config/firebase';
 import { checkAchievements, getAchievementById, UserProgressData } from '../utils/achievements';
-import { AuthUser } from './FirebaseAuthService';
+import { AuthUser } from './index';
 
 export interface UserSettings {
   id: string;

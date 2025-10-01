@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthUser } from './FirebaseAuthService';
 import {
+  AuthUser,
   firebaseDataService,
   FocusSession,
   UserProgress,
   UserSettings,
   WorkoutSession,
-} from './FirebaseDataService';
+} from './index';
 
 const STORAGE_KEYS = {
   PENDING_SESSIONS: 'pending_sessions',

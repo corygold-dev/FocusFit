@@ -42,3 +42,7 @@ app-example
 # generated native folders
 /ios
 /android
+
+# Documentation
+USER_TESTING_GUIDE.md
+DISTRIBUTION_SETUP.md

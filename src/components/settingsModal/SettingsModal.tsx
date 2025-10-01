@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { FeedbackData, feedbackService } from '../../services';
+import FeedbackModal from '../FeedbackModal';
 import DataExportSection from './DataExportSection';
 import DifficultySelector from './DifficultySelector';
 import EquipmentSelector from './EquipmentSelector';
@@ -44,7 +46,8 @@ export default function SettingsModal({
   onSave,
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
@@ -102,6 +105,17 @@ export default function SettingsModal({
     }
   };
 
+  const handleFeedbackSubmit = async (feedback: FeedbackData) => {
+    if (!user) return;
+
+    try {
+      await feedbackService.submitFeedback(user, feedback);
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+      Alert.alert('Error', 'Failed to submit feedback. Please try again.');
+    }
+  };
+
   return (
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalOverlay}>
@@ -146,6 +160,14 @@ export default function SettingsModal({
               <View style={styles.logoutSection}>
                 <Text style={styles.sectionTitle}>Account:</Text>
                 <DataExportSection />
+
+                <TouchableOpacity
+                  style={styles.feedbackButton}
+                  onPress={() => setShowFeedbackModal(true)}
+                >
+                  <Text style={styles.feedbackButtonText}>Send Feedback</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
                   <Text style={styles.logoutText}>Log Out</Text>
                 </TouchableOpacity>
@@ -159,6 +181,12 @@ export default function SettingsModal({
           </View>
         </View>
       </View>
+
+      <FeedbackModal
+        visible={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+        onSubmit={handleFeedbackSubmit}
+      />
     </Modal>
   );
 }
