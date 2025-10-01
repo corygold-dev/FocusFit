@@ -28,7 +28,16 @@ interface AnalyticsData {
 
 export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps) {
   const { theme } = useTheme();
-  const { user, getUserProgress, getUserWorkoutHistory, getUserFocusHistory } = useAuth();
+  const {
+    user,
+    getUserProgress,
+    getUserWorkoutHistory,
+    getUserFocusHistory,
+    getTotalWorkouts,
+    getTotalFocusSessions,
+    getTotalWorkoutDuration,
+    getTotalFocusDuration,
+  } = useAuth();
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const styles = analyticsModalStyles(theme);
@@ -40,8 +49,21 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
       const progress = await getUserProgress();
       if (!progress) return;
 
-      const workoutHistory = await getUserWorkoutHistory();
-      const focusHistory = await getUserFocusHistory();
+      const [
+        totalWorkouts,
+        totalFocusSessions,
+        totalWorkoutDuration,
+        totalFocusDuration,
+        workoutHistory,
+        focusHistory,
+      ] = await Promise.all([
+        getTotalWorkouts(),
+        getTotalFocusSessions(),
+        getTotalWorkoutDuration(),
+        getTotalFocusDuration(),
+        getUserWorkoutHistory(),
+        getUserFocusHistory(),
+      ]);
 
       const thisWeek = new Date();
       thisWeek.setDate(thisWeek.getDate() - 7);
@@ -62,10 +84,10 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
           : 0;
 
       setAnalyticsData({
-        totalWorkouts: progress.totalWorkouts,
-        totalFocusSessions: progress.totalFocusSessions,
-        totalWorkoutTime: Math.round(progress.totalWorkoutDuration / 60),
-        totalFocusTime: Math.round(progress.totalFocusDuration / 60),
+        totalWorkouts,
+        totalFocusSessions,
+        totalWorkoutTime: Math.round(totalWorkoutDuration / 60),
+        totalFocusTime: Math.round(totalFocusDuration / 60),
         currentWorkoutStreak: progress.workoutStreak,
         currentFocusStreak: progress.focusStreak,
         longestWorkoutStreak: progress.workoutStreak,
@@ -84,7 +106,15 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
     } finally {
       setIsLoading(false);
     }
-  }, [getUserProgress, getUserWorkoutHistory, getUserFocusHistory]);
+  }, [
+    getUserProgress,
+    getTotalWorkouts,
+    getTotalFocusSessions,
+    getTotalWorkoutDuration,
+    getTotalFocusDuration,
+    getUserWorkoutHistory,
+    getUserFocusHistory,
+  ]);
 
   useEffect(() => {
     if (visible && user) {

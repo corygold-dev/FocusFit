@@ -46,12 +46,8 @@ export interface FocusSession {
 export interface UserProgress {
   id: string;
   userId: string;
-  totalWorkouts: number;
-  totalWorkoutDuration: number;
   workoutStreak: number;
   lastWorkoutDate?: Date | null;
-  totalFocusSessions: number;
-  totalFocusDuration: number;
   focusStreak: number;
   lastFocusSessionDate?: Date | null;
   achievements: string[];
@@ -120,8 +116,25 @@ export class FirebaseDataService {
         updatedAt: serverTimestamp(),
       };
 
+      const [totalWorkouts, totalFocusSessions, totalWorkoutDuration, totalFocusDuration] =
+        await Promise.all([
+          this.getTotalWorkouts(user),
+          this.getTotalFocusSessions(user),
+          this.getTotalWorkoutDuration(user),
+          this.getTotalFocusDuration(user),
+        ]);
+
+      const progressForAchievements: UserProgressData = {
+        totalWorkouts,
+        totalFocusSessions,
+        totalWorkoutDuration,
+        totalFocusDuration,
+        workoutStreak: updatedProgress.workoutStreak || 0,
+        focusStreak: updatedProgress.focusStreak || 0,
+      };
+
       const newAchievements = checkAchievements(
-        updatedProgress as UserProgressData,
+        progressForAchievements,
         currentProgress?.achievements || [],
       );
 
@@ -198,6 +211,26 @@ export class FirebaseDataService {
       // Last activity was 2+ days ago, reset to 1
       return 1;
     }
+  }
+
+  async getTotalWorkouts(user: AuthUser): Promise<number> {
+    const sessions = await this.getUserWorkoutHistory(user);
+    return sessions.length;
+  }
+
+  async getTotalFocusSessions(user: AuthUser): Promise<number> {
+    const sessions = await this.getUserFocusHistory(user);
+    return sessions.length;
+  }
+
+  async getTotalWorkoutDuration(user: AuthUser): Promise<number> {
+    const sessions = await this.getUserWorkoutHistory(user);
+    return sessions.reduce((total, session) => total + (session.duration || 0), 0);
+  }
+
+  async getTotalFocusDuration(user: AuthUser): Promise<number> {
+    const sessions = await this.getUserFocusHistory(user);
+    return sessions.reduce((total, session) => total + session.duration, 0);
   }
 
   // Workout Sessions
@@ -314,12 +347,8 @@ export class FirebaseDataService {
       if (!existingProgress) {
         // Create default progress
         await this.updateUserProgress(user, {
-          totalWorkouts: 0,
-          totalWorkoutDuration: 0,
           lastWorkoutDate: null,
           workoutStreak: 0,
-          totalFocusSessions: 0,
-          totalFocusDuration: 0,
           lastFocusSessionDate: null,
           focusStreak: 0,
           achievements: [],

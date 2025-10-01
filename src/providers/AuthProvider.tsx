@@ -50,6 +50,10 @@ interface AuthContextType {
   getUserWorkoutHistory: () => Promise<WorkoutSession[]>;
   getUserFocusHistory: () => Promise<FocusSession[]>;
   getUserProgress: () => Promise<UserProgress | null>;
+  getTotalWorkouts: () => Promise<number>;
+  getTotalFocusSessions: () => Promise<number>;
+  getTotalWorkoutDuration: () => Promise<number>;
+  getTotalFocusDuration: () => Promise<number>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -285,6 +289,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return firebaseDataService.getUserProgress(user);
   }, [user]);
 
+  const getTotalWorkouts = useCallback(async (): Promise<number> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getTotalWorkouts(user);
+  }, [user]);
+
+  const getTotalFocusSessions = useCallback(async (): Promise<number> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getTotalFocusSessions(user);
+  }, [user]);
+
+  const getTotalWorkoutDuration = useCallback(async (): Promise<number> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getTotalWorkoutDuration(user);
+  }, [user]);
+
+  const getTotalFocusDuration = useCallback(async (): Promise<number> => {
+    if (!user) throw new Error('User not authenticated');
+    return firebaseDataService.getTotalFocusDuration(user);
+  }, [user]);
+
   // ============================================================================
   // EFFECTS
   // ============================================================================
@@ -354,6 +378,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       getUserWorkoutHistory,
       getUserFocusHistory,
       getUserProgress,
+      getTotalWorkouts,
+      getTotalFocusSessions,
+      getTotalWorkoutDuration,
+      getTotalFocusDuration,
     }),
     [
       user,
@@ -378,6 +406,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       getUserWorkoutHistory,
       getUserFocusHistory,
       getUserProgress,
+      getTotalWorkouts,
+      getTotalFocusSessions,
+      getTotalWorkoutDuration,
+      getTotalFocusDuration,
     ],
   );
 
@@ -415,6 +447,10 @@ export const useBackendData = () => {
     getUserWorkoutHistory: auth.getUserWorkoutHistory,
     getUserFocusHistory: auth.getUserFocusHistory,
     getUserProgress: auth.getUserProgress,
+    getTotalWorkouts: auth.getTotalWorkouts,
+    getTotalFocusSessions: auth.getTotalFocusSessions,
+    getTotalWorkoutDuration: auth.getTotalWorkoutDuration,
+    getTotalFocusDuration: auth.getTotalFocusDuration,
   };
 };
 

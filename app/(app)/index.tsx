@@ -1,6 +1,6 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
-import { useBackendData, useTheme, useTimerContext } from '@/src/providers';
+import { useBackendData, useTheme, useTimerContext, useWorkoutType } from '@/src/providers';
 import { useRouter } from 'expo-router';
 import { BarChart3, Settings } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -13,6 +13,7 @@ import {
   SettingsModal,
   TimerControls,
   TimerDisplay,
+  WorkoutChoiceModal,
 } from '@/src/components';
 import ModalButton from '@/src/components/timerScreen/ModalButton';
 import TimeModal from '@/src/components/timerScreen/TimeModal';
@@ -30,6 +31,7 @@ export default function TimerScreen() {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
+  const [showWorkoutChoice, setShowWorkoutChoice] = useState(false);
 
   const { settings, saveUserSettings } = useUserSettings();
 
@@ -71,8 +73,6 @@ export default function TimerScreen() {
       const currentProgress = await getUserProgress();
       if (currentProgress) {
         await saveUserProgress({
-          totalFocusSessions: currentProgress.totalFocusSessions + 1,
-          totalFocusDuration: currentProgress.totalFocusDuration + actualFocusDuration,
           lastFocusSessionDate: completedAt,
         });
       }
@@ -84,8 +84,22 @@ export default function TimerScreen() {
 
   const handleFocusComplete = useCallback(async () => {
     await saveFocusSession();
+    setShowWorkoutChoice(true);
+  }, [saveFocusSession]);
+
+  const { setWorkoutType } = useWorkoutType();
+
+  const handleChooseStrength = useCallback(() => {
+    setShowWorkoutChoice(false);
+    setWorkoutType('strength');
     router.push('/exercise');
-  }, [router, saveFocusSession]);
+  }, [router, setWorkoutType]);
+
+  const handleChooseMobility = useCallback(() => {
+    setShowWorkoutChoice(false);
+    setWorkoutType('mobility');
+    router.push('/exercise');
+  }, [router, setWorkoutType]);
 
   const { secondsLeft, isRunning, progress, resetTimer, toggleTimer, setCustomDuration } = useTimer(
     {
@@ -223,6 +237,12 @@ export default function TimerScreen() {
             await saveUserSettings({ lastFocusTime: minutes * 60 });
           }
         }}
+      />
+
+      <WorkoutChoiceModal
+        visible={showWorkoutChoice}
+        onChooseStrength={handleChooseStrength}
+        onChooseMobility={handleChooseMobility}
       />
     </SafeAreaView>
   );

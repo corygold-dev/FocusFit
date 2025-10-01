@@ -8,17 +8,24 @@ import {
 } from '@/src/components';
 import { exerciseScreenStyles } from '@/src/components/exerciseScreen/styles';
 import { useWorkout } from '@/src/hooks';
-import { useTheme, useTimerContext, useUserSettings } from '@/src/providers';
+import { useTheme, useTimerContext, useUserSettings, useWorkoutType } from '@/src/providers';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 
 export default function ExerciseScreen() {
   const router = useRouter();
+  const { workoutType, clearWorkoutType } = useWorkoutType();
   const { settings } = useUserSettings();
   const { theme } = useTheme();
   const { setSelectedFocusTime } = useTimerContext();
   const styles = exerciseScreenStyles(theme);
+
+  useEffect(() => {
+    return () => {
+      clearWorkoutType();
+    };
+  }, [clearWorkoutType]);
 
   const {
     phase,
@@ -32,17 +39,10 @@ export default function ExerciseScreen() {
     restartExercise,
   } = useWorkout({
     settings: settings || { difficulty: 'medium', equipment: [], excludedExercises: [] },
+    workoutType: workoutType || 'strength',
   });
 
-  const handleExitWorkout = () => {
-    if (settings?.lastFocusTime) {
-      const minutes = settings.lastFocusTime / 60;
-      setSelectedFocusTime(minutes);
-    }
-    router.replace('/');
-  };
-
-  const handleReturnToFocus = () => {
+  const handleReturnHome = () => {
     if (settings?.lastFocusTime) {
       const minutes = settings.lastFocusTime / 60;
       setSelectedFocusTime(minutes);
@@ -55,7 +55,7 @@ export default function ExerciseScreen() {
   }
 
   if (error) {
-    return <ErrorState error={error} onReturnHome={() => router.replace('/')} />;
+    return <ErrorState error={error} onReturnHome={handleReturnHome} />;
   }
 
   return (
@@ -64,7 +64,7 @@ export default function ExerciseScreen() {
         <PreviewPhase
           exerciseName={currentExercise}
           onStart={startCountdown}
-          onExit={handleExitWorkout}
+          onExit={handleReturnHome}
         />
       )}
 
@@ -77,13 +77,13 @@ export default function ExerciseScreen() {
           progress={progress}
           onSkip={skipExercise}
           onRestart={restartExercise}
-          onExit={handleExitWorkout}
+          onExit={handleReturnHome}
         />
       )}
 
       {phase === 'completed' && (
         <CompletedPhase
-          onReturnHome={handleReturnToFocus}
+          onReturnHome={handleReturnHome}
           onSetFocusTime={setSelectedFocusTime}
           previousFocusTime={settings?.lastFocusTime ? settings.lastFocusTime / 60 : undefined}
         />

@@ -12,31 +12,44 @@ export type UserSettings = {
   timerEndNotifications?: boolean;
 };
 
-export function pickWorkout(userSettings: UserSettings): Exercise[] {
+export function pickStrengthWorkout(userSettings: UserSettings): Exercise[] {
   const { difficulty, equipment, excludedExercises } = userSettings;
 
   const filteredExercises = _.filter(exercises, (e) => {
     const difficultyMatches = e.difficulty.includes(difficulty);
     const equipmentMatches = !e.equipment || _.every(e.equipment, (eq) => equipment.includes(eq));
     const notExcluded = !excludedExercises.includes(e.name);
-    return difficultyMatches && equipmentMatches && notExcluded;
+    const isStrength = e.category !== 'mobility';
+    return difficultyMatches && equipmentMatches && notExcluded && isStrength;
   });
 
-  const nonMobility = _.filter(filteredExercises, (e) => e.category !== 'mobility');
-
-  const [first] = _.sampleSize(nonMobility, 1);
-
+  const [first] = _.sampleSize(filteredExercises, 1);
   const [second] = _.sampleSize(
-    _.filter(nonMobility, (e) => e.category !== first?.category),
+    _.filter(filteredExercises, (e) => e.name !== first?.name),
     1,
   );
 
-  const [mobility] = _.sampleSize(
-    _.filter(exercises, (e) => e.category === 'mobility' && !excludedExercises.includes(e.name)),
+  return [first, second].filter(Boolean);
+}
+
+export function pickMobilityWorkout(userSettings: UserSettings): Exercise[] {
+  const { difficulty, equipment, excludedExercises } = userSettings;
+
+  const filteredExercises = _.filter(exercises, (e) => {
+    const difficultyMatches = e.difficulty.includes(difficulty);
+    const equipmentMatches = !e.equipment || _.every(e.equipment, (eq) => equipment.includes(eq));
+    const notExcluded = !excludedExercises.includes(e.name);
+    const isMobility = e.category === 'mobility';
+    return difficultyMatches && equipmentMatches && notExcluded && isMobility;
+  });
+
+  const [first] = _.sampleSize(filteredExercises, 1);
+  const [second] = _.sampleSize(
+    _.filter(filteredExercises, (e) => e.name !== first?.name),
     1,
   );
 
-  return [first, second, mobility].filter(Boolean);
+  return [first, second].filter(Boolean);
 }
 
 export function getFilteredExercisesByCategory(difficulty: Difficulty, equipment: string[] = []) {

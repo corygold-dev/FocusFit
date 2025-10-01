@@ -39,3 +39,14 @@ export const LOCAL_STORAGE_KEYS = {
   USER_PROGRESS: 'userProgress',
   LAST_SYNC: 'lastSyncTime',
 };
+
+export const WORKOUT = {
+  STRENGTH: {
+    ROUNDS: 4,
+    DURATION_PER_ROUND: 30,
+    TOTAL_DURATION: 4 * 30,
+  },
+  MOBILITY: {
+    DURATION_PER_EXERCISE: 60,
+  },
+};
