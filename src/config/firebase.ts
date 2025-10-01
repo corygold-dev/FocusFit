@@ -12,17 +12,15 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase with guard against multiple initializations
-let app: FirebaseApp | undefined;
-let auth: Auth | undefined;
+let app: FirebaseApp;
+let auth: Auth;
 
 // Guard against multiple Firebase app initializations
-if (!app) {
-  try {
-    app = initializeApp(firebaseConfig);
-  } catch (error: unknown) {
-    console.error('Firebase app initialization error:', error);
-    throw error;
-  }
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error: unknown) {
+  console.error('Firebase app initialization error:', error);
+  throw error;
 }
 
 // Initialize auth (persistence is handled automatically in React Native)

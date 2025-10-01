@@ -1,5 +1,6 @@
 import { useAuth, useTheme } from '@/src/providers';
 import { getAchievementById } from '@/src/utils/achievements';
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, ScrollView, Text, View } from 'react-native';
 import { analyticsModalStyles } from './styles/analyticsModal.styles';
@@ -150,10 +151,16 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
         <View style={styles.modalContent}>
           <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
-              <Text style={styles.modalTitle}>📊 Your Progress</Text>
+              <View style={styles.titleContainer}>
+                <MaterialIcons name="analytics" size={28} color={theme.colors.primary} />
+                <Text style={styles.modalTitle}>Your Progress</Text>
+              </View>
 
               <View style={styles.focusSection}>
-                <Text style={styles.sectionTitle}>🎯 Focus Sessions</Text>
+                <View style={styles.sectionHeader}>
+                  <MaterialIcons name="psychology" size={20} color="#2196F3" />
+                  <Text style={styles.sectionTitle}>Focus Sessions</Text>
+                </View>
                 <View style={styles.metricsGrid}>
                   <View style={styles.metricCard}>
                     <Text style={styles.metricNumber}>
@@ -183,7 +190,10 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
               </View>
 
               <View style={styles.workoutSection}>
-                <Text style={styles.sectionTitle}>💪 Workouts</Text>
+                <View style={styles.sectionHeader}>
+                  <MaterialIcons name="fitness-center" size={20} color="#FF9800" />
+                  <Text style={styles.sectionTitle}>Workouts</Text>
+                </View>
                 <View style={styles.metricsGrid}>
                   <View style={styles.metricCard}>
                     <Text style={styles.metricNumber}>{analyticsData?.totalWorkouts || 0}</Text>
@@ -210,7 +220,10 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
 
               {/* Achievements Section */}
               <View style={styles.achievementsSection}>
-                <Text style={styles.sectionTitle}>🏆 Achievements</Text>
+                <View style={styles.sectionHeader}>
+                  <MaterialIcons name="emoji-events" size={20} color="#FFD700" />
+                  <Text style={styles.sectionTitle}>Achievements</Text>
+                </View>
                 {analyticsData?.achievements && analyticsData.achievements.length > 0 ? (
                   <ScrollView
                     horizontal
@@ -221,7 +234,16 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
                       const achievement = getAchievementById(achievementId);
                       return (
                         <View key={index} style={styles.achievementCard}>
-                          <Text style={styles.achievementEmoji}>{achievement?.emoji || '🏆'}</Text>
+                          <View style={styles.achievementIcon}>
+                            <MaterialIcons
+                              name={
+                                (achievement?.iconName as keyof typeof MaterialIcons.glyphMap) ||
+                                'emoji-events'
+                              }
+                              size={24}
+                              color={achievement?.iconColor || '#4CAF50'}
+                            />
+                          </View>
                           <Text style={styles.achievementText}>
                             {achievement?.name || achievementId}
                           </Text>
@@ -232,7 +254,7 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
                 ) : (
                   <View style={styles.noAchievementsContainer}>
                     <Text style={styles.noAchievementsText}>
-                      Keep going to unlock achievements! 🎯
+                      Keep going to unlock achievements!
                     </Text>
                   </View>
                 )}

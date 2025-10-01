@@ -23,12 +23,22 @@ export const analyticsModalStyles = (theme: Theme) =>
     scrollContent: {
       padding: 20,
     },
+    titleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 20,
+    },
     modalTitle: {
       fontSize: 24,
       fontWeight: 'bold',
-      marginBottom: 20,
-      textAlign: 'center',
+      marginLeft: 8,
       color: theme.colors.text,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
     },
     loadingContainer: {
       flex: 1,
@@ -46,7 +56,7 @@ export const analyticsModalStyles = (theme: Theme) =>
     sectionTitle: {
       fontSize: 18,
       fontWeight: '600',
-      marginBottom: 16,
+      marginLeft: 8,
       color: theme.colors.text,
     },
     focusSection: {
@@ -112,6 +122,9 @@ export const analyticsModalStyles = (theme: Theme) =>
       shadowOpacity: 0.1,
       shadowRadius: 4,
       elevation: 3,
+    },
+    achievementIcon: {
+      marginBottom: 8,
     },
     achievementEmoji: {
       fontSize: 24,

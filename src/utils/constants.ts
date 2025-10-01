@@ -1,4 +1,4 @@
-export type CategoryKey = 'upper' | 'lower' | 'full' | 'mobility';
+export type CategoryKey = 'upper' | 'lower' | 'mobility';
 export type Difficulty = 'easy' | 'medium' | 'hard';
 export type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -30,7 +30,6 @@ export const SLIDER = {
 export const CATEGORY_LABELS: Record<CategoryKey, string> = {
   upper: 'Upper Body',
   lower: 'Lower Body',
-  full: 'Full Body',
   mobility: 'Mobility',
 };
 

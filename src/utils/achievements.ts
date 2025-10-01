@@ -12,6 +12,8 @@ export interface Achievement {
   name: string;
   description: string;
   emoji: string;
+  iconName: string;
+  iconColor: string;
   condition: (progress: UserProgressData) => boolean;
 }
 
@@ -21,6 +23,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'First Focus',
     description: 'Complete your first focus session',
     emoji: '🎯',
+    iconName: 'psychology',
+    iconColor: '#2196F3',
     condition: (progress) => progress.totalFocusSessions >= 1,
   },
   {
@@ -28,6 +32,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'First Workout',
     description: 'Complete your first workout',
     emoji: '💪',
+    iconName: 'fitness-center',
+    iconColor: '#FF9800',
     condition: (progress) => progress.totalWorkouts >= 1,
   },
   {
@@ -35,6 +41,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Focus Streak',
     description: '3-day focus streak',
     emoji: '🔥',
+    iconName: 'local-fire-department',
+    iconColor: '#F44336',
     condition: (progress) => progress.focusStreak >= 3,
   },
   {
@@ -42,6 +50,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Workout Streak',
     description: '3-day workout streak',
     emoji: '💪',
+    iconName: 'trending-up',
+    iconColor: '#FF9800',
     condition: (progress) => progress.workoutStreak >= 3,
   },
   {
@@ -49,6 +59,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Focus Master',
     description: '7-day focus streak',
     emoji: '👑',
+    iconName: 'star',
+    iconColor: '#9C27B0',
     condition: (progress) => progress.focusStreak >= 7,
   },
   {
@@ -56,6 +68,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Workout Warrior',
     description: '7-day workout streak',
     emoji: '⚔️',
+    iconName: 'sports-mma',
+    iconColor: '#FF5722',
     condition: (progress) => progress.workoutStreak >= 7,
   },
   {
@@ -63,6 +77,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Focus Enthusiast',
     description: 'Complete 10 focus sessions',
     emoji: '🧠',
+    iconName: 'self-improvement',
+    iconColor: '#2196F3',
     condition: (progress) => progress.totalFocusSessions >= 10,
   },
   {
@@ -70,6 +86,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Workout Enthusiast',
     description: 'Complete 10 workouts',
     emoji: '🏋️',
+    iconName: 'sports',
+    iconColor: '#FF9800',
     condition: (progress) => progress.totalWorkouts >= 10,
   },
   {
@@ -77,6 +95,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Focus Master',
     description: 'Complete 50 focus sessions',
     emoji: '🎓',
+    iconName: 'school',
+    iconColor: '#9C27B0',
     condition: (progress) => progress.totalFocusSessions >= 50,
   },
   {
@@ -84,6 +104,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Workout Master',
     description: 'Complete 50 workouts',
     emoji: '🏆',
+    iconName: 'emoji-events',
+    iconColor: '#FFD700',
     condition: (progress) => progress.totalWorkouts >= 50,
   },
   {
@@ -91,6 +113,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Time Keeper',
     description: '24 hours of total focus time',
     emoji: '⏰',
+    iconName: 'schedule',
+    iconColor: '#607D8B',
     condition: (progress) => progress.totalFocusDuration >= 24 * 60 * 60,
   },
   {
@@ -98,6 +122,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     name: 'Endurance',
     description: '2 hours of total workout time',
     emoji: '🏃',
+    iconName: 'timer',
+    iconColor: '#795548',
     condition: (progress) => progress.totalWorkoutDuration >= 2 * 60 * 60,
   },
 ];
