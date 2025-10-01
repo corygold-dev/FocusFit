@@ -15,9 +15,7 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLName": "focusfit",
-            "CFBundleURLSchemes": [
-              "focusfit"
-            ]
+            "CFBundleURLSchemes": ["focusfit"]
           },
           {
             "CFBundleURLName": "google",
@@ -28,9 +26,7 @@
         ]
       },
       "entitlements": {
-        "com.apple.developer.applesignin": [
-          "Default"
-        ]
+        "com.apple.developer.applesignin": ["Default"]
       },
       "scheme": "focusfit"
     },

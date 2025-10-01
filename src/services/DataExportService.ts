@@ -1,13 +1,13 @@
 import packageJson from '../../package.json';
+import { AuthUser } from './FirebaseAuthService';
 import {
-  AuthUser,
   firebaseDataService,
   FocusSession,
-  simpleOfflineService,
   UserProgress,
   UserSettings,
   WorkoutSession,
-} from './index';
+} from './FirebaseDataService';
+import { simpleOfflineService } from './SimpleOfflineService';
 
 export interface ExportData {
   user: {

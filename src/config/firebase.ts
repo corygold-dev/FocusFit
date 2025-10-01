@@ -43,4 +43,4 @@ try {
 
 const db: Firestore = getFirestore(app);
 
-export { auth, db };
+export { app, auth, db };

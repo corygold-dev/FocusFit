@@ -5,7 +5,7 @@ export const createStyles = (theme: Theme) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      paddingHorizontal: 24,
+      paddingHorizontal: 8,
       paddingVertical: 32,
       justifyContent: 'center',
       alignItems: 'center',
@@ -47,7 +47,6 @@ export const createStyles = (theme: Theme) =>
     },
     mediaContainer: {
       flex: 1,
-      maxHeight: 400,
       width: '100%',
       marginBottom: 24,
     },

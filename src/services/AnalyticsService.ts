@@ -1,48 +1,41 @@
-import analytics from '@react-native-firebase/analytics';
-
+// Simple Analytics Service for User Testing
 export class AnalyticsService {
   // ============================================================================
   // USER ACTIONS
   // ============================================================================
 
-  static async trackFocusSessionStarted(duration: number) {
-    await analytics().logEvent('focus_session_started', {
-      duration_minutes: duration,
-      timestamp: new Date().toISOString(),
-    });
+  static trackFocusSessionStarted(duration: number) {
+    console.log('📊 Analytics: Focus session started', { duration_minutes: duration });
+    // TODO: Implement proper analytics when needed
   }
 
-  static async trackFocusSessionCompleted(duration: number, actualDuration: number) {
-    await analytics().logEvent('focus_session_completed', {
+  static trackFocusSessionCompleted(duration: number, actualDuration: number) {
+    console.log('📊 Analytics: Focus session completed', {
       planned_duration_minutes: duration,
       actual_duration_minutes: actualDuration,
       completion_rate: (actualDuration / duration) * 100,
-      timestamp: new Date().toISOString(),
     });
   }
 
-  static async trackWorkoutStarted(exerciseCount: number, difficulty: string) {
-    await analytics().logEvent('workout_started', {
+  static trackWorkoutStarted(exerciseCount: number, difficulty: string) {
+    console.log('📊 Analytics: Workout started', {
       exercise_count: exerciseCount,
       difficulty,
-      timestamp: new Date().toISOString(),
     });
   }
 
-  static async trackWorkoutCompleted(exerciseCount: number, duration: number, difficulty: string) {
-    await analytics().logEvent('workout_completed', {
+  static trackWorkoutCompleted(exerciseCount: number, duration: number, difficulty: string) {
+    console.log('📊 Analytics: Workout completed', {
       exercise_count: exerciseCount,
       duration_minutes: Math.round(duration / 60),
       difficulty,
-      timestamp: new Date().toISOString(),
     });
   }
 
-  static async trackExerciseCompleted(exerciseName: string, category: string) {
-    await analytics().logEvent('exercise_completed', {
+  static trackExerciseCompleted(exerciseName: string, category: string) {
+    console.log('📊 Analytics: Exercise completed', {
       exercise_name: exerciseName,
       category,
-      timestamp: new Date().toISOString(),
     });
   }
 
@@ -50,11 +43,10 @@ export class AnalyticsService {
   // ACHIEVEMENTS
   // ============================================================================
 
-  static async trackAchievementUnlocked(achievementId: string, achievementName: string) {
-    await analytics().logEvent('achievement_unlocked', {
+  static trackAchievementUnlocked(achievementId: string, achievementName: string) {
+    console.log('📊 Analytics: Achievement unlocked', {
       achievement_id: achievementId,
       achievement_name: achievementName,
-      timestamp: new Date().toISOString(),
     });
   }
 
@@ -62,20 +54,18 @@ export class AnalyticsService {
   // SETTINGS & PREFERENCES
   // ============================================================================
 
-  static async trackSettingsChanged(settingType: string, oldValue: any, newValue: any) {
-    await analytics().logEvent('settings_changed', {
+  static trackSettingsChanged(settingType: string, oldValue: unknown, newValue: unknown) {
+    console.log('📊 Analytics: Settings changed', {
       setting_type: settingType,
       old_value: oldValue,
       new_value: newValue,
-      timestamp: new Date().toISOString(),
     });
   }
 
-  static async trackNotificationSettingsChanged(reminderType: string, enabled: boolean) {
-    await analytics().logEvent('notification_settings_changed', {
+  static trackNotificationSettingsChanged(reminderType: string, enabled: boolean) {
+    console.log('📊 Analytics: Notification settings changed', {
       reminder_type: reminderType,
       enabled,
-      timestamp: new Date().toISOString(),
     });
   }
 
@@ -83,66 +73,52 @@ export class AnalyticsService {
   // USER ENGAGEMENT
   // ============================================================================
 
-  static async trackAppOpened() {
-    await analytics().logEvent('app_opened', {
-      timestamp: new Date().toISOString(),
-    });
+  static trackAppOpened() {
+    console.log('📊 Analytics: App opened');
   }
 
-  static async trackAnalyticsViewed() {
-    await analytics().logEvent('analytics_viewed', {
-      timestamp: new Date().toISOString(),
-    });
+  static trackAnalyticsViewed() {
+    console.log('📊 Analytics: Analytics viewed');
   }
 
-  static async trackDataExported(exportType: 'json' | 'csv') {
-    await analytics().logEvent('data_exported', {
-      export_type: exportType,
-      timestamp: new Date().toISOString(),
-    });
+  static trackDataExported(exportType: 'json' | 'csv') {
+    console.log('📊 Analytics: Data exported', { export_type: exportType });
   }
 
   // ============================================================================
   // ONBOARDING & FIRST USE
   // ============================================================================
 
-  static async trackOnboardingCompleted() {
-    await analytics().logEvent('onboarding_completed', {
-      timestamp: new Date().toISOString(),
-    });
+  static trackOnboardingCompleted() {
+    console.log('📊 Analytics: Onboarding completed');
   }
 
-  static async trackFirstFocusSession() {
-    await analytics().logEvent('first_focus_session', {
-      timestamp: new Date().toISOString(),
-    });
+  static trackFirstFocusSession() {
+    console.log('📊 Analytics: First focus session');
   }
 
-  static async trackFirstWorkout() {
-    await analytics().logEvent('first_workout', {
-      timestamp: new Date().toISOString(),
-    });
+  static trackFirstWorkout() {
+    console.log('📊 Analytics: First workout');
   }
 
   // ============================================================================
   // USER PROPERTIES
   // ============================================================================
 
-  static async setUserProperties(userId: string, properties: Record<string, any>) {
-    await analytics().setUserId(userId);
-    await analytics().setUserProperties(properties);
+  static setUserProperties(userId: string, properties: Record<string, unknown>) {
+    console.log('📊 Analytics: User properties set', { userId, properties });
   }
 
-  static async setUserEngagementLevel(level: 'new' | 'active' | 'power_user') {
-    await analytics().setUserProperty('engagement_level', level);
+  static setUserEngagementLevel(level: 'new' | 'active' | 'power_user') {
+    console.log('📊 Analytics: User engagement level set', { level });
   }
 
-  static async setUserPreferredDifficulty(difficulty: string) {
-    await analytics().setUserProperty('preferred_difficulty', difficulty);
+  static setUserPreferredDifficulty(difficulty: string) {
+    console.log('📊 Analytics: User preferred difficulty set', { difficulty });
   }
 
-  static async setUserEquipment(equipment: string[]) {
-    await analytics().setUserProperty('equipment', equipment.join(','));
+  static setUserEquipment(equipment: string[]) {
+    console.log('📊 Analytics: User equipment set', { equipment });
   }
 }
 
