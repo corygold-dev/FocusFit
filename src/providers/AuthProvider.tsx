@@ -7,16 +7,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import firebaseAuthService, { AuthUser } from '../services/FirebaseAuthService';
 import {
-  AuthUser,
-  firebaseAuthService,
   firebaseDataService,
   FocusSession,
-  simpleOfflineService,
   UserProgress,
   UserSettings,
   WorkoutSession,
-} from '../services';
+} from '../services/FirebaseDataService';
+import { simpleOfflineService } from '../services/SimpleOfflineService';
 
 // ============================================================================
 // AUTH CONTEXT

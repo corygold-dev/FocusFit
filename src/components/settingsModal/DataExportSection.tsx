@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, Share, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth, useTheme } from '../../providers';
-import { dataExportService } from '../../services';
+import { dataExportService } from '../../services/DataExportService';
 
 interface DataExportSectionProps {
   onExportComplete?: () => void;

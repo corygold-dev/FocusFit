@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { FeedbackData, feedbackService } from '../../services';
+import { FeedbackData, feedbackService } from '../../services/FeedbackService';
 import FeedbackModal from '../FeedbackModal';
 import DataExportSection from './DataExportSection';
 import DifficultySelector from './DifficultySelector';
