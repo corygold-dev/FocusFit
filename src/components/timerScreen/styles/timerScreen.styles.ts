@@ -16,4 +16,14 @@ export const createStyles = (theme: Theme) =>
     timeButton: {
       minWidth: 200,
     },
+    focusPhraseContainer: {
+      paddingVertical: 8,
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    focusPhraseText: {
+      fontSize: 24,
+      textAlign: 'center',
+    },
   });

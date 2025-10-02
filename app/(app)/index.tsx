@@ -4,7 +4,7 @@ import { useBackendData, useTheme, useTimerContext, useWorkoutType } from '@/src
 import { useRouter } from 'expo-router';
 import { BarChart3, Settings } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Alert, Platform, View } from 'react-native';
+import { Alert, Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -19,7 +19,7 @@ import ModalButton from '@/src/components/timerScreen/ModalButton';
 import TimeModal from '@/src/components/timerScreen/TimeModal';
 import Button from '@/src/components/ui/Button';
 import { useUserSettings } from '@/src/providers';
-import { MIN_FOCUS_DURATION } from '@/src/utils/constants';
+import { FOCUS_PHRASES, FOCUS_PHRASE_INTERVAL, MIN_FOCUS_DURATION } from '@/src/utils/constants';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
@@ -32,6 +32,7 @@ export default function TimerScreen() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showWorkoutChoice, setShowWorkoutChoice] = useState(false);
+  const [encouragingMessageIndex, setEncouragingMessageIndex] = useState(0);
 
   const { settings, saveUserSettings } = useUserSettings();
 
@@ -50,7 +51,7 @@ export default function TimerScreen() {
   const hasSavedFocusRef = useRef(false);
   const focusStartTimeRef = useRef<number | null>(null);
 
-  const saveFocusSession = useCallback(async () => {
+  const saveFocusSession = useCallback(async (): Promise<void> => {
     if (hasSavedFocusRef.current) return;
 
     try {
@@ -70,6 +71,7 @@ export default function TimerScreen() {
         duration: actualFocusDuration,
         completedAt,
       });
+
       const currentProgress = await getUserProgress();
       if (currentProgress) {
         await saveUserProgress({
@@ -82,24 +84,24 @@ export default function TimerScreen() {
     }
   }, [saveFocusSessionToDB, saveUserProgress, getUserProgress]);
 
-  const handleFocusComplete = useCallback(async () => {
+  const handleFocusComplete = useCallback(async (): Promise<void> => {
     await saveFocusSession();
     setShowWorkoutChoice(true);
-  }, [saveFocusSession]);
+  }, [saveFocusSession, setShowWorkoutChoice]);
 
   const { setWorkoutType } = useWorkoutType();
 
-  const handleChooseStrength = useCallback(() => {
+  const handleChooseStrength = useCallback((): void => {
     setShowWorkoutChoice(false);
     setWorkoutType('strength');
     router.push('/exercise');
-  }, [router, setWorkoutType]);
+  }, [router, setWorkoutType, setShowWorkoutChoice]);
 
-  const handleChooseMobility = useCallback(() => {
+  const handleChooseMobility = useCallback((): void => {
     setShowWorkoutChoice(false);
     setWorkoutType('mobility');
     router.push('/exercise');
-  }, [router, setWorkoutType]);
+  }, [router, setWorkoutType, setShowWorkoutChoice]);
 
   const { secondsLeft, isRunning, progress, resetTimer, toggleTimer, setCustomDuration } = useTimer(
     {
@@ -108,11 +110,11 @@ export default function TimerScreen() {
     },
   );
 
-  const handleResetTimer = async () => {
+  const handleResetTimer = useCallback(async (): Promise<void> => {
     await resetTimer();
     focusStartTimeRef.current = null;
     hasSavedFocusRef.current = false;
-  };
+  }, [resetTimer]);
 
   useEffect(() => {
     if (shouldAutoStart && !isRunning) {
@@ -128,7 +130,19 @@ export default function TimerScreen() {
     }
   }, [isRunning]);
 
-  const skipToExercise = async () => {
+  useEffect(() => {
+    if (isRunning) {
+      setEncouragingMessageIndex(Math.floor(Math.random() * FOCUS_PHRASES.length));
+
+      const interval = setInterval(() => {
+        setEncouragingMessageIndex(Math.floor(Math.random() * FOCUS_PHRASES.length));
+      }, FOCUS_PHRASE_INTERVAL);
+
+      return () => clearInterval(interval);
+    }
+  }, [isRunning]);
+
+  const skipToExercise = useCallback(async (): Promise<void> => {
     if (isRunning) {
       toggleTimer();
     }
@@ -145,12 +159,12 @@ export default function TimerScreen() {
         ],
       );
     }
-  };
+  }, [isRunning, toggleTimer, setShowConfirmDialog, handleFocusComplete]);
 
-  const handleSkipConfirm = () => {
+  const handleSkipConfirm = useCallback((): void => {
     setShowConfirmDialog(false);
     handleFocusComplete();
-  };
+  }, [setShowConfirmDialog, handleFocusComplete]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -168,22 +182,30 @@ export default function TimerScreen() {
       />
       <TimerDisplay title="Focus" progress={progress} secondsLeft={secondsLeft} />
 
-      <View style={styles.timeButtonContainer}>
-        <Button
-          title="Change focus time"
-          variant="secondary"
-          onPress={() => setShowTimeModal(true)}
-          style={[styles.timeButton, { opacity: isRunning ? 0 : 1 }]}
-          disabled={isRunning}
-        />
-      </View>
-
       <TimerControls
         isRunning={isRunning}
         onToggle={toggleTimer}
         onReset={handleResetTimer}
         onSkip={skipToExercise}
       />
+
+      <View style={styles.timeButtonContainer}>
+        {isRunning ? (
+          <View style={[styles.timeButton, styles.focusPhraseContainer]}>
+            <Text style={[styles.focusPhraseText, { color: theme.colors.text }]}>
+              {FOCUS_PHRASES[encouragingMessageIndex]}
+            </Text>
+          </View>
+        ) : (
+          <Button
+            title="Change focus time"
+            variant="secondary"
+            onPress={() => setShowTimeModal(true)}
+            style={styles.timeButton}
+          />
+        )}
+      </View>
+
       <AnalyticsModal visible={showAnalytics} onClose={() => setShowAnalytics(false)} />
 
       <SettingsModal
