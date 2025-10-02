@@ -85,7 +85,9 @@
       "expo-asset"
     ],
     "splash": {
-      "backgroundColor": "#ffffff"
+      "image": "./assets/images/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#3B82F6"
     },
     "experiments": {
       "typedRoutes": true
