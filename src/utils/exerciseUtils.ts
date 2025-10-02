@@ -23,13 +23,13 @@ export function pickStrengthWorkout(userSettings: UserSettings): Exercise[] {
     return difficultyMatches && equipmentMatches && notExcluded && isStrength;
   });
 
-  const [first] = _.sampleSize(filteredExercises, 1);
-  const [second] = _.sampleSize(
-    _.filter(filteredExercises, (e) => e.name !== first?.name),
-    1,
-  );
+  const upperBodyExercises = _.filter(filteredExercises, (e) => e.category === 'upper');
+  const lowerBodyExercises = _.filter(filteredExercises, (e) => e.category === 'lower');
 
-  return [first, second].filter(Boolean);
+  const [upperExercise] = _.sampleSize(upperBodyExercises, 1);
+  const [lowerExercise] = _.sampleSize(lowerBodyExercises, 1);
+
+  return [upperExercise, lowerExercise].filter(Boolean);
 }
 
 export function pickMobilityWorkout(userSettings: UserSettings): Exercise[] {
