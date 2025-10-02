@@ -143,10 +143,6 @@ export default function TimerScreen() {
   }, [isRunning]);
 
   const skipToExercise = useCallback(async (): Promise<void> => {
-    if (isRunning) {
-      toggleTimer();
-    }
-
     if (Platform.OS === 'web') {
       setShowConfirmDialog(true);
     } else {
@@ -155,16 +151,27 @@ export default function TimerScreen() {
         'Are you sure you want to skip the timer and go directly to exercises?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Skip', onPress: handleFocusComplete },
+          {
+            text: 'Skip',
+            onPress: async () => {
+              if (isRunning) {
+                toggleTimer();
+              }
+              await handleFocusComplete();
+            },
+          },
         ],
       );
     }
   }, [isRunning, toggleTimer, setShowConfirmDialog, handleFocusComplete]);
 
-  const handleSkipConfirm = useCallback((): void => {
+  const handleSkipConfirm = useCallback(async (): Promise<void> => {
     setShowConfirmDialog(false);
-    handleFocusComplete();
-  }, [setShowConfirmDialog, handleFocusComplete]);
+    if (isRunning) {
+      toggleTimer();
+    }
+    await handleFocusComplete();
+  }, [isRunning, toggleTimer, setShowConfirmDialog, handleFocusComplete]);
 
   return (
     <SafeAreaView style={styles.container}>
