@@ -226,18 +226,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Update the progress
         await firebaseDataService.updateUserProgress(user, progress);
 
-        // Calculate streaks using the NEW dates from the progress update
+        // Calculate streaks using the NEW activity dates
         if (progress.lastWorkoutDate) {
           const newStreak = firebaseDataService.calculateStreak(
-            progress.lastWorkoutDate,
             currentProgress?.workoutStreak || 0,
+            currentProgress?.lastWorkoutDate,
+            progress.lastWorkoutDate,
           );
           await firebaseDataService.updateUserProgress(user, { workoutStreak: newStreak });
         }
         if (progress.lastFocusSessionDate) {
           const newStreak = firebaseDataService.calculateStreak(
-            progress.lastFocusSessionDate,
             currentProgress?.focusStreak || 0,
+            currentProgress?.lastFocusSessionDate,
+            progress.lastFocusSessionDate,
           );
           await firebaseDataService.updateUserProgress(user, { focusStreak: newStreak });
         }

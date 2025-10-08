@@ -178,7 +178,7 @@ export class FirebaseDataService {
           ? currentProgress.workoutStreak || 0
           : currentProgress.focusStreak || 0;
 
-      const newStreak = this.calculateStreak(lastActivityDate, currentStreak);
+      const newStreak = this.calculateStreak(currentStreak, lastActivityDate);
 
       const updateData =
         activityType === 'workout' ? { workoutStreak: newStreak } : { focusStreak: newStreak };
@@ -190,10 +190,15 @@ export class FirebaseDataService {
     }
   }
 
-  calculateStreak(lastActivityDate: Date | null | undefined, currentStreak: number): number {
-    if (!lastActivityDate) return 1; // First activity
+  calculateStreak(
+    currentStreak: number,
+    lastActivityDate: Date | null | undefined,
+    newActivityDate: Date = new Date(),
+  ): number {
+    // If no previous activity, start with streak of 1
+    if (!lastActivityDate) return 1;
 
-    const today = new Date();
+    const today = new Date(newActivityDate);
     today.setHours(0, 0, 0, 0);
 
     const lastActivity = new Date(lastActivityDate);
@@ -201,14 +206,14 @@ export class FirebaseDataService {
 
     const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
 
-    if (daysDiff === 1) {
-      // Last activity was yesterday, increment streak
-      return currentStreak + 1;
-    } else if (daysDiff === 0) {
-      // Last activity was today, maintain current streak
+    if (daysDiff === 0) {
+      // Already logged today → no change
       return currentStreak;
+    } else if (daysDiff === 1) {
+      // Consecutive day → increase streak
+      return currentStreak + 1;
     } else {
-      // Last activity was 2+ days ago, reset to 1
+      // Missed a day or more → reset streak
       return 1;
     }
   }
