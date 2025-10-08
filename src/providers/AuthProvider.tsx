@@ -167,6 +167,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsSyncing(true);
 
     try {
+      // Initialize user data for new users (creates default settings and progress if they don't exist)
+      await firebaseDataService.initializeUserData(userToSync);
+
       // Load user settings from Firestore
       const userSettings = await firebaseDataService.getUserSettings(userToSync);
       setSettings(userSettings);
