@@ -14,7 +14,6 @@ import { checkAchievements, getAchievementById, UserProgressData } from '../util
 import { AuthUser } from './index';
 
 export interface UserSettings {
-  id: string;
   userId: string;
   difficulty: 'easy' | 'medium' | 'hard';
   equipment: string[];
@@ -44,7 +43,6 @@ export interface FocusSession {
 }
 
 export interface UserProgress {
-  id: string;
   userId: string;
   workoutStreak: number;
   lastWorkoutDate?: Date | null;
@@ -110,7 +108,7 @@ export class FirebaseDataService {
     try {
       const currentProgress = await this.getUserProgress(user);
       const updatedProgress = {
-        ...currentProgress,
+        ...(currentProgress || {}),
         ...progress,
         userId: user.uid,
         updatedAt: serverTimestamp(),
