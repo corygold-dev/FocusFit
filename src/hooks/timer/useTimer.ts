@@ -88,20 +88,21 @@ export function useTimer({
 
   useInterval(
     () => {
-      if (!endTimeRef.current) return;
+      if (!isRunning) return;
 
-      const remaining = Math.max(
-        Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
-        0
-      );
-      setSecondsLeft(remaining);
-
-      if (remaining <= 0) {
-        setIsRunning(false);
-        cleanupTimerResources(intervalRef, notificationIdRef);
-        playEndSound();
-        onComplete?.();
-      }
+      setSecondsLeft(prev => {
+        const newSeconds = prev - 1;
+        
+        if (newSeconds <= 0) {
+          setIsRunning(false);
+          cleanupTimerResources(intervalRef, notificationIdRef);
+          playEndSound();
+          onComplete?.();
+          return 0;
+        }
+        
+        return newSeconds;
+      });
     },
     isRunning ? TIMER.ONE_SECOND : null
   );
