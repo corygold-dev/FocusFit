@@ -17,7 +17,7 @@ export const workoutChoiceModalStyles = (theme: Theme) =>
       padding: 24,
       borderLeftWidth: 4,
       borderLeftColor: theme.colors.secondary,
-      shadowColor: '#000',
+      shadowColor: theme.colors.text,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.25,
       shadowRadius: 8,

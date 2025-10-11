@@ -1,5 +1,5 @@
-import { StyleSheet } from 'react-native';
 import { Theme } from '@/styles/theme';
+import { StyleSheet } from 'react-native';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
@@ -10,7 +10,7 @@ export const createStyles = (theme: Theme) =>
       alignItems: 'center',
     },
     modalContent: {
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.modalBackground,
       borderRadius: 16,
       padding: 24,
       width: '90%',

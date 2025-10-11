@@ -11,7 +11,7 @@ export const timeModalStyles = (theme: Theme) =>
       paddingHorizontal: 20,
     },
     modalContent: {
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.modalBackground,
       borderRadius: 16,
       padding: 24,
       width: '100%',
