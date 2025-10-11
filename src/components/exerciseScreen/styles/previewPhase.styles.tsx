@@ -30,7 +30,7 @@ export const createStyles = (theme: Theme) =>
     },
     exerciseSection: {
       alignItems: 'center',
-      marginBottom: 48,
+      marginBottom: 16,
     },
     exerciseLabel: {
       fontSize: 16,
@@ -48,7 +48,7 @@ export const createStyles = (theme: Theme) =>
     mediaContainer: {
       width: 350,
       height: 300,
-      marginBottom: 48,
+      marginBottom: 24,
       alignSelf: 'center',
     },
     actionSection: {
@@ -57,6 +57,21 @@ export const createStyles = (theme: Theme) =>
     startButton: {
       height: 56,
       minWidth: 200,
+    },
+    shuffleButton: {
+      marginTop: 16,
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderRadius: 8,
+      backgroundColor: theme.colors.surfaceVariant,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+    shuffleButtonText: {
+      color: theme.colors.text,
+      fontSize: 14,
+      fontWeight: '500',
+      fontFamily: theme.fonts.medium,
     },
     exitButtonContainer: {
       marginTop: 24,

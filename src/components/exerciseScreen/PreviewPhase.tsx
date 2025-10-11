@@ -1,6 +1,6 @@
 import Button from '@/src/components/ui/Button';
-import { useTheme } from '@/src/providers';
 import { exercises } from '@/src/lib/exercises';
+import { useTheme } from '@/src/providers';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import ExerciseInstructions from './ExerciseInstructions';
@@ -9,10 +9,11 @@ import { previewPhaseStyles } from './styles';
 interface PreviewPhaseProps {
   exerciseName: string;
   onStart: () => void;
+  onShuffle?: () => void;
   onExit?: () => void;
 }
 
-export default function PreviewPhase({ exerciseName, onStart, onExit }: PreviewPhaseProps) {
+export default function PreviewPhase({ exerciseName, onStart, onShuffle, onExit }: PreviewPhaseProps) {
   const { theme } = useTheme();
   const styles = previewPhaseStyles(theme);
 
@@ -47,6 +48,11 @@ export default function PreviewPhase({ exerciseName, onStart, onExit }: PreviewP
           accessibilityLabel={`Start ${exerciseName} exercise`}
           style={[styles.startButton, { backgroundColor: theme.colors.secondary }]}
         />
+            {onShuffle && (
+              <TouchableOpacity style={styles.shuffleButton} onPress={onShuffle}>
+                <Text style={styles.shuffleButtonText}>Try Different Exercise</Text>
+              </TouchableOpacity>
+            )}
       </View>
 
       {onExit && (

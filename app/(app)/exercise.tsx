@@ -36,6 +36,7 @@ export default function ExerciseScreen() {
     error,
     startCountdown,
     skipExercise,
+    shuffleExercise,
     restartExercise,
   } = useWorkout({
     settings: settings || { difficulty: 'medium', equipment: [], excludedExercises: [] },
@@ -64,6 +65,7 @@ export default function ExerciseScreen() {
         <PreviewPhase
           exerciseName={currentExercise}
           onStart={startCountdown}
+          onShuffle={shuffleExercise}
           onExit={handleReturnHome}
         />
       )}

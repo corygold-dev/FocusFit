@@ -1,4 +1,4 @@
-import { Exercise } from '@/src/lib/exercises';
+import { Exercise, exercises } from '@/src/lib/exercises';
 import { useAuth, useBackendData, useSounds } from '@/src/providers';
 import { TIMER, WORKOUT } from '@/src/utils/constants';
 import { pickMobilityWorkout, pickStrengthWorkout, UserSettings } from '@/src/utils/exerciseUtils';
@@ -211,6 +211,31 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     }
   };
 
+  const shuffleExercise = () => {
+    if (currentList.length <= 1) return;
+    
+    const currentExercise = currentList[currentIndex];
+    const currentCategory = currentExercise.category;
+    
+    const sameCategoryExercises = exercises.filter(ex => 
+      ex.category === currentCategory && 
+      ex.name !== currentExercise.name &&
+      ex.difficulty.includes(settings.difficulty) &&
+      (!ex.equipment || ex.equipment.every(eq => settings.equipment.includes(eq))) &&
+      !settings.excludedExercises.includes(ex.name)
+    );
+    
+    if (sameCategoryExercises.length === 0) return;
+    
+    const randomIndex = Math.floor(Math.random() * sameCategoryExercises.length);
+    const newExercise = sameCategoryExercises[randomIndex];
+    
+    const newList = [...currentList];
+    newList[currentIndex] = newExercise;
+    setCurrentList(newList);
+    setPhase('preview');
+  };
+
   const restartExercise = () => {
     let duration: number;
     if (workoutType === 'strength') {
@@ -243,6 +268,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     error,
     startCountdown,
     skipExercise,
+    shuffleExercise,
     restartExercise,
   };
 }
