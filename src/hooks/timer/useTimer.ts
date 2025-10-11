@@ -1,8 +1,9 @@
-import { useBackendData, useSounds } from '@/src/providers';
+import { useSounds } from '@/src/providers';
 import { cleanupTimerResources } from '@/src/utils/cleanupTimerResources';
 import { TIMER } from '@/src/utils/constants';
 import { scheduleTimerNotification } from '@/src/utils/notifications';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useBackgroundTimer } from './useBackgroundTimer';
 import { useInterval } from './useInterval';
 
 interface TimerOptions {
@@ -19,34 +20,35 @@ export function useTimer({
   const [isRunning, setIsRunning] = useState(false);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const notificationIdRef = useRef<string | null>(null);
-  const endTimeRef = useRef<number | null>(null);
 
   const { playEndSound } = useSounds();
-  const { settings } = useBackendData();
 
   const progress = useMemo(() => 1 - secondsLeft / duration, [secondsLeft, duration]);
 
+  const {
+    scheduleBackgroundNotification,
+    cleanupBackgroundTimer,
+    resetBackgroundTimer,
+    notificationIdRef,
+    endTimeRef,
+  } = useBackgroundTimer({
+    isActive: isRunning,
+    secondsLeft,
+    onScheduleNotification: scheduleTimerNotification,
+  });
+
   const startTimer = async (newDuration?: number) => {
     const time = newDuration ?? secondsLeft;
-    endTimeRef.current = Date.now() + time * TIMER.ONE_SECOND;
-
+    setSecondsLeft(time);
     setIsRunning(true);
-
-    if (endTimeRef.current && settings?.timerEndNotifications) {
-      const triggerDate = new Date(endTimeRef.current);
-      try {
-        notificationIdRef.current = await scheduleTimerNotification(triggerDate);
-      } catch (error) {
-        console.error('Failed to schedule notification:', error);
-      }
-    }
+    await scheduleBackgroundNotification();
   };
 
   const pauseTimer = async () => {
     setIsRunning(false);
 
     await cleanupTimerResources(intervalRef, notificationIdRef);
+    await cleanupBackgroundTimer();
 
     if (endTimeRef.current) {
       const remaining = Math.max(
@@ -54,16 +56,17 @@ export function useTimer({
         0,
       );
       setSecondsLeft(remaining);
-      endTimeRef.current = null;
+      resetBackgroundTimer();
     }
   };
 
   const resetTimer = async () => {
     setIsRunning(false);
     setSecondsLeft(duration);
-    endTimeRef.current = null;
+    resetBackgroundTimer();
 
     await cleanupTimerResources(intervalRef, notificationIdRef);
+    await cleanupBackgroundTimer();
   };
 
   const toggleTimer = () => {
@@ -103,8 +106,9 @@ export function useTimer({
   useEffect(() => {
     return () => {
       cleanupTimerResources(intervalRef, notificationIdRef);
+      cleanupBackgroundTimer();
     };
-  }, []);
+  }, [cleanupBackgroundTimer]);
 
   return {
     duration,

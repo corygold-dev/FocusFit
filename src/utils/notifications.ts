@@ -20,6 +20,26 @@ export async function scheduleTimerNotification(triggerDate: Date) {
   }
 }
 
+export async function scheduleExerciseNotification(triggerDate: Date, exerciseName: string) {
+  try {
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Exercise Complete!',
+        body: `${exerciseName} finished - Next exercise ready`,
+        sound: 'finish-sound.wav',
+      },
+      trigger: {
+        type: 'date',
+        date: triggerDate,
+      } as Notifications.DateTriggerInput,
+    });
+    return id;
+  } catch (error) {
+    console.error('Failed to schedule exercise notification:', error);
+    return null;
+  }
+}
+
 export async function cancelNotification(id: string | null) {
   if (id) await Notifications.cancelScheduledNotificationAsync(id);
 }

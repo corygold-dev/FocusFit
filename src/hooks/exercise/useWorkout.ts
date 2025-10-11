@@ -2,8 +2,10 @@ import { Exercise } from '@/src/lib/exercises';
 import { useAuth, useBackendData, useSounds } from '@/src/providers';
 import { TIMER, WORKOUT } from '@/src/utils/constants';
 import { pickMobilityWorkout, pickStrengthWorkout, UserSettings } from '@/src/utils/exerciseUtils';
+import { scheduleExerciseNotification } from '@/src/utils/notifications';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInterval } from '../timer';
+import { useBackgroundTimer } from '../timer/useBackgroundTimer';
 
 type Phase = 'preview' | 'countdown' | 'active' | 'completed';
 
@@ -20,11 +22,29 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const hasSavedWorkoutRef = useRef(false);
 
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
   const { user } = useAuth();
   const { saveUserProgress, saveWorkoutSession, getUserProgress } = useBackendData();
+
+  const scheduleExerciseNotificationCallback = useCallback(async (triggerDate: Date) => {
+    const currentExercise = currentList[currentIndex];
+    if (currentExercise) {
+      return await scheduleExerciseNotification(triggerDate, currentExercise.name);
+    }
+    return null;
+  }, [currentList, currentIndex]);
+
+  const {
+    scheduleBackgroundNotification,
+    cleanupBackgroundTimer,
+  } = useBackgroundTimer({
+    isActive: phase === 'active',
+    secondsLeft,
+    onScheduleNotification: scheduleExerciseNotificationCallback,
+  });
 
   const handleStrengthProgression = useCallback(() => {
     const currentRound = currentIndex;
@@ -73,6 +93,8 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     } catch (error) {
       console.error('Error saving workout session:', error);
       hasSavedWorkoutRef.current = false;
+    } finally {
+      await cleanupBackgroundTimer();
     }
   }, [user?.uid, currentList, workoutType, saveWorkoutSession, getUserProgress, saveUserProgress]);
 
@@ -108,6 +130,17 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   }, [phase, saveWorkoutData]);
 
   const isTimerActive = phase === 'countdown' || phase === 'active';
+
+  useEffect(() => {
+    scheduleBackgroundNotification();
+  }, [scheduleBackgroundNotification]);
+
+  useEffect(() => {
+    if (phase !== 'active') {
+      cleanupBackgroundTimer();
+    }
+  }, [phase, cleanupBackgroundTimer]);
+
   useInterval(
     () => {
       setSecondsLeft((prev) => prev - 1);
