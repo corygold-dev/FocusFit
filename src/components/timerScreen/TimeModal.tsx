@@ -25,12 +25,21 @@ export default function TimeModal({
   const styles = timeModalStyles(theme);
 
   return (
-    <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="fade"
+      onRequestClose={onClose}
+    >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Change Focus Time</Text>
           <Text style={styles.modalSubtitle}>{formatTime(secondsLeft)}</Text>
-          <TimerSlider value={secondsLeft} isRunning={isRunning} onChange={onChange} />
+          <TimerSlider
+            value={secondsLeft}
+            isRunning={isRunning}
+            onChange={onChange}
+          />
           <View style={styles.modalButtons}>
             <Button
               title="Cancel"

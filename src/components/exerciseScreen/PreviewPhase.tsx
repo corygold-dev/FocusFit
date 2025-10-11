@@ -13,11 +13,16 @@ interface PreviewPhaseProps {
   onExit?: () => void;
 }
 
-export default function PreviewPhase({ exerciseName, onStart, onShuffle, onExit }: PreviewPhaseProps) {
+export default function PreviewPhase({
+  exerciseName,
+  onStart,
+  onShuffle,
+  onExit,
+}: PreviewPhaseProps) {
   const { theme } = useTheme();
   const styles = previewPhaseStyles(theme);
 
-  const exercise = exercises.find((ex) => ex.name === exerciseName);
+  const exercise = exercises.find(ex => ex.name === exerciseName);
   const instructions = exercise?.instructions || [
     'Prepare for the exercise',
     'Focus on proper form',
@@ -37,7 +42,10 @@ export default function PreviewPhase({ exerciseName, onStart, onShuffle, onExit 
       </View>
 
       <View style={styles.mediaContainer}>
-        <ExerciseInstructions exerciseName={exerciseName} steps={instructions} />
+        <ExerciseInstructions
+          exerciseName={exerciseName}
+          steps={instructions}
+        />
       </View>
 
       <View style={styles.actionSection}>
@@ -46,13 +54,16 @@ export default function PreviewPhase({ exerciseName, onStart, onShuffle, onExit 
           variant="primary"
           onPress={onStart}
           accessibilityLabel={`Start ${exerciseName} exercise`}
-          style={[styles.startButton, { backgroundColor: theme.colors.secondary }]}
+          style={[
+            styles.startButton,
+            { backgroundColor: theme.colors.secondary },
+          ]}
         />
-            {onShuffle && (
-              <TouchableOpacity style={styles.shuffleButton} onPress={onShuffle}>
-                <Text style={styles.shuffleButtonText}>Try Different Exercise</Text>
-              </TouchableOpacity>
-            )}
+        {onShuffle && (
+          <TouchableOpacity style={styles.shuffleButton} onPress={onShuffle}>
+            <Text style={styles.shuffleButtonText}>Try Different Exercise</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {onExit && (

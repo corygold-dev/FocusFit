@@ -23,7 +23,10 @@ export function useTimer({
 
   const { playEndSound } = useSounds();
 
-  const progress = useMemo(() => 1 - secondsLeft / duration, [secondsLeft, duration]);
+  const progress = useMemo(
+    () => 1 - secondsLeft / duration,
+    [secondsLeft, duration]
+  );
 
   const {
     scheduleBackgroundNotification,
@@ -53,7 +56,7 @@ export function useTimer({
     if (endTimeRef.current) {
       const remaining = Math.max(
         Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
-        0,
+        0
       );
       setSecondsLeft(remaining);
       resetBackgroundTimer();
@@ -89,7 +92,7 @@ export function useTimer({
 
       const remaining = Math.max(
         Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
-        0,
+        0
       );
       setSecondsLeft(remaining);
 
@@ -100,7 +103,7 @@ export function useTimer({
         onComplete?.();
       }
     },
-    isRunning ? TIMER.ONE_SECOND : null,
+    isRunning ? TIMER.ONE_SECOND : null
   );
 
   useEffect(() => {
@@ -108,7 +111,7 @@ export function useTimer({
       cleanupTimerResources(intervalRef, notificationIdRef);
       cleanupBackgroundTimer();
     };
-  }, [cleanupBackgroundTimer]);
+  }, [cleanupBackgroundTimer, notificationIdRef]);
 
   return {
     duration,

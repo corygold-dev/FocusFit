@@ -33,7 +33,11 @@ export default function TimerControls({
         disabled={isRunning}
         accessibilityLabel="Reset timer"
       />
-      <Button title="Skip" onPress={onSkip} accessibilityLabel="Skip timer and go to exercises" />
+      <Button
+        title="Skip"
+        onPress={onSkip}
+        accessibilityLabel="Skip timer and go to exercises"
+      />
     </View>
   );
 }

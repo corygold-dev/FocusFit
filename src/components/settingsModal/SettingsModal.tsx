@@ -51,8 +51,11 @@ export default function SettingsModal({
   const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
-  const [difficulty, setDifficulty] = useState<UserSettings['difficulty']>(initialDifficulty);
-  const [excludedExercises, setExcludedExercises] = useState<string[]>(initialExcludedExercises);
+  const [difficulty, setDifficulty] =
+    useState<UserSettings['difficulty']>(initialDifficulty);
+  const [excludedExercises, setExcludedExercises] = useState<string[]>(
+    initialExcludedExercises
+  );
   const [notifications, setNotifications] = useState({
     morningReminders: initialMorningReminders,
     afternoonReminders: initialAfternoonReminders,
@@ -125,13 +128,18 @@ export default function SettingsModal({
               <Text style={styles.modalTitle}>Settings</Text>
 
               <Text style={styles.sectionTitle}>Theme:</Text>
-              <ThemeSelector currentTheme={themeMode} onThemeChange={setThemeMode} />
+              <ThemeSelector
+                currentTheme={themeMode}
+                onThemeChange={setThemeMode}
+              />
 
               <Text style={styles.sectionTitle}>Daily Reminders:</Text>
               <NotificationSettings
                 initialMorningReminders={notifications.morningReminders}
                 initialAfternoonReminders={notifications.afternoonReminders}
-                initialTimerEndNotifications={notifications.timerEndNotifications}
+                initialTimerEndNotifications={
+                  notifications.timerEndNotifications
+                }
                 onNotificationChange={setNotifications}
               />
 
@@ -168,7 +176,10 @@ export default function SettingsModal({
                   <Text style={styles.feedbackButtonText}>Send Feedback</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+                <TouchableOpacity
+                  style={styles.logoutButton}
+                  onPress={handleLogout}
+                >
                   <Text style={styles.logoutText}>Log Out</Text>
                 </TouchableOpacity>
               </View>
@@ -176,8 +187,16 @@ export default function SettingsModal({
           </View>
 
           <View style={styles.buttonRow}>
-            <Button title="Cancel" onPress={onClose} color={theme.colors.textSecondary} />
-            <Button title="Save" onPress={handleSave} color={theme.colors.primary} />
+            <Button
+              title="Cancel"
+              onPress={onClose}
+              color={theme.colors.textSecondary}
+            />
+            <Button
+              title="Save"
+              onPress={handleSave}
+              color={theme.colors.primary}
+            />
           </View>
         </View>
       </View>

@@ -1,7 +1,14 @@
 import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { registerFormStyles } from './styles';
 
 interface RegisterFormProps {
@@ -14,7 +21,8 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, loginWithGoogle, loginWithApple, error, clearError } = useAuth();
+  const { register, loginWithGoogle, loginWithApple, error, clearError } =
+    useAuth();
   const { theme } = useTheme();
   const styles = registerFormStyles(theme);
 
@@ -42,11 +50,17 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     setIsSubmitting(true);
     try {
       await register(email, password);
-      Alert.alert('Success', 'Account created successfully! You can now sign in.');
+      Alert.alert(
+        'Success',
+        'Account created successfully! You can now sign in.'
+      );
       onNavigateToLogin();
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Registration Error', errorObj.message || 'Failed to register');
+      Alert.alert(
+        'Registration Error',
+        errorObj.message || 'Failed to register'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +72,10 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
       await loginWithGoogle();
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Google Sign-In Error', errorObj.message || 'Failed to sign in with Google');
+      Alert.alert(
+        'Google Sign-In Error',
+        errorObj.message || 'Failed to sign in with Google'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -70,7 +87,10 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
       await loginWithApple();
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Apple Sign-In Error', errorObj.message || 'Failed to sign in with Apple');
+      Alert.alert(
+        'Apple Sign-In Error',
+        errorObj.message || 'Failed to sign in with Apple'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -120,7 +140,11 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
 
         {error && <Text style={styles.errorText}>{error}</Text>}
 
-        <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={isSubmitting}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleRegister}
+          disabled={isSubmitting}
+        >
           {isSubmitting ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -150,7 +174,10 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
           style={styles.socialButton}
         />
 
-        <TouchableOpacity onPress={handleNavigateToLogin} disabled={isSubmitting}>
+        <TouchableOpacity
+          onPress={handleNavigateToLogin}
+          disabled={isSubmitting}
+        >
           <Text style={styles.linkText}>Already have an account? Log In</Text>
         </TouchableOpacity>
       </View>

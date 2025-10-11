@@ -11,7 +11,11 @@ interface TimerDisplayProps {
   secondsLeft: number;
 }
 
-export default function TimerDisplay({ title, progress, secondsLeft }: TimerDisplayProps) {
+export default function TimerDisplay({
+  title,
+  progress,
+  secondsLeft,
+}: TimerDisplayProps) {
   const { theme } = useTheme();
   const styles = timerDisplayStyles(theme);
 

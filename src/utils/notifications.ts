@@ -20,7 +20,10 @@ export async function scheduleTimerNotification(triggerDate: Date) {
   }
 }
 
-export async function scheduleExerciseNotification(triggerDate: Date, exerciseName: string) {
+export async function scheduleExerciseNotification(
+  triggerDate: Date,
+  exerciseName: string
+) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
@@ -44,7 +47,10 @@ export async function cancelNotification(id: string | null) {
   if (id) await Notifications.cancelScheduledNotificationAsync(id);
 }
 
-export async function scheduleDailyReminder(hour: number = 9, minute: number = 0) {
+export async function scheduleDailyReminder(
+  hour: number = 9,
+  minute: number = 0
+) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
@@ -67,7 +73,10 @@ export async function scheduleDailyReminder(hour: number = 9, minute: number = 0
   }
 }
 
-export async function scheduleMotivationalReminder(hour: number = 15, minute: number = 0) {
+export async function scheduleMotivationalReminder(
+  hour: number = 15,
+  minute: number = 0
+) {
   try {
     const id = await Notifications.scheduleNotificationAsync({
       content: {
@@ -92,15 +101,18 @@ export async function scheduleMotivationalReminder(hour: number = 15, minute: nu
 
 export async function cancelAllDailyReminders() {
   try {
-    const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
+    const scheduledNotifications =
+      await Notifications.getAllScheduledNotificationsAsync();
     const dailyReminders = scheduledNotifications.filter(
-      (notification) =>
+      notification =>
         notification.content.data?.type === 'daily_reminder' ||
-        notification.content.data?.type === 'motivational',
+        notification.content.data?.type === 'motivational'
     );
 
     for (const notification of dailyReminders) {
-      await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+      await Notifications.cancelScheduledNotificationAsync(
+        notification.identifier
+      );
     }
   } catch (error) {
     console.error('Failed to cancel daily reminders:', error);

@@ -1,6 +1,12 @@
 import { useTheme } from '@/src/providers';
 import { THEME_MODES, ThemeMode } from '@/src/utils/constants';
-import { ChevronDown, ChevronUp, Moon, Smartphone, Sun } from 'lucide-react-native';
+import {
+  ChevronDown,
+  ChevronUp,
+  Moon,
+  Smartphone,
+  Sun,
+} from 'lucide-react-native';
 import React, { useCallback, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { themeSelectorStyles } from './styles';
@@ -10,7 +16,10 @@ type ThemeSelectorProps = {
   onThemeChange: (theme: ThemeMode) => void;
 };
 
-export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSelectorProps) {
+export default function ThemeSelector({
+  currentTheme,
+  onThemeChange,
+}: ThemeSelectorProps) {
   const { theme } = useTheme();
   const styles = themeSelectorStyles(theme);
 
@@ -23,32 +32,42 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
           return (
             <Sun
               size={18}
-              color={mode === currentTheme ? theme.colors.primary : theme.colors.text}
+              color={
+                mode === currentTheme ? theme.colors.primary : theme.colors.text
+              }
             />
           );
         case 'dark':
           return (
             <Moon
               size={18}
-              color={mode === currentTheme ? theme.colors.primary : theme.colors.text}
+              color={
+                mode === currentTheme ? theme.colors.primary : theme.colors.text
+              }
             />
           );
         case 'system':
           return (
             <Smartphone
               size={18}
-              color={mode === currentTheme ? theme.colors.primary : theme.colors.text}
+              color={
+                mode === currentTheme ? theme.colors.primary : theme.colors.text
+              }
             />
           );
         default:
           return null;
       }
     },
-    [currentTheme, theme.colors.primary, theme.colors.text],
+    [currentTheme, theme.colors.primary, theme.colors.text]
   );
 
   const getThemeLabel = useCallback((mode: ThemeMode) => {
-    return mode === 'system' ? 'Match System' : mode === 'dark' ? 'Dark' : 'Light';
+    return mode === 'system'
+      ? 'Match System'
+      : mode === 'dark'
+        ? 'Dark'
+        : 'Light';
   }, []);
 
   return (
@@ -70,7 +89,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
 
       {showDropdown && (
         <View style={styles.dropdownMenu}>
-          {THEME_MODES.map((modeOption) => (
+          {THEME_MODES.map(modeOption => (
             <TouchableOpacity
               key={modeOption}
               style={[
@@ -90,7 +109,8 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
                 <Text
                   style={[
                     styles.dropdownOptionText,
-                    modeOption === currentTheme && styles.dropdownOptionTextSelected,
+                    modeOption === currentTheme &&
+                      styles.dropdownOptionTextSelected,
                   ]}
                 >
                   {getThemeLabel(modeOption)}

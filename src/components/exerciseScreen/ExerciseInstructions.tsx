@@ -8,14 +8,20 @@ interface ExerciseInstructionsProps {
   steps: string[];
 }
 
-export default function ExerciseInstructions({ exerciseName, steps }: ExerciseInstructionsProps) {
+export default function ExerciseInstructions({
+  exerciseName,
+  steps,
+}: ExerciseInstructionsProps) {
   const { theme } = useTheme();
   const styles = exerciseInstructionsStyles(theme);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>How to do {exerciseName}</Text>
-      <ScrollView style={styles.scrollContainer} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+      >
         {steps.map((step, index) => (
           <View key={index} style={styles.stepContainer}>
             <View style={styles.stepNumber}>

@@ -14,7 +14,9 @@ interface WorkoutProviderProps {
   children: ReactNode;
 }
 
-export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) => {
+export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({
+  children,
+}) => {
   const [workoutType, setWorkoutType] = useState<WorkoutType>(null);
 
   const clearWorkoutType = () => setWorkoutType(null);
@@ -25,7 +27,9 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children }) =>
     clearWorkoutType,
   };
 
-  return <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>;
+  return (
+    <WorkoutContext.Provider value={value}>{children}</WorkoutContext.Provider>
+  );
 };
 
 export const useWorkoutType = (): WorkoutContextType => {

@@ -16,7 +16,9 @@ interface TimerProviderProps {
 
 export const TimerProvider: React.FC<TimerProviderProps> = ({ children }) => {
   const [shouldAutoStart, setShouldAutoStart] = useState(false);
-  const [selectedFocusTime, setSelectedFocusTime] = useState<number | null>(null);
+  const [selectedFocusTime, setSelectedFocusTime] = useState<number | null>(
+    null
+  );
 
   const clearAutoStart = () => setShouldAutoStart(false);
 

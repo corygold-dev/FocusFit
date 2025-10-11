@@ -8,7 +8,12 @@ import {
 } from '@/src/components';
 import { exerciseScreenStyles } from '@/src/components/exerciseScreen/styles';
 import { useWorkout } from '@/src/hooks';
-import { useTheme, useTimerContext, useUserSettings, useWorkoutType } from '@/src/providers';
+import {
+  useTheme,
+  useTimerContext,
+  useUserSettings,
+  useWorkoutType,
+} from '@/src/providers';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
@@ -39,7 +44,11 @@ export default function ExerciseScreen() {
     shuffleExercise,
     restartExercise,
   } = useWorkout({
-    settings: settings || { difficulty: 'medium', equipment: [], excludedExercises: [] },
+    settings: settings || {
+      difficulty: 'medium',
+      equipment: [],
+      excludedExercises: [],
+    },
     workoutType: workoutType || 'strength',
   });
 
@@ -87,7 +96,9 @@ export default function ExerciseScreen() {
         <CompletedPhase
           onReturnHome={handleReturnHome}
           onSetFocusTime={setSelectedFocusTime}
-          previousFocusTime={settings?.lastFocusTime ? settings.lastFocusTime / 60 : undefined}
+          previousFocusTime={
+            settings?.lastFocusTime ? settings.lastFocusTime / 60 : undefined
+          }
         />
       )}
     </View>

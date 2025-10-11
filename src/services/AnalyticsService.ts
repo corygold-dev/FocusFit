@@ -5,7 +5,9 @@ export class AnalyticsService {
   // ============================================================================
 
   static trackFocusSessionStarted(duration: number) {
-    console.log('📊 Analytics: Focus session started', { duration_minutes: duration });
+    console.log('📊 Analytics: Focus session started', {
+      duration_minutes: duration,
+    });
     // TODO: Implement proper analytics when needed
   }
 
@@ -24,7 +26,11 @@ export class AnalyticsService {
     });
   }
 
-  static trackWorkoutCompleted(exerciseCount: number, duration: number, difficulty: string) {
+  static trackWorkoutCompleted(
+    exerciseCount: number,
+    duration: number,
+    difficulty: string
+  ) {
     console.log('📊 Analytics: Workout completed', {
       exercise_count: exerciseCount,
       duration_minutes: Math.round(duration / 60),
@@ -43,7 +49,10 @@ export class AnalyticsService {
   // ACHIEVEMENTS
   // ============================================================================
 
-  static trackAchievementUnlocked(achievementId: string, achievementName: string) {
+  static trackAchievementUnlocked(
+    achievementId: string,
+    achievementName: string
+  ) {
     console.log('📊 Analytics: Achievement unlocked', {
       achievement_id: achievementId,
       achievement_name: achievementName,
@@ -54,7 +63,11 @@ export class AnalyticsService {
   // SETTINGS & PREFERENCES
   // ============================================================================
 
-  static trackSettingsChanged(settingType: string, oldValue: unknown, newValue: unknown) {
+  static trackSettingsChanged(
+    settingType: string,
+    oldValue: unknown,
+    newValue: unknown
+  ) {
     console.log('📊 Analytics: Settings changed', {
       setting_type: settingType,
       old_value: oldValue,
@@ -62,7 +75,10 @@ export class AnalyticsService {
     });
   }
 
-  static trackNotificationSettingsChanged(reminderType: string, enabled: boolean) {
+  static trackNotificationSettingsChanged(
+    reminderType: string,
+    enabled: boolean
+  ) {
     console.log('📊 Analytics: Notification settings changed', {
       reminder_type: reminderType,
       enabled,
@@ -105,7 +121,10 @@ export class AnalyticsService {
   // USER PROPERTIES
   // ============================================================================
 
-  static setUserProperties(userId: string, properties: Record<string, unknown>) {
+  static setUserProperties(
+    userId: string,
+    properties: Record<string, unknown>
+  ) {
     console.log('📊 Analytics: User properties set', { userId, properties });
   }
 

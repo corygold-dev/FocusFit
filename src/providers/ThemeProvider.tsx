@@ -33,7 +33,9 @@ const ThemeContext = createContext<ThemeContextType>({
   setThemeMode: () => {},
 });
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const systemColorScheme = useColorScheme();
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
 
@@ -72,7 +74,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     loadThemePreference();
   }, []);
 
-  const isDark = themeMode === 'dark' || (themeMode === 'system' && systemColorScheme === 'dark');
+  const isDark =
+    themeMode === 'dark' ||
+    (themeMode === 'system' && systemColorScheme === 'dark');
   const theme = getTheme(isDark);
 
   const updateThemeMode = (mode: ThemeMode) => {
@@ -87,12 +91,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         } else {
           console.error('Failed to save theme preference', String(error));
         }
-      },
+      }
     );
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, isDark, themeMode, setThemeMode: updateThemeMode }}>
+    <ThemeContext.Provider
+      value={{ theme, isDark, themeMode, setThemeMode: updateThemeMode }}
+    >
       {children}
     </ThemeContext.Provider>
   );

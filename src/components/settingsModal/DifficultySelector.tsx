@@ -38,10 +38,13 @@ export default function DifficultySelector({
 
       {showDropdown && (
         <View style={styles.dropdownMenu}>
-          {_.map(options, (level) => (
+          {_.map(options, level => (
             <TouchableOpacity
               key={level}
-              style={[styles.dropdownOption, level === difficulty && styles.dropdownOptionSelected]}
+              style={[
+                styles.dropdownOption,
+                level === difficulty && styles.dropdownOptionSelected,
+              ]}
               onPress={() => {
                 onChange(level as Difficulty);
                 setShowDropdown(false);

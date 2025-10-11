@@ -1,3 +1,4 @@
+import { useLeaderboard } from '@/src/hooks/useLeaderboard';
 import { useAuth, useTheme } from '@/src/providers';
 import { getAchievementById } from '@/src/utils/achievements';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -27,7 +28,10 @@ interface AnalyticsData {
   achievements: string[];
 }
 
-export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps) {
+export default function AnalyticsModal({
+  visible,
+  onClose,
+}: AnalyticsModalProps) {
   const { theme } = useTheme();
   const {
     user,
@@ -39,7 +43,10 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
     getTotalWorkoutDuration,
     getTotalFocusDuration,
   } = useAuth();
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const { focusEntries, workoutsEntries, getUserRank } = useLeaderboard();
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const styles = analyticsModalStyles(theme);
 
@@ -70,11 +77,13 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
       thisWeek.setDate(thisWeek.getDate() - 7);
 
       const thisWeekWorkouts = workoutHistory.filter(
-        (session) => session.completedAt && new Date(session.completedAt) >= thisWeek,
+        session =>
+          session.completedAt && new Date(session.completedAt) >= thisWeek
       ).length;
 
       const thisWeekFocusSessions = focusHistory.filter(
-        (session) => session.completedAt && new Date(session.completedAt) >= thisWeek,
+        session =>
+          session.completedAt && new Date(session.completedAt) >= thisWeek
       ).length;
 
       const averageFocusDuration =
@@ -96,7 +105,9 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
         averageFocusDuration: Math.round(averageFocusDuration),
         thisWeekWorkouts,
         thisWeekFocusSessions,
-        lastWorkoutDate: progress.lastWorkoutDate ? new Date(progress.lastWorkoutDate) : null,
+        lastWorkoutDate: progress.lastWorkoutDate
+          ? new Date(progress.lastWorkoutDate)
+          : null,
         lastFocusDate: progress.lastFocusSessionDate
           ? new Date(progress.lastFocusSessionDate)
           : null,
@@ -152,8 +163,70 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
           <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
               <View style={styles.titleContainer}>
-                <MaterialIcons name="analytics" size={28} color={theme.colors.primary} />
+                <MaterialIcons
+                  name="analytics"
+                  size={28}
+                  color={theme.colors.primary}
+                />
                 <Text style={styles.modalTitle}>Your Progress</Text>
+              </View>
+
+              {/* Weekly Leaderboard Section */}
+              <View style={styles.leaderboardSection}>
+                <View style={styles.sectionHeader}>
+                  <MaterialIcons name="leaderboard" size={20} color="#9C27B0" />
+                  <Text style={styles.sectionTitle}>Weekly Rankings</Text>
+                </View>
+                <Text style={styles.resetInfo}>
+                  Resets every Monday at midnight
+                </Text>
+                <View style={styles.leaderboardGrid}>
+                  <View style={styles.leaderboardCard}>
+                    <View style={styles.leaderboardHeader}>
+                      <MaterialIcons
+                        name="psychology"
+                        size={16}
+                        color="#2196F3"
+                      />
+                      <Text style={styles.leaderboardTitle}>Focus Time</Text>
+                    </View>
+                    <View style={styles.rankContainer}>
+                      <Text style={styles.rankNumber}>
+                        {getUserRank('focus') > 0
+                          ? `#${getUserRank('focus')}`
+                          : 'N/A'}
+                      </Text>
+                      <Text style={styles.rankLabel}>
+                        {getUserRank('focus') > 0
+                          ? `of ${Math.max(focusEntries.length, workoutsEntries.length)} users`
+                          : 'Complete focus sessions to rank'}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={styles.leaderboardCard}>
+                    <View style={styles.leaderboardHeader}>
+                      <MaterialIcons
+                        name="fitness-center"
+                        size={16}
+                        color="#FF9800"
+                      />
+                      <Text style={styles.leaderboardTitle}>Workouts</Text>
+                    </View>
+                    <View style={styles.rankContainer}>
+                      <Text style={styles.rankNumber}>
+                        {getUserRank('workouts') > 0
+                          ? `#${getUserRank('workouts')}`
+                          : 'N/A'}
+                      </Text>
+                      <Text style={styles.rankLabel}>
+                        {getUserRank('workouts') > 0
+                          ? `of ${Math.max(focusEntries.length, workoutsEntries.length)} users`
+                          : 'Complete workouts to rank'}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               </View>
 
               <View style={styles.focusSection}>
@@ -191,12 +264,18 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
 
               <View style={styles.workoutSection}>
                 <View style={styles.sectionHeader}>
-                  <MaterialIcons name="fitness-center" size={20} color="#FF9800" />
+                  <MaterialIcons
+                    name="fitness-center"
+                    size={20}
+                    color="#FF9800"
+                  />
                   <Text style={styles.sectionTitle}>Workouts</Text>
                 </View>
                 <View style={styles.metricsGrid}>
                   <View style={styles.metricCard}>
-                    <Text style={styles.metricNumber}>{analyticsData?.totalWorkouts || 0}</Text>
+                    <Text style={styles.metricNumber}>
+                      {analyticsData?.totalWorkouts || 0}
+                    </Text>
                     <Text style={styles.metricLabel}>Total Workouts</Text>
                   </View>
                   <View style={styles.metricCard}>
@@ -206,7 +285,9 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
                     <Text style={styles.metricLabel}>Total Time</Text>
                   </View>
                   <View style={styles.metricCard}>
-                    <Text style={styles.metricNumber}>{analyticsData?.thisWeekWorkouts || 0}</Text>
+                    <Text style={styles.metricNumber}>
+                      {analyticsData?.thisWeekWorkouts || 0}
+                    </Text>
                     <Text style={styles.metricLabel}>This Week</Text>
                   </View>
                   <View style={styles.metricCard}>
@@ -221,10 +302,15 @@ export default function AnalyticsModal({ visible, onClose }: AnalyticsModalProps
               {/* Achievements Section */}
               <View style={styles.achievementsSection}>
                 <View style={styles.sectionHeader}>
-                  <MaterialIcons name="emoji-events" size={20} color="#FFD700" />
+                  <MaterialIcons
+                    name="emoji-events"
+                    size={20}
+                    color="#FFD700"
+                  />
                   <Text style={styles.sectionTitle}>Achievements</Text>
                 </View>
-                {analyticsData?.achievements && analyticsData.achievements.length > 0 ? (
+                {analyticsData?.achievements &&
+                analyticsData.achievements.length > 0 ? (
                   <ScrollView
                     horizontal
                     showsHorizontalScrollIndicator={false}

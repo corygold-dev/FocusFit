@@ -47,7 +47,9 @@ export default function ConfirmationDialog({
             accessibilityRole="button"
             accessibilityLabel={confirmText}
           >
-            <Text style={[styles.modalButtonText, styles.confirmButtonText]}>{confirmText}</Text>
+            <Text style={[styles.modalButtonText, styles.confirmButtonText]}>
+              {confirmText}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

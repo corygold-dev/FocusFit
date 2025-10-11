@@ -11,7 +11,11 @@ interface TimerSliderProps {
   onChange: (minutes: number) => void;
 }
 
-export default function TimerSlider({ value, isRunning, onChange }: TimerSliderProps) {
+export default function TimerSlider({
+  value,
+  isRunning,
+  onChange,
+}: TimerSliderProps) {
   const { theme } = useTheme();
   const styles = timerSliderStyles(theme);
 
@@ -23,12 +27,14 @@ export default function TimerSlider({ value, isRunning, onChange }: TimerSliderP
         maximumValue={SLIDER.MAX}
         step={SLIDER.STEP}
         value={value / 60}
-        onValueChange={(minutes) => {
+        onValueChange={minutes => {
           if (!isRunning) {
             onChange(minutes);
           }
         }}
-        minimumTrackTintColor={isRunning ? theme.colors.textSecondary : theme.colors.primary}
+        minimumTrackTintColor={
+          isRunning ? theme.colors.textSecondary : theme.colors.primary
+        }
         maximumTrackTintColor={theme.colors.surfaceVariant}
         thumbTintColor={theme.colors.primaryLight}
         disabled={isRunning}

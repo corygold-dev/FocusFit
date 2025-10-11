@@ -55,7 +55,10 @@ class FirebaseAuthService {
       const googleCredential = GoogleAuthProvider.credential(idToken);
 
       // Sign-in the user with the credential
-      const result: UserCredential = await signInWithCredential(auth, googleCredential);
+      const result: UserCredential = await signInWithCredential(
+        auth,
+        googleCredential
+      );
 
       return this.convertFirebaseUser(result.user);
     } catch (error) {
@@ -72,7 +75,9 @@ class FirebaseAuthService {
 
     try {
       // Dynamic import for iOS only
-      const { appleAuth } = await import('@invertase/react-native-apple-authentication');
+      const { appleAuth } = await import(
+        '@invertase/react-native-apple-authentication'
+      );
 
       // Start the sign-in request
       const appleAuthRequestResponse = await appleAuth.performRequest({
@@ -95,7 +100,10 @@ class FirebaseAuthService {
       });
 
       // Sign the user in with the credential
-      const result: UserCredential = await signInWithCredential(auth, appleCredential);
+      const result: UserCredential = await signInWithCredential(
+        auth,
+        appleCredential
+      );
 
       return this.convertFirebaseUser(result.user);
     } catch (error) {
@@ -105,9 +113,16 @@ class FirebaseAuthService {
   }
 
   // Email/Password Sign-In
-  async signInWithEmailAndPassword(email: string, password: string): Promise<AuthUser> {
+  async signInWithEmailAndPassword(
+    email: string,
+    password: string
+  ): Promise<AuthUser> {
     try {
-      const result: UserCredential = await signInWithEmailAndPassword(auth, email, password);
+      const result: UserCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       return this.convertFirebaseUser(result.user);
     } catch (error) {
       console.error('Email/Password Sign-In Error:', error);
@@ -116,9 +131,16 @@ class FirebaseAuthService {
   }
 
   // Email/Password Registration
-  async createUserWithEmailAndPassword(email: string, password: string): Promise<AuthUser> {
+  async createUserWithEmailAndPassword(
+    email: string,
+    password: string
+  ): Promise<AuthUser> {
     try {
-      const result: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const result: UserCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
       // Send email verification
       if (result.user) {
@@ -144,7 +166,7 @@ class FirebaseAuthService {
 
   // Auth State Listener
   onAuthStateChanged(callback: (user: AuthUser | null) => void): () => void {
-    return onAuthStateChanged(auth, (firebaseUser) => {
+    return onAuthStateChanged(auth, firebaseUser => {
       if (firebaseUser) {
         callback(this.convertFirebaseUser(firebaseUser));
       } else {

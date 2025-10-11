@@ -115,14 +115,14 @@ export class DataExportService {
     let csv = 'Type,Date,Duration,Details\n';
 
     // Add focus sessions
-    data.focusSessions.forEach((session) => {
+    data.focusSessions.forEach(session => {
       const date = new Date(session.completedAt).toLocaleDateString();
       const duration = Math.round(session.duration / 60); // Convert to minutes
       csv += `Focus Session,${date},${duration} minutes,Focus session\n`;
     });
 
     // Add workout sessions
-    data.workoutSessions.forEach((session) => {
+    data.workoutSessions.forEach(session => {
       const date = session.completedAt
         ? new Date(session.completedAt).toLocaleDateString()
         : 'Unknown';
@@ -205,11 +205,12 @@ ${this.getRecentActivitySummary(data)}
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const recentFocus = data.focusSessions.filter(
-      (session) => new Date(session.completedAt) >= sevenDaysAgo,
+      session => new Date(session.completedAt) >= sevenDaysAgo
     );
 
     const recentWorkouts = data.workoutSessions.filter(
-      (session) => session.completedAt && new Date(session.completedAt) >= sevenDaysAgo,
+      session =>
+        session.completedAt && new Date(session.completedAt) >= sevenDaysAgo
     );
 
     const totalRecentTime =
@@ -227,7 +228,9 @@ ${this.getRecentActivitySummary(data)}
   // DATA VALIDATION
   // ============================================================================
 
-  async validateExportData(data: ExportData): Promise<{ isValid: boolean; errors: string[] }> {
+  async validateExportData(
+    data: ExportData
+  ): Promise<{ isValid: boolean; errors: string[] }> {
     const errors: string[] = [];
 
     // Check required fields
@@ -236,12 +239,16 @@ ${this.getRecentActivitySummary(data)}
     if (!data.user.exportDate) errors.push('Missing export date');
 
     // Check data consistency
-    if (data.focusSessions.length < 0) errors.push('Invalid focus sessions count');
-    if (data.workoutSessions.length < 0) errors.push('Invalid workout sessions count');
+    if (data.focusSessions.length < 0)
+      errors.push('Invalid focus sessions count');
+    if (data.workoutSessions.length < 0)
+      errors.push('Invalid workout sessions count');
 
     // Check for reasonable data ranges
-    if (data.metadata.totalFocusTime < 0) errors.push('Invalid total focus time');
-    if (data.metadata.totalWorkoutTime < 0) errors.push('Invalid total workout time');
+    if (data.metadata.totalFocusTime < 0)
+      errors.push('Invalid total focus time');
+    if (data.metadata.totalWorkoutTime < 0)
+      errors.push('Invalid total workout time');
 
     return {
       isValid: errors.length === 0,

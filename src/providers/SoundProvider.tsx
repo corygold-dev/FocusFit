@@ -1,6 +1,12 @@
 import { audio } from '@/assets';
 import { useAudioPlayer } from 'expo-audio';
-import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 type AudioPlayer = ReturnType<typeof useAudioPlayer>;
 
@@ -13,7 +19,9 @@ type SoundContextType = {
 
 const SoundContext = createContext<SoundContextType | undefined>(undefined);
 
-export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isReady, setIsReady] = useState(false);
   const [audioPlayers, setAudioPlayers] = useState<{
     smallBeep?: AudioPlayer;
@@ -71,7 +79,9 @@ export const SoundProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [isReady, audioPlayers.endSound]);
 
   return (
-    <SoundContext.Provider value={{ playSmallBeep, playFinalBeep, playEndSound, isReady }}>
+    <SoundContext.Provider
+      value={{ playSmallBeep, playFinalBeep, playEndSound, isReady }}
+    >
       {children}
     </SoundContext.Provider>
   );

@@ -105,34 +105,35 @@ A comprehensive productivity and fitness app that combines focused work sessions
 ### Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone git@github.com:corygold-dev/FocusFit.git
    cd FocusFit
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Configure Firebase:**
-   
+
    Create a Firebase project at [Firebase Console](https://console.firebase.google.com/) and:
-   
    - Enable Authentication with Google, Apple, and Email/Password providers
    - Create a Firestore database
    - Download your `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
    - Update `src/config/firebase.ts` with your Firebase configuration
-   
+
    ```typescript
    // src/config/firebase.ts
    const firebaseConfig = {
-     apiKey: "your-api-key",
-     authDomain: "your-project.firebaseapp.com",
-     projectId: "your-project-id",
-     storageBucket: "your-project.appspot.com",
-     messagingSenderId: "your-sender-id",
-     appId: "your-app-id"
+     apiKey: 'your-api-key',
+     authDomain: 'your-project.firebaseapp.com',
+     projectId: 'your-project-id',
+     storageBucket: 'your-project.appspot.com',
+     messagingSenderId: 'your-sender-id',
+     appId: 'your-app-id',
    };
    ```
 
@@ -151,37 +152,44 @@ A comprehensive productivity and fitness app that combines focused work sessions
 ## 🛠 Tech Stack
 
 ### Core Framework
+
 - **React Native**: 0.79.5 - Cross-platform mobile development
 - **Expo**: ~53.0.23 - Development platform and tools
 - **TypeScript**: ~5.8.3 - Type safety and enhanced developer experience
 
 ### Navigation & Routing
+
 - **Expo Router**: ~5.1.7 - File-based routing system
 - **React Navigation**: Built-in navigation components
 
 ### Backend & Authentication
+
 - **Firebase**: ^12.3.0 - Backend services and authentication
 - **Firebase Auth**: Google, Apple, and Email/Password authentication
 - **Firebase Firestore**: Real-time database for user data and sessions
 - **Firebase Storage**: Media file storage
 
 ### State Management & Data
+
 - **React Context API**: Unified state management with providers
 - **AsyncStorage**: ^2.1.2 - Local data persistence
 - **React Native NetInfo**: ^11.4.1 - Network connectivity detection
 
 ### UI & Styling
+
 - **React Native StyleSheet**: Custom theme system
 - **Lucide React Native**: ^0.544.0 - Icon library
 - **React Native SVG**: ^15.11.2 - Vector graphics support
 - **React Native Reanimated**: ~3.17.4 - Smooth animations
 
 ### Notifications & Audio
+
 - **Expo Notifications**: ~0.31.4 - Cross-platform notifications
 - **Expo Audio**: ~0.4.9 - Custom sound effects
 - **Expo Haptics**: ~14.1.4 - Tactile feedback
 
 ### Development Tools
+
 - **ESLint**: ^9.35.0 - Code linting and formatting
 - **Prettier**: ^3.6.2 - Code formatting
 - **TypeScript ESLint**: ^8.43.0 - TypeScript-specific linting rules
@@ -253,18 +261,21 @@ FocusFit/
 ### Key Features Implementation
 
 #### Authentication & Data Management
+
 - **Firebase Integration**: Complete user authentication with Google, Apple, and email/password
 - **Offline Support**: Automatic data sync when connection is restored
 - **Data Export**: Comprehensive JSON/CSV export with metadata
 - **User Privacy**: Complete data ownership and export capabilities
 
 #### Analytics & Progress Tracking
+
 - **Achievement System**: 12 achievements with progress tracking
 - **Analytics Dashboard**: Comprehensive insights into user patterns
 - **Streak Tracking**: Focus and workout streak monitoring
 - **Progress Visualization**: Beautiful charts and metrics display
 
 #### Exercise System
+
 - **30 Office-Friendly Exercises**: Upper body, lower body, and mobility routines
 - **Step-by-Step Instructions**: Clear, detailed instructions for each exercise
 - **Equipment Customization**: Choose available equipment and exclude unwanted exercises
@@ -272,6 +283,7 @@ FocusFit/
 - **Smart Selection**: AI-powered workout recommendations
 
 #### Notification System
+
 - **Daily Reminders**: Smart notification scheduling with user preferences
 - **Cross-Platform**: iOS and Android notification channels
 - **Customizable**: Users can enable/disable different reminder types

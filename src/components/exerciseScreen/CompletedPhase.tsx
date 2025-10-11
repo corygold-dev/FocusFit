@@ -21,7 +21,9 @@ export default function CompletedPhase({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Workout Complete!</Text>
-      <Text style={styles.completedText}>Great job — don't forget to hydrate!</Text>
+      <Text style={styles.completedText}>
+        Great job — don't forget to hydrate!
+      </Text>
       <Button
         title="Time to Focus"
         variant="primary"

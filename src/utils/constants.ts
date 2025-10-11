@@ -17,7 +17,12 @@ export const MIN_FOCUS_DURATION = 30;
 
 export const DIFFICULTY_LEVELS: Difficulty[] = ['easy', 'medium', 'hard'];
 export const USER_SETTINGS_STORAGE_KEY = 'userSettings';
-export const EQUIPMENT_OPTIONS = ['TRX', 'Kettlebell', 'Pull-up Bar', 'Resistance Band'];
+export const EQUIPMENT_OPTIONS = [
+  'TRX',
+  'Kettlebell',
+  'Pull-up Bar',
+  'Resistance Band',
+];
 export const THEME_MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
 export const THEME_MODE_STORAGE_KEY = 'themeMode';

@@ -1,7 +1,11 @@
 import { StyleSheet } from 'react-native';
 import { Theme } from '@/styles/theme';
 
-export const createStyles = (theme: Theme, variant: 'primary' | 'secondary', disabled: boolean) =>
+export const createStyles = (
+  theme: Theme,
+  variant: 'primary' | 'secondary',
+  disabled: boolean
+) =>
   StyleSheet.create({
     button: {
       paddingVertical: 12,
@@ -21,7 +25,9 @@ export const createStyles = (theme: Theme, variant: 'primary' | 'secondary', dis
     },
     disabled: {
       backgroundColor:
-        disabled && variant === 'primary' ? theme.colors.buttonDisabled : 'transparent',
+        disabled && variant === 'primary'
+          ? theme.colors.buttonDisabled
+          : 'transparent',
       borderColor: theme.colors.textSecondary,
       opacity: 0.7,
     },

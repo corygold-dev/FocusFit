@@ -66,28 +66,41 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Animated.View style={[styles.titleContainer, { opacity: titleOpacity }]}>
+        <Animated.View
+          style={[styles.titleContainer, { opacity: titleOpacity }]}
+        >
           <Text style={styles.title}>Welcome to FocusFit</Text>
         </Animated.View>
 
-        <Animated.View style={[styles.welcomeContainer, { opacity: welcomeOpacity }]}>
+        <Animated.View
+          style={[styles.welcomeContainer, { opacity: welcomeOpacity }]}
+        >
           <Text style={styles.welcomeText}>We're happy you're here</Text>
         </Animated.View>
 
-        <Animated.View style={[styles.subtitleContainer, { opacity: subtitleOpacity }]}>
+        <Animated.View
+          style={[styles.subtitleContainer, { opacity: subtitleOpacity }]}
+        >
           <Text style={styles.subtitle}>
-            Focus deeply, then move your body. The perfect blend of productivity and fitness.
+            Focus deeply, then move your body. The perfect blend of productivity
+            and fitness.
           </Text>
         </Animated.View>
 
-        <Animated.View style={[styles.timeSelection, { opacity: timeSelectionOpacity }]}>
-          <Text style={styles.timeLabel}>How long would you like to focus?</Text>
+        <Animated.View
+          style={[styles.timeSelection, { opacity: timeSelectionOpacity }]}
+        >
+          <Text style={styles.timeLabel}>
+            How long would you like to focus?
+          </Text>
           <View style={styles.presetGrid}>
-            {TIMER.PRESET_MINUTES.map((preset) => (
+            {TIMER.PRESET_MINUTES.map(preset => (
               <Button
                 key={preset.value}
                 title={preset.label}
-                variant={selectedTime === preset.value ? 'primary' : 'secondary'}
+                variant={
+                  selectedTime === preset.value ? 'primary' : 'secondary'
+                }
                 onPress={() => handleTimeSelection(preset.value)}
                 style={[
                   styles.presetButton,
@@ -98,7 +111,9 @@ export default function OnboardingScreen() {
           </View>
         </Animated.View>
 
-        <Animated.View style={[styles.startButtonContainer, { opacity: buttonOpacity }]}>
+        <Animated.View
+          style={[styles.startButtonContainer, { opacity: buttonOpacity }]}
+        >
           <Button
             title="Lock In"
             variant="primary"

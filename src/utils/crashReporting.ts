@@ -9,7 +9,9 @@ interface CrashInfo {
 }
 
 interface ReactNativeErrorUtils {
-  getGlobalHandler: () => ((error: Error, isFatal: boolean) => void) | undefined;
+  getGlobalHandler: () =>
+    | ((error: Error, isFatal: boolean) => void)
+    | undefined;
   setGlobalHandler: (handler: (error: Error, isFatal: boolean) => void) => void;
 }
 
@@ -61,13 +63,18 @@ export const crashReporter = CrashReporter.getInstance();
 export function setupGlobalErrorHandling() {
   try {
     const globalObj = globalThis as Record<string, unknown>;
-    const errorUtils = globalObj.ErrorUtils as ReactNativeErrorUtils | undefined;
+    const errorUtils = globalObj.ErrorUtils as
+      | ReactNativeErrorUtils
+      | undefined;
 
     if (errorUtils) {
       const originalHandler = errorUtils.getGlobalHandler();
 
       errorUtils.setGlobalHandler((error: Error, isFatal: boolean) => {
-        crashReporter.reportCrash(error, `Global Error Handler - Fatal: ${isFatal}`);
+        crashReporter.reportCrash(
+          error,
+          `Global Error Handler - Fatal: ${isFatal}`
+        );
 
         if (originalHandler) {
           originalHandler(error, isFatal);
@@ -80,7 +87,9 @@ export function setupGlobalErrorHandling() {
       | undefined;
 
     globalObj.onunhandledrejection = (event: { reason: unknown }) => {
-      const error = new Error(`Unhandled Promise Rejection: ${String(event.reason)}`);
+      const error = new Error(
+        `Unhandled Promise Rejection: ${String(event.reason)}`
+      );
       crashReporter.reportCrash(error, 'Unhandled Promise Rejection');
 
       if (originalUnhandledRejection) {

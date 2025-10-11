@@ -5,19 +5,29 @@ import {
   scheduleDailyReminder,
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 interface NotificationContextType {
   isLoading: boolean;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
 interface NotificationProviderProps {
   children: ReactNode;
 }
 
-export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
+export const NotificationProvider: React.FC<NotificationProviderProps> = ({
+  children,
+}) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -63,14 +73,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, [isLoading]);
 
   return (
-    <NotificationContext.Provider value={{ isLoading }}>{children}</NotificationContext.Provider>
+    <NotificationContext.Provider value={{ isLoading }}>
+      {children}
+    </NotificationContext.Provider>
   );
 };
 
 export const useNotifications = (): NotificationContextType => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotifications must be used within NotificationProvider');
+    throw new Error(
+      'useNotifications must be used within NotificationProvider'
+    );
   }
   return context;
 };

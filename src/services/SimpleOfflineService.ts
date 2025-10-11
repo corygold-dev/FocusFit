@@ -19,7 +19,9 @@ export class SimpleOfflineService {
   // SESSION STORAGE
   // ============================================================================
 
-  async saveOfflineSession(session: FocusSession | WorkoutSession): Promise<void> {
+  async saveOfflineSession(
+    session: FocusSession | WorkoutSession
+  ): Promise<void> {
     try {
       const key = 'exercises' in session ? 'workout' : 'focus';
       const existing = await this.getOfflineSessions();
@@ -30,13 +32,19 @@ export class SimpleOfflineService {
         existing.workout.push(session as WorkoutSession);
       }
 
-      await AsyncStorage.setItem(STORAGE_KEYS.PENDING_SESSIONS, JSON.stringify(existing));
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.PENDING_SESSIONS,
+        JSON.stringify(existing)
+      );
     } catch (error) {
       console.error('Failed to save offline session:', error);
     }
   }
 
-  async getOfflineSessions(): Promise<{ focus: FocusSession[]; workout: WorkoutSession[] }> {
+  async getOfflineSessions(): Promise<{
+    focus: FocusSession[];
+    workout: WorkoutSession[];
+  }> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEYS.PENDING_SESSIONS);
       return data ? JSON.parse(data) : { focus: [], workout: [] };
@@ -58,7 +66,10 @@ export class SimpleOfflineService {
     try {
       const existing = await this.getOfflineProgress();
       existing.push(progress);
-      await AsyncStorage.setItem(STORAGE_KEYS.PENDING_PROGRESS, JSON.stringify(existing));
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.PENDING_PROGRESS,
+        JSON.stringify(existing)
+      );
     } catch (error) {
       console.error('Failed to save offline progress:', error);
     }
@@ -86,7 +97,10 @@ export class SimpleOfflineService {
     try {
       const existing = await this.getOfflineSettings();
       existing.push(settings);
-      await AsyncStorage.setItem(STORAGE_KEYS.PENDING_SETTINGS, JSON.stringify(existing));
+      await AsyncStorage.setItem(
+        STORAGE_KEYS.PENDING_SETTINGS,
+        JSON.stringify(existing)
+      );
     } catch (error) {
       console.error('Failed to save offline settings:', error);
     }

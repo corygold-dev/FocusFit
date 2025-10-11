@@ -25,7 +25,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🎯',
     iconName: 'psychology',
     iconColor: '#2196F3',
-    condition: (progress) => progress.totalFocusSessions >= 1,
+    condition: progress => progress.totalFocusSessions >= 1,
   },
   {
     id: 'first_workout',
@@ -34,7 +34,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '💪',
     iconName: 'fitness-center',
     iconColor: '#FF9800',
-    condition: (progress) => progress.totalWorkouts >= 1,
+    condition: progress => progress.totalWorkouts >= 1,
   },
   {
     id: 'focus_streak_3',
@@ -43,7 +43,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🔥',
     iconName: 'local-fire-department',
     iconColor: '#F44336',
-    condition: (progress) => progress.focusStreak >= 3,
+    condition: progress => progress.focusStreak >= 3,
   },
   {
     id: 'workout_streak_3',
@@ -52,7 +52,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '💪',
     iconName: 'trending-up',
     iconColor: '#FF9800',
-    condition: (progress) => progress.workoutStreak >= 3,
+    condition: progress => progress.workoutStreak >= 3,
   },
   {
     id: 'focus_streak_7',
@@ -61,7 +61,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '👑',
     iconName: 'star',
     iconColor: '#9C27B0',
-    condition: (progress) => progress.focusStreak >= 7,
+    condition: progress => progress.focusStreak >= 7,
   },
   {
     id: 'workout_streak_7',
@@ -70,7 +70,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '⚔️',
     iconName: 'sports-mma',
     iconColor: '#FF5722',
-    condition: (progress) => progress.workoutStreak >= 7,
+    condition: progress => progress.workoutStreak >= 7,
   },
   {
     id: 'focus_10',
@@ -79,7 +79,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🧠',
     iconName: 'self-improvement',
     iconColor: '#2196F3',
-    condition: (progress) => progress.totalFocusSessions >= 10,
+    condition: progress => progress.totalFocusSessions >= 10,
   },
   {
     id: 'workout_10',
@@ -88,7 +88,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🏋️',
     iconName: 'sports',
     iconColor: '#FF9800',
-    condition: (progress) => progress.totalWorkouts >= 10,
+    condition: progress => progress.totalWorkouts >= 10,
   },
   {
     id: 'focus_50',
@@ -97,7 +97,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🎓',
     iconName: 'school',
     iconColor: '#9C27B0',
-    condition: (progress) => progress.totalFocusSessions >= 50,
+    condition: progress => progress.totalFocusSessions >= 50,
   },
   {
     id: 'workout_50',
@@ -106,7 +106,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🏆',
     iconName: 'emoji-events',
     iconColor: '#FFD700',
-    condition: (progress) => progress.totalWorkouts >= 50,
+    condition: progress => progress.totalWorkouts >= 50,
   },
   {
     id: 'focus_time_10h',
@@ -115,7 +115,7 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '⏰',
     iconName: 'schedule',
     iconColor: '#607D8B',
-    condition: (progress) => progress.totalFocusDuration >= 24 * 60 * 60,
+    condition: progress => progress.totalFocusDuration >= 24 * 60 * 60,
   },
   {
     id: 'workout_time_10h',
@@ -124,13 +124,13 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🏃',
     iconName: 'timer',
     iconColor: '#795548',
-    condition: (progress) => progress.totalWorkoutDuration >= 2 * 60 * 60,
+    condition: progress => progress.totalWorkoutDuration >= 2 * 60 * 60,
   },
 ];
 
 export function checkAchievements(
   currentProgress: UserProgressData,
-  existingAchievements: string[] = [],
+  existingAchievements: string[] = []
 ): string[] {
   const newAchievements: string[] = [];
 
@@ -148,5 +148,5 @@ export function checkAchievements(
 }
 
 export function getAchievementById(id: string): Achievement | undefined {
-  return ACHIEVEMENTS.find((achievement) => achievement.id === id);
+  return ACHIEVEMENTS.find(achievement => achievement.id === id);
 }

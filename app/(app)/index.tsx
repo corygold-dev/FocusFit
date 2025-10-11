@@ -1,6 +1,11 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
-import { useBackendData, useTheme, useTimerContext, useWorkoutType } from '@/src/providers';
+import {
+  useBackendData,
+  useTheme,
+  useTimerContext,
+  useWorkoutType,
+} from '@/src/providers';
 import { useRouter } from 'expo-router';
 import { BarChart3, Settings } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -19,13 +24,18 @@ import ModalButton from '@/src/components/timerScreen/ModalButton';
 import TimeModal from '@/src/components/timerScreen/TimeModal';
 import Button from '@/src/components/ui/Button';
 import { useUserSettings } from '@/src/providers';
-import { FOCUS_PHRASES, FOCUS_PHRASE_INTERVAL, MIN_FOCUS_DURATION } from '@/src/utils/constants';
+import {
+  FOCUS_PHRASES,
+  FOCUS_PHRASE_INTERVAL,
+  MIN_FOCUS_DURATION,
+} from '@/src/utils/constants';
 
 export default function TimerScreen() {
   const { theme } = useTheme();
   const styles = timerScreenStyles(theme);
   const router = useRouter();
-  const { shouldAutoStart, clearAutoStart, selectedFocusTime } = useTimerContext();
+  const { shouldAutoStart, clearAutoStart, selectedFocusTime } =
+    useTimerContext();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -58,7 +68,10 @@ export default function TimerScreen() {
       hasSavedFocusRef.current = true;
 
       const actualFocusDuration = focusStartTimeRef.current
-        ? Math.max(0, Math.floor((Date.now() - focusStartTimeRef.current) / 1000))
+        ? Math.max(
+            0,
+            Math.floor((Date.now() - focusStartTimeRef.current) / 1000)
+          )
         : 0;
 
       if (actualFocusDuration < MIN_FOCUS_DURATION) return;
@@ -103,12 +116,17 @@ export default function TimerScreen() {
     router.push('/exercise');
   }, [router, setWorkoutType, setShowWorkoutChoice]);
 
-  const { secondsLeft, isRunning, progress, resetTimer, toggleTimer, setCustomDuration } = useTimer(
-    {
-      onComplete: handleFocusComplete,
-      initialDuration: selectedFocusTime ? selectedFocusTime * 60 : undefined,
-    },
-  );
+  const {
+    secondsLeft,
+    isRunning,
+    progress,
+    resetTimer,
+    toggleTimer,
+    setCustomDuration,
+  } = useTimer({
+    onComplete: handleFocusComplete,
+    initialDuration: selectedFocusTime ? selectedFocusTime * 60 : undefined,
+  });
 
   const handleResetTimer = useCallback(async (): Promise<void> => {
     await resetTimer();
@@ -132,10 +150,14 @@ export default function TimerScreen() {
 
   useEffect(() => {
     if (isRunning) {
-      setEncouragingMessageIndex(Math.floor(Math.random() * FOCUS_PHRASES.length));
+      setEncouragingMessageIndex(
+        Math.floor(Math.random() * FOCUS_PHRASES.length)
+      );
 
       const interval = setInterval(() => {
-        setEncouragingMessageIndex(Math.floor(Math.random() * FOCUS_PHRASES.length));
+        setEncouragingMessageIndex(
+          Math.floor(Math.random() * FOCUS_PHRASES.length)
+        );
       }, FOCUS_PHRASE_INTERVAL);
 
       return () => clearInterval(interval);
@@ -160,7 +182,7 @@ export default function TimerScreen() {
               await handleFocusComplete();
             },
           },
-        ],
+        ]
       );
     }
   }, [isRunning, toggleTimer, setShowConfirmDialog, handleFocusComplete]);
@@ -187,7 +209,11 @@ export default function TimerScreen() {
         accessibilityLabel="Open settings"
         position="right"
       />
-      <TimerDisplay title="Focus" progress={progress} secondsLeft={secondsLeft} />
+      <TimerDisplay
+        title="Focus"
+        progress={progress}
+        secondsLeft={secondsLeft}
+      />
 
       <TimerControls
         isRunning={isRunning}
@@ -199,7 +225,9 @@ export default function TimerScreen() {
       <View style={styles.timeButtonContainer}>
         {isRunning ? (
           <View style={[styles.timeButton, styles.focusPhraseContainer]}>
-            <Text style={[styles.focusPhraseText, { color: theme.colors.text }]}>
+            <Text
+              style={[styles.focusPhraseText, { color: theme.colors.text }]}
+            >
               {FOCUS_PHRASES[encouragingMessageIndex]}
             </Text>
           </View>
@@ -213,7 +241,10 @@ export default function TimerScreen() {
         )}
       </View>
 
-      <AnalyticsModal visible={showAnalytics} onClose={() => setShowAnalytics(false)} />
+      <AnalyticsModal
+        visible={showAnalytics}
+        onClose={() => setShowAnalytics(false)}
+      />
 
       <SettingsModal
         visible={showSettings}

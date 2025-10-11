@@ -2,7 +2,7 @@ import { cancelNotification } from './notifications';
 
 export const cleanupTimerResources = async (
   intervalRef: { current: number | null },
-  notificationIdRef: { current: string | null },
+  notificationIdRef: { current: string | null }
 ): Promise<void> => {
   if (intervalRef.current !== null) {
     clearInterval(intervalRef.current);

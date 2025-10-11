@@ -20,7 +20,7 @@ export default function TimerPresets({
 
   return (
     <View style={styles.presets}>
-      {TIMER.PRESET_MINUTES.map((preset) => {
+      {TIMER.PRESET_MINUTES.map(preset => {
         const isSelected = selectedMinutes === preset.value;
         return (
           <TouchableOpacity
@@ -38,7 +38,10 @@ export default function TimerPresets({
             }}
           >
             <Text
-              style={[styles.presetText, isSelected ? styles.selectedText : styles.unselectedText]}
+              style={[
+                styles.presetText,
+                isSelected ? styles.selectedText : styles.unselectedText,
+              ]}
             >
               {preset.label}
             </Text>

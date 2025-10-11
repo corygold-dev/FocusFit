@@ -23,9 +23,15 @@ export default function NotificationSettings({
   const { theme } = useTheme();
   const styles = notificationSettingsStyles(theme);
 
-  const [morningReminders, setMorningReminders] = useState(initialMorningReminders);
-  const [afternoonReminders, setAfternoonReminders] = useState(initialAfternoonReminders);
-  const [timerEndNotifications, setTimerEndNotifications] = useState(initialTimerEndNotifications);
+  const [morningReminders, setMorningReminders] = useState(
+    initialMorningReminders
+  );
+  const [afternoonReminders, setAfternoonReminders] = useState(
+    initialAfternoonReminders
+  );
+  const [timerEndNotifications, setTimerEndNotifications] = useState(
+    initialTimerEndNotifications
+  );
 
   const handleNotificationChange = (type: string, value: boolean) => {
     let newNotifications;
@@ -33,15 +39,27 @@ export default function NotificationSettings({
     switch (type) {
       case 'morning':
         setMorningReminders(value);
-        newNotifications = { morningReminders: value, afternoonReminders, timerEndNotifications };
+        newNotifications = {
+          morningReminders: value,
+          afternoonReminders,
+          timerEndNotifications,
+        };
         break;
       case 'afternoon':
         setAfternoonReminders(value);
-        newNotifications = { morningReminders, afternoonReminders: value, timerEndNotifications };
+        newNotifications = {
+          morningReminders,
+          afternoonReminders: value,
+          timerEndNotifications,
+        };
         break;
       case 'timer':
         setTimerEndNotifications(value);
-        newNotifications = { morningReminders, afternoonReminders, timerEndNotifications: value };
+        newNotifications = {
+          morningReminders,
+          afternoonReminders,
+          timerEndNotifications: value,
+        };
         break;
       default:
         return;
@@ -61,9 +79,18 @@ export default function NotificationSettings({
         </View>
         <Switch
           value={morningReminders}
-          onValueChange={(enabled) => handleNotificationChange('morning', enabled)}
-          trackColor={{ false: theme.colors.surfaceVariant, true: theme.colors.primary }}
-          thumbColor={morningReminders ? theme.colors.background : theme.colors.textSecondary}
+          onValueChange={enabled =>
+            handleNotificationChange('morning', enabled)
+          }
+          trackColor={{
+            false: theme.colors.surfaceVariant,
+            true: theme.colors.primary,
+          }}
+          thumbColor={
+            morningReminders
+              ? theme.colors.background
+              : theme.colors.textSecondary
+          }
         />
       </View>
 
@@ -76,9 +103,18 @@ export default function NotificationSettings({
         </View>
         <Switch
           value={afternoonReminders}
-          onValueChange={(enabled) => handleNotificationChange('afternoon', enabled)}
-          trackColor={{ false: theme.colors.surfaceVariant, true: theme.colors.primary }}
-          thumbColor={afternoonReminders ? theme.colors.background : theme.colors.textSecondary}
+          onValueChange={enabled =>
+            handleNotificationChange('afternoon', enabled)
+          }
+          trackColor={{
+            false: theme.colors.surfaceVariant,
+            true: theme.colors.primary,
+          }}
+          thumbColor={
+            afternoonReminders
+              ? theme.colors.background
+              : theme.colors.textSecondary
+          }
         />
       </View>
 
@@ -91,9 +127,16 @@ export default function NotificationSettings({
         </View>
         <Switch
           value={timerEndNotifications}
-          onValueChange={(enabled) => handleNotificationChange('timer', enabled)}
-          trackColor={{ false: theme.colors.surfaceVariant, true: theme.colors.primary }}
-          thumbColor={timerEndNotifications ? theme.colors.background : theme.colors.textSecondary}
+          onValueChange={enabled => handleNotificationChange('timer', enabled)}
+          trackColor={{
+            false: theme.colors.surfaceVariant,
+            true: theme.colors.primary,
+          }}
+          thumbColor={
+            timerEndNotifications
+              ? theme.colors.background
+              : theme.colors.textSecondary
+          }
         />
       </View>
     </View>

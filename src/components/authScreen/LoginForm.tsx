@@ -2,7 +2,14 @@ import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Platform, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Platform,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { loginFormStyles } from './styles';
 
 interface LoginFormProps {
@@ -14,7 +21,8 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, loginWithGoogle, loginWithApple, error, clearError } = useAuth();
+  const { login, loginWithGoogle, loginWithApple, error, clearError } =
+    useAuth();
   const { theme } = useTheme();
   const styles = loginFormStyles(theme);
   const router = useRouter();
@@ -57,7 +65,10 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Google Sign-In Error', errorObj.message || 'Failed to sign in with Google');
+      Alert.alert(
+        'Google Sign-In Error',
+        errorObj.message || 'Failed to sign in with Google'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -70,7 +81,10 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Apple Sign-In Error', errorObj.message || 'Failed to sign in with Apple');
+      Alert.alert(
+        'Apple Sign-In Error',
+        errorObj.message || 'Failed to sign in with Apple'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -111,7 +125,11 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
           </View>
         )}
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={isSubmitting}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={isSubmitting}
+        >
           {isSubmitting ? (
             <Text style={styles.buttonText}>Logging in...</Text>
           ) : (
@@ -143,7 +161,10 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
           />
         )}
 
-        <TouchableOpacity onPress={handleNavigateToRegister} disabled={isSubmitting}>
+        <TouchableOpacity
+          onPress={handleNavigateToRegister}
+          disabled={isSubmitting}
+        >
           <Text style={styles.linkText}>Don't have an account? Sign Up</Text>
         </TouchableOpacity>
       </View>

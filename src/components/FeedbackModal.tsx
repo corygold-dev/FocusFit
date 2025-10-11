@@ -1,6 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useTheme } from '../providers';
 import { FEEDBACK_CATEGORIES, USER_TYPES } from '../utils/constants';
 import { feedbackModalStyles } from './FeedbackModal/styles';
@@ -18,7 +26,11 @@ interface FeedbackModalProps {
   onSubmit: (feedback: FeedbackData) => void;
 }
 
-export default function FeedbackModal({ visible, onClose, onSubmit }: FeedbackModalProps) {
+export default function FeedbackModal({
+  visible,
+  onClose,
+  onSubmit,
+}: FeedbackModalProps) {
   const { theme } = useTheme();
   const styles = feedbackModalStyles(theme);
 
@@ -59,9 +71,11 @@ export default function FeedbackModal({ visible, onClose, onSubmit }: FeedbackMo
           <Text style={styles.title}>Share Your Feedback</Text>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={styles.sectionTitle}>How would you rate FocusFit?</Text>
+            <Text style={styles.sectionTitle}>
+              How would you rate FocusFit?
+            </Text>
             <View style={styles.ratingContainer}>
-              {[1, 2, 3, 4, 5].map((star) => (
+              {[1, 2, 3, 4, 5].map(star => (
                 <TouchableOpacity
                   key={star}
                   style={styles.starButton}
@@ -70,18 +84,25 @@ export default function FeedbackModal({ visible, onClose, onSubmit }: FeedbackMo
                   <MaterialIcons
                     name={star <= rating ? 'star' : 'star-border'}
                     size={32}
-                    color={star <= rating ? '#FFD700' : theme.colors.textSecondary}
+                    color={
+                      star <= rating ? '#FFD700' : theme.colors.textSecondary
+                    }
                   />
                 </TouchableOpacity>
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>What type of feedback is this?</Text>
+            <Text style={styles.sectionTitle}>
+              What type of feedback is this?
+            </Text>
             <View style={styles.categoryContainer}>
-              {FEEDBACK_CATEGORIES.map((cat) => (
+              {FEEDBACK_CATEGORIES.map(cat => (
                 <TouchableOpacity
                   key={cat.id}
-                  style={[styles.categoryButton, category === cat.id && styles.selectedCategory]}
+                  style={[
+                    styles.categoryButton,
+                    category === cat.id && styles.selectedCategory,
+                  ]}
                   onPress={() => setCategory(cat.id)}
                 >
                   <MaterialIcons
@@ -101,12 +122,17 @@ export default function FeedbackModal({ visible, onClose, onSubmit }: FeedbackMo
               ))}
             </View>
 
-            <Text style={styles.sectionTitle}>How often do you use FocusFit?</Text>
+            <Text style={styles.sectionTitle}>
+              How often do you use FocusFit?
+            </Text>
             <View style={styles.userTypeContainer}>
-              {USER_TYPES.map((type) => (
+              {USER_TYPES.map(type => (
                 <TouchableOpacity
                   key={type.id}
-                  style={[styles.userTypeButton, userType === type.id && styles.selectedUserType]}
+                  style={[
+                    styles.userTypeButton,
+                    userType === type.id && styles.selectedUserType,
+                  ]}
                   onPress={() => setUserType(type.id)}
                 >
                   <Text
@@ -134,10 +160,16 @@ export default function FeedbackModal({ visible, onClose, onSubmit }: FeedbackMo
           </ScrollView>
 
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={onClose}
+            >
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.submitButton]} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={[styles.button, styles.submitButton]}
+              onPress={handleSubmit}
+            >
               <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
           </View>

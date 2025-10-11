@@ -46,7 +46,9 @@ interface AuthContextType {
   // Data methods
   saveUserSettings: (settings: Partial<UserSettings>) => Promise<void>;
   saveUserProgress: (progress: Partial<UserProgress>) => Promise<void>;
-  saveWorkoutSession: (session: Omit<WorkoutSession, 'userId'>) => Promise<void>;
+  saveWorkoutSession: (
+    session: Omit<WorkoutSession, 'userId'>
+  ) => Promise<void>;
   saveFocusSession: (session: Omit<FocusSession, 'userId'>) => Promise<void>;
   getUserWorkoutHistory: () => Promise<WorkoutSession[]>;
   getUserFocusHistory: () => Promise<FocusSession[]>;
@@ -135,7 +137,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(null);
       // Email verification not implemented
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Email verification failed');
+      setError(
+        err instanceof Error ? err.message : 'Email verification failed'
+      );
       throw err;
     }
   }, []);
@@ -171,11 +175,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await firebaseDataService.initializeUserData(userToSync);
 
       // Load user settings from Firestore
-      const userSettings = await firebaseDataService.getUserSettings(userToSync);
+      const userSettings =
+        await firebaseDataService.getUserSettings(userToSync);
       setSettings(userSettings);
 
       // Load user progress from Firestore
-      const userProgress = await firebaseDataService.getUserProgress(userToSync);
+      const userProgress =
+        await firebaseDataService.getUserProgress(userToSync);
       if (userProgress) {
         // Update progress if needed
       }
@@ -200,9 +206,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // Try to save to backend first
         await firebaseDataService.saveUserSettings(user, newSettings);
-        setSettings((prev) => ({ ...prev, ...newSettings }) as UserSettings);
+        setSettings(prev => ({ ...prev, ...newSettings }) as UserSettings);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save user settings, saving offline:', err);
+        console.error(
+          '💾 AuthProvider: Failed to save user settings, saving offline:',
+          err
+        );
         // Fallback to offline storage
         const fullSettings = { ...settings, ...newSettings } as UserSettings;
         await simpleOfflineService.saveOfflineSettings(fullSettings);
@@ -210,7 +219,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('💾 Settings saved offline, will sync when online');
       }
     },
-    [user, settings],
+    [user, settings]
   );
 
   const saveUserProgress = useCallback(
@@ -231,27 +240,37 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           const newStreak = firebaseDataService.calculateStreak(
             currentProgress?.workoutStreak || 0,
             currentProgress?.lastWorkoutDate,
-            progress.lastWorkoutDate,
+            progress.lastWorkoutDate
           );
-          await firebaseDataService.updateUserProgress(user, { workoutStreak: newStreak });
+          await firebaseDataService.updateUserProgress(user, {
+            workoutStreak: newStreak,
+          });
         }
         if (progress.lastFocusSessionDate) {
           const newStreak = firebaseDataService.calculateStreak(
             currentProgress?.focusStreak || 0,
             currentProgress?.lastFocusSessionDate,
-            progress.lastFocusSessionDate,
+            progress.lastFocusSessionDate
           );
-          await firebaseDataService.updateUserProgress(user, { focusStreak: newStreak });
+          await firebaseDataService.updateUserProgress(user, {
+            focusStreak: newStreak,
+          });
         }
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save user progress, saving offline:', err);
+        console.error(
+          '💾 AuthProvider: Failed to save user progress, saving offline:',
+          err
+        );
         // Fallback to offline storage
-        const fullProgress = { ...currentProgress, ...progress } as UserProgress;
+        const fullProgress = {
+          ...currentProgress,
+          ...progress,
+        } as UserProgress;
         await simpleOfflineService.saveOfflineProgress(fullProgress);
         console.log('💾 Progress saved offline, will sync when online');
       }
     },
-    [user],
+    [user]
   );
 
   const saveWorkoutSession = useCallback(
@@ -265,7 +284,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         await firebaseDataService.saveWorkoutSession(user, fullSession);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save workout session, saving offline:', err);
+        console.error(
+          '💾 AuthProvider: Failed to save workout session, saving offline:',
+          err
+        );
         // Fallback to offline storage
         const fullSession: WorkoutSession = {
           ...session,
@@ -275,7 +297,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('💾 Workout session saved offline, will sync when online');
       }
     },
-    [user],
+    [user]
   );
 
   const saveFocusSession = useCallback(
@@ -289,7 +311,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         };
         await firebaseDataService.saveFocusSession(user, fullSession);
       } catch (err) {
-        console.error('💾 AuthProvider: Failed to save focus session, saving offline:', err);
+        console.error(
+          '💾 AuthProvider: Failed to save focus session, saving offline:',
+          err
+        );
         // Fallback to offline storage
         const fullSession: FocusSession = {
           ...session,
@@ -299,10 +324,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('💾 Focus session saved offline, will sync when online');
       }
     },
-    [user],
+    [user]
   );
 
-  const getUserWorkoutHistory = useCallback(async (): Promise<WorkoutSession[]> => {
+  const getUserWorkoutHistory = useCallback(async (): Promise<
+    WorkoutSession[]
+  > => {
     if (!user) throw new Error('User not authenticated');
     return firebaseDataService.getUserWorkoutHistory(user);
   }, [user]);
@@ -312,10 +339,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return firebaseDataService.getUserFocusHistory(user);
   }, [user]);
 
-  const getUserProgress = useCallback(async (): Promise<UserProgress | null> => {
-    if (!user) throw new Error('User not authenticated');
-    return firebaseDataService.getUserProgress(user);
-  }, [user]);
+  const getUserProgress =
+    useCallback(async (): Promise<UserProgress | null> => {
+      if (!user) throw new Error('User not authenticated');
+      return firebaseDataService.getUserProgress(user);
+    }, [user]);
 
   const getTotalWorkouts = useCallback(async (): Promise<number> => {
     if (!user) throw new Error('User not authenticated');
@@ -342,7 +370,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
-    const unsubscribe = firebaseAuthService.onAuthStateChanged((authUser) => {
+    const unsubscribe = firebaseAuthService.onAuthStateChanged(authUser => {
       setUser(authUser);
       setIsLoading(false);
 
@@ -365,7 +393,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   useEffect(() => {
     // Only sync if user is authenticated, not currently syncing, and hasn't been synced yet
-    if (isAuthenticated && user && syncedUserUidRef.current !== user.uid && !isSyncing) {
+    if (
+      isAuthenticated &&
+      user &&
+      syncedUserUidRef.current !== user.uid &&
+      !isSyncing
+    ) {
       syncUserData(user);
     }
     // Note: isLoading is set to false in the auth state change listener
@@ -459,14 +492,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       getTotalFocusSessions,
       getTotalWorkoutDuration,
       getTotalFocusDuration,
-    ],
+    ]
   );
 
   // ============================================================================
   // RENDER PROVIDER (always render context, but conditionally render children)
   // ============================================================================
 
-  return <AuthContext.Provider value={value}>{isLoading ? null : children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {isLoading ? null : children}
+    </AuthContext.Provider>
+  );
 };
 
 // ============================================================================

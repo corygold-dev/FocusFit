@@ -21,10 +21,15 @@ export function useBackgroundTimer({
   const endTimeRef = useRef<number | null>(null);
 
   const scheduleBackgroundNotification = useCallback(async () => {
-    if (isActive && secondsLeft > 0 && endTimeRef.current === null && settings?.timerEndNotifications) {
+    if (
+      isActive &&
+      secondsLeft > 0 &&
+      endTimeRef.current === null &&
+      settings?.timerEndNotifications
+    ) {
       // Calculate end time for background timer
       endTimeRef.current = Date.now() + secondsLeft * TIMER.ONE_SECOND;
-      
+
       try {
         const triggerDate = new Date(endTimeRef.current);
         notificationIdRef.current = await onScheduleNotification(triggerDate);
@@ -33,7 +38,12 @@ export function useBackgroundTimer({
         endTimeRef.current = null;
       }
     }
-  }, [isActive, secondsLeft, settings?.timerEndNotifications, onScheduleNotification]);
+  }, [
+    isActive,
+    secondsLeft,
+    settings?.timerEndNotifications,
+    onScheduleNotification,
+  ]);
 
   const cleanupBackgroundTimer = useCallback(async () => {
     await cleanupTimerResources({ current: null }, notificationIdRef);

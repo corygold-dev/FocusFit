@@ -15,7 +15,10 @@ export default function CountdownPhase({ secondsLeft }: CountdownPhaseProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Get ready...</Text>
-      <Text style={styles.timer} accessibilityLabel={`${secondsLeft} seconds until start`}>
+      <Text
+        style={styles.timer}
+        accessibilityLabel={`${secondsLeft} seconds until start`}
+      >
         {formatTime(secondsLeft)}
       </Text>
     </View>

@@ -1,7 +1,11 @@
 import { Exercise, exercises } from '@/src/lib/exercises';
 import { useAuth, useBackendData, useSounds } from '@/src/providers';
 import { TIMER, WORKOUT } from '@/src/utils/constants';
-import { pickMobilityWorkout, pickStrengthWorkout, UserSettings } from '@/src/utils/exerciseUtils';
+import {
+  pickMobilityWorkout,
+  pickStrengthWorkout,
+  UserSettings,
+} from '@/src/utils/exerciseUtils';
 import { scheduleExerciseNotification } from '@/src/utils/notifications';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInterval } from '../timer';
@@ -27,24 +31,29 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
 
   const { playSmallBeep, playFinalBeep, playEndSound } = useSounds();
   const { user } = useAuth();
-  const { saveUserProgress, saveWorkoutSession, getUserProgress } = useBackendData();
+  const { saveUserProgress, saveWorkoutSession, getUserProgress } =
+    useBackendData();
 
-  const scheduleExerciseNotificationCallback = useCallback(async (triggerDate: Date) => {
-    const currentExercise = currentList[currentIndex];
-    if (currentExercise) {
-      return await scheduleExerciseNotification(triggerDate, currentExercise.name);
-    }
-    return null;
-  }, [currentList, currentIndex]);
+  const scheduleExerciseNotificationCallback = useCallback(
+    async (triggerDate: Date) => {
+      const currentExercise = currentList[currentIndex];
+      if (currentExercise) {
+        return await scheduleExerciseNotification(
+          triggerDate,
+          currentExercise.name
+        );
+      }
+      return null;
+    },
+    [currentList, currentIndex]
+  );
 
-  const {
-    scheduleBackgroundNotification,
-    cleanupBackgroundTimer,
-  } = useBackgroundTimer({
-    isActive: phase === 'active',
-    secondsLeft,
-    onScheduleNotification: scheduleExerciseNotificationCallback,
-  });
+  const { scheduleBackgroundNotification, cleanupBackgroundTimer } =
+    useBackgroundTimer({
+      isActive: phase === 'active',
+      secondsLeft,
+      onScheduleNotification: scheduleExerciseNotificationCallback,
+    });
 
   const handleStrengthProgression = useCallback(() => {
     const currentRound = currentIndex;
@@ -58,13 +67,14 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   }, [currentIndex]);
 
   const saveWorkoutData = useCallback(async () => {
-    if (!user?.uid || currentList.length === 0 || hasSavedWorkoutRef.current) return;
+    if (!user?.uid || currentList.length === 0 || hasSavedWorkoutRef.current)
+      return;
 
     try {
       hasSavedWorkoutRef.current = true;
 
       const sessionId = `workout_${Date.now()}`;
-      const exercises = currentList.map((exercise) => exercise.name);
+      const exercises = currentList.map(exercise => exercise.name);
 
       let duration: number;
       if (workoutType === 'strength') {
@@ -72,8 +82,9 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
       } else {
         duration = currentList.reduce(
           (total, exercise) =>
-            total + (exercise.duration || WORKOUT.MOBILITY.DURATION_PER_EXERCISE),
-          0,
+            total +
+            (exercise.duration || WORKOUT.MOBILITY.DURATION_PER_EXERCISE),
+          0
         );
       }
 
@@ -96,7 +107,15 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     } finally {
       await cleanupBackgroundTimer();
     }
-  }, [user?.uid, currentList, workoutType, saveWorkoutSession, getUserProgress, saveUserProgress]);
+  }, [
+    user?.uid,
+    currentList,
+    workoutType,
+    saveWorkoutSession,
+    getUserProgress,
+    saveUserProgress,
+    cleanupBackgroundTimer,
+  ]);
 
   useEffect(() => {
     try {
@@ -116,7 +135,8 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
         hasSavedWorkoutRef.current = false;
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to load workout';
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to load workout';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -143,9 +163,9 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
 
   useInterval(
     () => {
-      setSecondsLeft((prev) => prev - 1);
+      setSecondsLeft(prev => prev - 1);
     },
-    isTimerActive ? TIMER.ONE_SECOND : null,
+    isTimerActive ? TIMER.ONE_SECOND : null
   );
 
   useEffect(() => {
@@ -163,7 +183,9 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
       if (workoutType === 'strength') {
         duration = WORKOUT.STRENGTH.DURATION_PER_ROUND;
       } else {
-        duration = currentList[currentIndex]?.duration || WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
+        duration =
+          currentList[currentIndex]?.duration ||
+          WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
       }
       setSecondsLeft(duration);
       setTotalDuration(duration);
@@ -175,7 +197,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
         handleStrengthProgression();
       } else {
         if (currentIndex < currentList.length - 1) {
-          setCurrentIndex((i) => i + 1);
+          setCurrentIndex(i => i + 1);
           setPhase('preview');
         } else {
           setPhase('completed');
@@ -203,7 +225,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
       handleStrengthProgression();
     } else {
       if (currentIndex < currentList.length - 1) {
-        setCurrentIndex((i) => i + 1);
+        setCurrentIndex(i => i + 1);
         setPhase('preview');
       } else {
         setPhase('completed');
@@ -213,23 +235,27 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
 
   const shuffleExercise = () => {
     if (currentList.length <= 1) return;
-    
+
     const currentExercise = currentList[currentIndex];
     const currentCategory = currentExercise.category;
-    
-    const sameCategoryExercises = exercises.filter(ex => 
-      ex.category === currentCategory && 
-      ex.name !== currentExercise.name &&
-      ex.difficulty.includes(settings.difficulty) &&
-      (!ex.equipment || ex.equipment.every(eq => settings.equipment.includes(eq))) &&
-      !settings.excludedExercises.includes(ex.name)
+
+    const sameCategoryExercises = exercises.filter(
+      ex =>
+        ex.category === currentCategory &&
+        ex.name !== currentExercise.name &&
+        ex.difficulty.includes(settings.difficulty) &&
+        (!ex.equipment ||
+          ex.equipment.every(eq => settings.equipment.includes(eq))) &&
+        !settings.excludedExercises.includes(ex.name)
     );
-    
+
     if (sameCategoryExercises.length === 0) return;
-    
-    const randomIndex = Math.floor(Math.random() * sameCategoryExercises.length);
+
+    const randomIndex = Math.floor(
+      Math.random() * sameCategoryExercises.length
+    );
     const newExercise = sameCategoryExercises[randomIndex];
-    
+
     const newList = [...currentList];
     newList[currentIndex] = newExercise;
     setCurrentList(newList);
@@ -241,7 +267,9 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     if (workoutType === 'strength') {
       duration = WORKOUT.STRENGTH.DURATION_PER_ROUND;
     } else {
-      duration = currentList[currentIndex]?.duration || WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
+      duration =
+        currentList[currentIndex]?.duration ||
+        WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
     }
     setSecondsLeft(duration);
     setTotalDuration(duration);
@@ -256,7 +284,8 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     return currentList[currentIndex]?.name ?? '';
   }, [currentList, currentIndex, workoutType]);
 
-  const progress = totalDuration > 0 ? (totalDuration - secondsLeft) / totalDuration : 0;
+  const progress =
+    totalDuration > 0 ? (totalDuration - secondsLeft) / totalDuration : 0;
 
   return {
     phase,

@@ -27,7 +27,7 @@ export default function ActivePhase({
   const { theme } = useTheme();
   const styles = activePhaseStyles(theme);
 
-  const exercise = exercises.find((ex) => ex.name === exerciseName);
+  const exercise = exercises.find(ex => ex.name === exerciseName);
   const instructions = exercise?.instructions || [
     'Prepare for the exercise',
     'Focus on proper form',
@@ -43,11 +43,17 @@ export default function ActivePhase({
       </View>
 
       <View style={styles.mediaContainer}>
-        <ExerciseInstructions exerciseName={exerciseName} steps={instructions} />
+        <ExerciseInstructions
+          exerciseName={exerciseName}
+          steps={instructions}
+        />
       </View>
 
       <View style={styles.timerSection}>
-        <Text style={styles.timer} accessibilityLabel={`${secondsLeft} seconds remaining`}>
+        <Text
+          style={styles.timer}
+          accessibilityLabel={`${secondsLeft} seconds remaining`}
+        >
           {formatTime(secondsLeft)}
         </Text>
 
@@ -66,11 +72,17 @@ export default function ActivePhase({
       </View>
 
       <View style={styles.actionButtons}>
-        <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={onRestart}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.secondaryButton]}
+          onPress={onRestart}
+        >
           <Text style={styles.secondaryButtonText}>Restart</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.actionButton, styles.primaryButton]} onPress={onSkip}>
+        <TouchableOpacity
+          style={[styles.actionButton, styles.primaryButton]}
+          onPress={onSkip}
+        >
           <Text style={styles.primaryButtonText}>Skip</Text>
         </TouchableOpacity>
       </View>

@@ -1,6 +1,13 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { ActivityIndicator, Alert, Share, Text, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useAuth, useTheme } from '../../providers';
 import { dataExportService } from '../../services/DataExportService';
 
@@ -8,7 +15,9 @@ interface DataExportSectionProps {
   onExportComplete?: () => void;
 }
 
-export default function DataExportSection({ onExportComplete }: DataExportSectionProps) {
+export default function DataExportSection({
+  onExportComplete,
+}: DataExportSectionProps) {
   const { theme } = useTheme();
   const { user } = useAuth();
   const [isExporting, setIsExporting] = useState(false);
@@ -59,13 +68,15 @@ export default function DataExportSection({ onExportComplete }: DataExportSectio
       Alert.alert(
         'Export Complete',
         'Your data has been prepared for export. The JSON data contains all your FocusFit information.',
-        [{ text: 'OK', onPress: onExportComplete }],
+        [{ text: 'OK', onPress: onExportComplete }]
       );
     } catch (error) {
       console.error('Export failed:', error);
-      Alert.alert('Export Failed', 'There was an error exporting your data. Please try again.', [
-        { text: 'OK' },
-      ]);
+      Alert.alert(
+        'Export Failed',
+        'There was an error exporting your data. Please try again.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setIsExporting(false);
     }
@@ -84,14 +95,18 @@ export default function DataExportSection({ onExportComplete }: DataExportSectio
         title: 'FocusFit Data Export (CSV)',
       });
 
-      Alert.alert('Export Complete', 'Your session data has been exported as CSV format.', [
-        { text: 'OK', onPress: onExportComplete },
-      ]);
+      Alert.alert(
+        'Export Complete',
+        'Your session data has been exported as CSV format.',
+        [{ text: 'OK', onPress: onExportComplete }]
+      );
     } catch (error) {
       console.error('CSV export failed:', error);
-      Alert.alert('Export Failed', 'There was an error exporting your data. Please try again.', [
-        { text: 'OK' },
-      ]);
+      Alert.alert(
+        'Export Failed',
+        'There was an error exporting your data. Please try again.',
+        [{ text: 'OK' }]
+      );
     } finally {
       setIsExporting(false);
     }
@@ -108,8 +123,8 @@ export default function DataExportSection({ onExportComplete }: DataExportSectio
   return (
     <View>
       <Text style={styles.description}>
-        Export your FocusFit data for backup, analysis, or to use with other apps. Choose from
-        complete JSON export or CSV for spreadsheets.
+        Export your FocusFit data for backup, analysis, or to use with other
+        apps. Choose from complete JSON export or CSV for spreadsheets.
       </Text>
 
       <TouchableOpacity
@@ -122,7 +137,9 @@ export default function DataExportSection({ onExportComplete }: DataExportSectio
         ) : (
           <MaterialIcons name="download" size={16} color="#FFFFFF" />
         )}
-        <Text style={[styles.exportButtonText, isExporting && styles.disabledText]}>
+        <Text
+          style={[styles.exportButtonText, isExporting && styles.disabledText]}
+        >
           {isExporting ? 'Exporting...' : 'Export Data'}
         </Text>
       </TouchableOpacity>

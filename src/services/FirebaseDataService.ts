@@ -10,7 +10,11 @@ import {
 } from 'firebase/firestore';
 import { Alert } from 'react-native';
 import { db } from '../config/firebase';
-import { checkAchievements, getAchievementById, UserProgressData } from '../utils/achievements';
+import {
+  checkAchievements,
+  getAchievementById,
+  UserProgressData,
+} from '../utils/achievements';
 import { AuthUser } from './index';
 
 export interface UserSettings {
@@ -71,7 +75,10 @@ export class FirebaseDataService {
     }
   }
 
-  async saveUserSettings(user: AuthUser, settings: Partial<UserSettings>): Promise<void> {
+  async saveUserSettings(
+    user: AuthUser,
+    settings: Partial<UserSettings>
+  ): Promise<void> {
     try {
       const settingsRef = doc(db, 'userSettings', user.uid);
       const settingsData = {
@@ -104,7 +111,10 @@ export class FirebaseDataService {
     }
   }
 
-  async updateUserProgress(user: AuthUser, progress: Partial<UserProgress>): Promise<void> {
+  async updateUserProgress(
+    user: AuthUser,
+    progress: Partial<UserProgress>
+  ): Promise<void> {
     try {
       const currentProgress = await this.getUserProgress(user);
       const updatedProgress = {
@@ -114,13 +124,17 @@ export class FirebaseDataService {
         updatedAt: serverTimestamp(),
       };
 
-      const [totalWorkouts, totalFocusSessions, totalWorkoutDuration, totalFocusDuration] =
-        await Promise.all([
-          this.getTotalWorkouts(user),
-          this.getTotalFocusSessions(user),
-          this.getTotalWorkoutDuration(user),
-          this.getTotalFocusDuration(user),
-        ]);
+      const [
+        totalWorkouts,
+        totalFocusSessions,
+        totalWorkoutDuration,
+        totalFocusDuration,
+      ] = await Promise.all([
+        this.getTotalWorkouts(user),
+        this.getTotalFocusSessions(user),
+        this.getTotalWorkoutDuration(user),
+        this.getTotalFocusDuration(user),
+      ]);
 
       const progressForAchievements: UserProgressData = {
         totalWorkouts,
@@ -133,7 +147,7 @@ export class FirebaseDataService {
 
       const newAchievements = checkAchievements(
         progressForAchievements,
-        currentProgress?.achievements || [],
+        currentProgress?.achievements || []
       );
 
       if (newAchievements.length > 0) {
@@ -161,7 +175,10 @@ export class FirebaseDataService {
     }
   }
 
-  async updateStreaks(user: AuthUser, activityType: 'workout' | 'focus'): Promise<void> {
+  async updateStreaks(
+    user: AuthUser,
+    activityType: 'workout' | 'focus'
+  ): Promise<void> {
     try {
       const currentProgress = await this.getUserProgress(user);
       if (!currentProgress) return;
@@ -179,7 +196,9 @@ export class FirebaseDataService {
       const newStreak = this.calculateStreak(currentStreak, lastActivityDate);
 
       const updateData =
-        activityType === 'workout' ? { workoutStreak: newStreak } : { focusStreak: newStreak };
+        activityType === 'workout'
+          ? { workoutStreak: newStreak }
+          : { focusStreak: newStreak };
 
       await this.updateUserProgress(user, updateData);
     } catch (error) {
@@ -191,7 +210,7 @@ export class FirebaseDataService {
   calculateStreak(
     currentStreak: number,
     lastActivityDate: Date | null | undefined,
-    newActivityDate: Date = new Date(),
+    newActivityDate: Date = new Date()
   ): number {
     // If no previous activity, start with streak of 1
     if (!lastActivityDate) return 1;
@@ -202,7 +221,9 @@ export class FirebaseDataService {
     const lastActivity = new Date(lastActivityDate);
     lastActivity.setHours(0, 0, 0, 0);
 
-    const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.floor(
+      (today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
+    );
 
     if (daysDiff === 0) {
       // Already logged today → no change
@@ -228,7 +249,10 @@ export class FirebaseDataService {
 
   async getTotalWorkoutDuration(user: AuthUser): Promise<number> {
     const sessions = await this.getUserWorkoutHistory(user);
-    return sessions.reduce((total, session) => total + (session.duration || 0), 0);
+    return sessions.reduce(
+      (total, session) => total + (session.duration || 0),
+      0
+    );
   }
 
   async getTotalFocusDuration(user: AuthUser): Promise<number> {
@@ -237,9 +261,16 @@ export class FirebaseDataService {
   }
 
   // Workout Sessions
-  async saveWorkoutSession(user: AuthUser, session: WorkoutSession): Promise<boolean> {
+  async saveWorkoutSession(
+    user: AuthUser,
+    session: WorkoutSession
+  ): Promise<boolean> {
     try {
-      const sessionRef = doc(db, 'workoutSession', `${user.uid}_${session.sessionId}`);
+      const sessionRef = doc(
+        db,
+        'workoutSession',
+        `${user.uid}_${session.sessionId}`
+      );
       const sessionData = {
         ...session,
         userId: user.uid,
@@ -255,7 +286,10 @@ export class FirebaseDataService {
     }
   }
 
-  async getUserWorkoutHistory(user: AuthUser, limit: number = 50): Promise<WorkoutSession[]> {
+  async getUserWorkoutHistory(
+    user: AuthUser,
+    limit: number = 50
+  ): Promise<WorkoutSession[]> {
     try {
       const sessionsRef = collection(db, 'workoutSession');
       const q = query(sessionsRef, where('userId', '==', user.uid));
@@ -263,14 +297,16 @@ export class FirebaseDataService {
       const querySnapshot = await getDocs(q);
       const sessions: WorkoutSession[] = [];
 
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         const data = doc.data();
         sessions.push({
           userId: data.userId,
           sessionId: data.sessionId,
           exercises: data.exercises,
           duration: data.duration,
-          completedAt: data.completedAt ? new Date(data.completedAt.seconds * 1000) : undefined,
+          completedAt: data.completedAt
+            ? new Date(data.completedAt.seconds * 1000)
+            : undefined,
         });
       });
 
@@ -281,9 +317,16 @@ export class FirebaseDataService {
     }
   }
 
-  async saveFocusSession(user: AuthUser, session: FocusSession): Promise<boolean> {
+  async saveFocusSession(
+    user: AuthUser,
+    session: FocusSession
+  ): Promise<boolean> {
     try {
-      const sessionRef = doc(db, 'focusSession', `${user.uid}_${session.sessionId}`);
+      const sessionRef = doc(
+        db,
+        'focusSession',
+        `${user.uid}_${session.sessionId}`
+      );
       const sessionData = {
         ...session,
         userId: user.uid,
@@ -300,7 +343,10 @@ export class FirebaseDataService {
     }
   }
 
-  async getUserFocusHistory(user: AuthUser, limit: number = 50): Promise<FocusSession[]> {
+  async getUserFocusHistory(
+    user: AuthUser,
+    limit: number = 50
+  ): Promise<FocusSession[]> {
     try {
       const sessionsRef = collection(db, 'focusSession');
       const q = query(sessionsRef, where('userId', '==', user.uid));
@@ -308,7 +354,7 @@ export class FirebaseDataService {
       const querySnapshot = await getDocs(q);
       const sessions: FocusSession[] = [];
 
-      querySnapshot.forEach((doc) => {
+      querySnapshot.forEach(doc => {
         const data = doc.data();
         sessions.push({
           userId: data.userId,
