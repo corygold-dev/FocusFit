@@ -13,6 +13,7 @@ A comprehensive productivity and fitness app that combines focused work sessions
 - **Background Timer**: Exercise timer continues running even when phone is locked
 - **8 New Achievements**: Expanded achievement system with more milestones to unlock
 - **Exercise Customization**: Choose which exercises to include/exclude from workouts
+- **Switch Sides Reminder**: Smart alerts for bilateral exercises to ensure balanced workouts
 - **Improved Timer Reliability**: Fixed critical timer issues for better user experience
 
 ### 🔧 **Technical Enhancements**
