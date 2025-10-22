@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "912307609119",
+    "project_id": "focusfit-fde9e",
+    "storage_bucket": "focusfit-fde9e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:912307609119:android:c7e59493218575b27e7f2a",
+        "android_client_info": {
+          "package_name": "com.corygold.focusfit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "912307609119-4bdu1spkrqt5p9csk3qfk8sbvla1pcjr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHpb9WQZZHIoemrtssyAz36sO9RheJBfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "912307609119-4bdu1spkrqt5p9csk3qfk8sbvla1pcjr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.corygold.focusfit"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

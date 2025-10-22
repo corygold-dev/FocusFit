@@ -38,7 +38,8 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.corygold.focusfit",
-      "scheme": "focusfit"
+      "scheme": "focusfit",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "output": "static",
@@ -79,7 +80,8 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob",
-          "iosClientId": "912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob.apps.googleusercontent.com"
+          "iosClientId": "912307609119-e3k98jadmqkkgnfokdlvesqii32cqmob.apps.googleusercontent.com",
+          "androidClientId": "912307609119-4bdu1spkrqt5p9csk3qfk8sbvla1pcjr.apps.googleusercontent.com"
         }
       ],
       "expo-asset"
