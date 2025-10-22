@@ -229,33 +229,30 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       let currentProgress: UserProgress | null = null;
 
       try {
-        // Get current progress before updating
         currentProgress = await firebaseDataService.getUserProgress(user);
 
-        // Update the progress
-        await firebaseDataService.updateUserProgress(user, progress);
+        const updatedProgress = { ...progress };
 
-        // Calculate streaks using the NEW activity dates
         if (progress.lastWorkoutDate) {
           const newStreak = firebaseDataService.calculateStreak(
             currentProgress?.workoutStreak || 0,
             currentProgress?.lastWorkoutDate,
             progress.lastWorkoutDate
           );
-          await firebaseDataService.updateUserProgress(user, {
-            workoutStreak: newStreak,
-          });
+          updatedProgress.workoutStreak = newStreak;
         }
+
         if (progress.lastFocusSessionDate) {
           const newStreak = firebaseDataService.calculateStreak(
             currentProgress?.focusStreak || 0,
             currentProgress?.lastFocusSessionDate,
             progress.lastFocusSessionDate
           );
-          await firebaseDataService.updateUserProgress(user, {
-            focusStreak: newStreak,
-          });
+          updatedProgress.focusStreak = newStreak;
         }
+
+        // Single database call with all updates
+        await firebaseDataService.updateUserProgress(user, updatedProgress);
       } catch (err) {
         console.error(
           '💾 AuthProvider: Failed to save user progress, saving offline:',

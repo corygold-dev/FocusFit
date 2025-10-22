@@ -215,26 +215,54 @@ export class FirebaseDataService {
     // If no previous activity, start with streak of 1
     if (!lastActivityDate) return 1;
 
-    const today = new Date(newActivityDate);
-    today.setHours(0, 0, 0, 0);
-
-    const lastActivity = new Date(lastActivityDate);
-    lastActivity.setHours(0, 0, 0, 0);
+    // Normalize dates to UTC to avoid timezone issues
+    const today = this.normalizeDateToUTC(newActivityDate);
+    const lastActivity = this.normalizeDateToUTC(lastActivityDate);
 
     const daysDiff = Math.floor(
       (today.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24)
     );
 
-    if (daysDiff === 0) {
-      // Already logged today → no change
+    if (daysDiff < 0) {
+      // Future date - shouldn't happen, but reset to 1 for safety
+      console.warn('Future activity date detected, resetting streak');
+      return 1;
+    } else if (daysDiff === 0) {
+      // Same day - keep current streak (don't increase for multiple activities same day)
       return currentStreak;
     } else if (daysDiff === 1) {
-      // Consecutive day → increase streak
-      return currentStreak + 1;
+      // Consecutive day - increase streak
+      return Math.max(1, currentStreak + 1);
     } else {
-      // Missed a day or more → reset streak
+      // Missed a day or more - reset streak to 1
       return 1;
     }
+  }
+
+  private normalizeDateToUTC(date: Date | null | undefined): Date {
+    if (!date) return new Date();
+
+    let normalizedDate: Date;
+    if (date && typeof date === 'object' && 'toDate' in date) {
+      normalizedDate = (date as { toDate: () => Date }).toDate();
+    } else {
+      normalizedDate = new Date(date);
+    }
+
+    // Create a new date at UTC midnight for the same calendar date
+    // This ensures consistent day boundaries regardless of timezone
+    const utcDate = new Date(
+      Date.UTC(
+        normalizedDate.getUTCFullYear(),
+        normalizedDate.getUTCMonth(),
+        normalizedDate.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    );
+    return utcDate;
   }
 
   async getTotalWorkouts(user: AuthUser): Promise<number> {

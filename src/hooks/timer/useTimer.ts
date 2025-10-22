@@ -92,7 +92,7 @@ export function useTimer({
 
       setSecondsLeft(prev => {
         const newSeconds = prev - 1;
-        
+
         if (newSeconds <= 0) {
           setIsRunning(false);
           cleanupTimerResources(intervalRef, notificationIdRef);
@@ -100,7 +100,7 @@ export function useTimer({
           onComplete?.();
           return 0;
         }
-        
+
         return newSeconds;
       });
     },

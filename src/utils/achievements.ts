@@ -133,7 +133,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '💯',
     iconName: 'hundred',
     iconColor: '#FFD700',
-    condition: progress => (progress.totalFocusSessions + progress.totalWorkouts) >= 100,
+    condition: progress =>
+      progress.totalFocusSessions + progress.totalWorkouts >= 100,
   },
   {
     id: 'unstoppable',
@@ -142,7 +143,8 @@ export const ACHIEVEMENTS: Achievement[] = [
     emoji: '🚀',
     iconName: 'rocket-launch',
     iconColor: '#E91E63',
-    condition: progress => progress.focusStreak >= 30 || progress.workoutStreak >= 30,
+    condition: progress =>
+      progress.focusStreak >= 30 || progress.workoutStreak >= 30,
   },
   {
     id: 'zen_master',
