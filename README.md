@@ -4,6 +4,22 @@
 
 A comprehensive productivity and fitness app that combines focused work sessions with energizing exercise routines. Build consistent habits with smart notifications, personalized workouts, and detailed progress tracking.
 
+## 🆕 What's New in v1.1.0
+
+### 🎯 **Major Improvements**
+
+- **Full Android Support**: Complete Google Sign-In integration for Android devices
+- **Enhanced Streak Logic**: Fixed timezone issues and improved streak calculations
+- **Background Timer**: Exercise timer continues running even when phone is locked
+- **8 New Achievements**: Expanded achievement system with more milestones to unlock
+- **Exercise Customization**: Choose which exercises to include/exclude from workouts
+- **Improved Timer Reliability**: Fixed critical timer issues for better user experience
+
+### 🔧 **Technical Enhancements**
+
+- **Robust Authentication**: Fixed Google Sign-In "developer error" on Android
+- **UI/UX Polish**: Fixed dark mode issues and improved visual consistency
+
 ## ✨ Features
 
 ### 🎯 **Focus & Productivity**
@@ -21,7 +37,8 @@ A comprehensive productivity and fitness app that combines focused work sessions
 - **30 Office-Friendly Exercises**: Upper body, lower body, and mobility routines
 - **Multiple Difficulty Levels**: Easy, medium, and hard options to match your fitness level
 - **Equipment Support**: Desk, chair, bodyweight, TRX, kettlebells, pull-up bars, and resistance bands
-- **Exercise Customization**: Exclude exercises you don't want to do
+- **Exercise Customization**: Choose which exercises to include/exclude from your workouts
+- **Background Timer**: Exercise timer continues running even when phone is locked
 - **Step-by-Step Instructions**: Clear, detailed instructions for each exercise
 - **Real-time Guidance**: Countdown timers and progress tracking
 - **Workout History**: Track all your completed workouts
@@ -29,7 +46,7 @@ A comprehensive productivity and fitness app that combines focused work sessions
 ### 📊 **Analytics & Progress**
 
 - **Comprehensive Analytics**: Detailed insights into your focus and workout patterns
-- **Achievement System**: 12 achievements to unlock as you progress
+- **Achievement System**: 20 achievements to unlock as you progress
 - **Progress Tracking**: Total sessions, duration, and streak monitoring
 - **Visual Analytics**: Beautiful charts and metrics display
 - **Recent Activity**: Track your last 7 days of activity
@@ -41,6 +58,7 @@ A comprehensive productivity and fitness app that combines focused work sessions
 - **Motivational Boost**: Afternoon reminders to maintain momentum
 - **Customizable Timing**: Set your preferred reminder times
 - **Cross-Platform**: Works on both iOS and Android with proper notification channels
+- **Background Execution**: Notifications and timers work even when app is in background
 - **Timer End Notifications**: Get notified when your focus sessions complete
 
 ### 🎨 **Personalization**
