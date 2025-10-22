@@ -8,6 +8,7 @@ export type Exercise = {
   equipment?: string[] | null;
   difficulty: Difficulty[];
   instructions: string[];
+  isBilateral?: boolean;
 };
 
 export const exercises: Exercise[] = [
@@ -351,6 +352,7 @@ export const exercises: Exercise[] = [
       'Swing your free leg forward and backward in a controlled motion',
       'Switch legs and repeat the swinging motion',
     ],
+    isBilateral: true,
   },
   {
     name: 'Chest Opener Stretch',
@@ -360,9 +362,9 @@ export const exercises: Exercise[] = [
     equipment: null,
     difficulty: ['easy', 'medium', 'hard'],
     instructions: [
-      'Stand with feet shoulder-width apart and arms extended to the sides',
+      'Stand in a doorway with arms on the doorframe in an "L" shape',
       'Keep your shoulders relaxed and core engaged',
-      'Gently pull your arms back, opening your chest and squeezing your shoulder blades',
+      'Gently press your torso forward, opening your chest and squeezing your shoulder blades',
       'Hold the stretch and breathe deeply, feeling the stretch across your chest',
     ],
   },
@@ -389,9 +391,9 @@ export const exercises: Exercise[] = [
     difficulty: ['easy', 'medium', 'hard'],
     instructions: [
       'Start in a forward fold with hands on the ground and knees slightly bent',
-      'Keep your hands planted and walk your feet back to a downward dog position',
-      'Walk your hands forward while keeping your legs straight',
-      'Continue the walking motion, moving your hands and feet in opposite directions',
+      'Keep your hands planted gently straighten one leg until you feel a stretch',
+      'Hold for a few seconds, then switch legs and repeat',
+      'If the stretch is too intense, you can elevate your hands on a step or chair',
     ],
   },
   {
@@ -407,6 +409,7 @@ export const exercises: Exercise[] = [
       'Place your left elbow on the outside of your right knee and twist your torso',
       'Hold the stretch and breathe deeply, then switch sides',
     ],
+    isBilateral: true,
   },
   {
     name: '90/90 Stretch',
@@ -421,6 +424,7 @@ export const exercises: Exercise[] = [
       'Keep your back straight and lean forward over your right leg',
       'Hold the stretch and breathe deeply, then switch leg positions',
     ],
+    isBilateral: true,
   },
   {
     name: "World's Greatest Stretch",
@@ -435,6 +439,7 @@ export const exercises: Exercise[] = [
       'Place your left hand on the ground and rotate your torso to the right',
       'Hold the stretch and breathe deeply, then switch sides',
     ],
+    isBilateral: true,
   },
   {
     name: 'Couch Stretch',
@@ -449,5 +454,6 @@ export const exercises: Exercise[] = [
       'Keep your left foot flat on the ground and your torso upright',
       'Hold the stretch and breathe deeply, then switch legs',
     ],
+    isBilateral: true,
   },
 ];

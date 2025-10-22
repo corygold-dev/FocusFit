@@ -1,10 +1,11 @@
 import { exercises } from '@/src/lib/exercises';
 import { useTheme } from '@/src/providers';
 import { formatTime } from '@/src/utils/formatTime';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import * as Progress from 'react-native-progress';
 import ExerciseInstructions from './ExerciseInstructions';
+import SwitchSidesReminder from './SwitchSidesReminder';
 import { activePhaseStyles } from './styles';
 
 interface ActivePhaseProps {
@@ -35,6 +36,18 @@ export default function ActivePhase({
     'Breathe steadily throughout',
   ];
 
+  const [showReminder, setShowReminder] = useState(false);
+
+  useEffect(() => {
+    if (exercise?.isBilateral) {
+      if (progress >= 0.5 && !showReminder) {
+        setShowReminder(true);
+        const timer = setTimeout(() => setShowReminder(false), 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [progress, exercise?.isBilateral, showReminder]);
+
   return (
     <View style={styles.container}>
       <View style={styles.titleSection}>
@@ -48,6 +61,8 @@ export default function ActivePhase({
           steps={instructions}
         />
       </View>
+
+      <SwitchSidesReminder isVisible={showReminder} />
 
       <View style={styles.timerSection}>
         <Text
