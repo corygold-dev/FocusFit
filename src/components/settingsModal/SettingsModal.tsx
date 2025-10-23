@@ -1,6 +1,7 @@
 import { useAuth, useTheme } from '@/src/providers';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/src/utils/constants';
 import { UserSettings } from '@/src/utils/exerciseUtils';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
@@ -47,6 +48,7 @@ export default function SettingsModal({
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
   const { logout, deleteAccount, user } = useAuth();
+  const router = useRouter();
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const styles = settingsModalStyles(theme);
 
@@ -94,16 +96,24 @@ export default function SettingsModal({
     onClose();
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (Platform.OS === 'web') {
       const confirmLogout = window.confirm('Are you sure you want to log out?');
       if (confirmLogout) {
-        logout();
+        await logout();
+        router.replace('/sign-in');
       }
     } else {
       Alert.alert('Log Out', 'Are you sure you want to log out?', [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Log Out', style: 'destructive', onPress: logout },
+        {
+          text: 'Log Out',
+          style: 'destructive',
+          onPress: async () => {
+            await logout();
+            router.replace('/sign-in');
+          },
+        },
       ]);
     }
   };
