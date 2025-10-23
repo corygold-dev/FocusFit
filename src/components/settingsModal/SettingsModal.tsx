@@ -46,7 +46,7 @@ export default function SettingsModal({
   onSave,
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
-  const { logout, user } = useAuth();
+  const { logout, deleteAccount, user } = useAuth();
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const styles = settingsModalStyles(theme);
 
@@ -106,6 +106,34 @@ export default function SettingsModal({
         { text: 'Log Out', style: 'destructive', onPress: logout },
       ]);
     }
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Account',
+          style: 'destructive',
+          onPress: () => {
+            Alert.alert(
+              'Final Confirmation',
+              'This will permanently delete your account and all data. Are you absolutely sure?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Yes, Delete',
+                  style: 'destructive',
+                  onPress: deleteAccount,
+                },
+              ]
+            );
+          },
+        },
+      ]
+    );
   };
 
   const handleFeedbackSubmit = async (feedback: FeedbackData) => {
@@ -181,6 +209,13 @@ export default function SettingsModal({
                   onPress={handleLogout}
                 >
                   <Text style={styles.logoutText}>Log Out</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.deleteAccountButton}
+                  onPress={handleDeleteAccount}
+                >
+                  <Text style={styles.deleteAccountText}>Delete Account</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>

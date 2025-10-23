@@ -36,6 +36,7 @@ interface AuthContextType {
   sendEmailVerification: () => Promise<void>;
   clearError: () => void;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 
   // Data persistence
   isOnline: boolean;
@@ -153,6 +154,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       syncedUserUidRef.current = null;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Logout failed');
+      throw err;
+    }
+  }, []);
+
+  const deleteAccount = useCallback(async () => {
+    try {
+      setError(null);
+      await firebaseAuthService.deleteAccount();
+      setUser(null);
+      setSettings(null);
+      syncedUserUidRef.current = null;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Account deletion failed');
       throw err;
     }
   }, []);
@@ -442,6 +456,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       sendEmailVerification,
       clearError,
       logout,
+      deleteAccount,
 
       // Data state
       isOnline,

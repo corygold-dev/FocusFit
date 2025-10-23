@@ -87,4 +87,19 @@ export const createStyles = (theme: Theme) =>
       fontWeight: '600',
       fontSize: 16,
     },
+    deleteAccountButton: {
+      backgroundColor: theme.colors.error + '20',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginTop: 8,
+      borderWidth: 2,
+      borderColor: theme.colors.error,
+      alignItems: 'center',
+    },
+    deleteAccountText: {
+      color: theme.colors.error,
+      fontWeight: '700',
+      fontSize: 16,
+    },
   });

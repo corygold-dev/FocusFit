@@ -45,7 +45,7 @@ class FirebaseAuthService {
 
       // Get the users ID token
       const signInResult = await GoogleSignin.signIn();
-      const idToken = signInResult.data?.idToken;
+      const idToken = signInResult.idToken;
 
       if (!idToken) {
         throw new Error('Google Sign-In failed - no ID token returned');
@@ -161,6 +161,51 @@ class FirebaseAuthService {
     } catch (error) {
       console.error('Sign Out Error:', error);
       throw error;
+    }
+  }
+
+  // Delete Account
+  async deleteAccount(): Promise<void> {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        throw new Error('No user is currently signed in');
+      }
+
+      // Delete user data from Firestore
+      await this.deleteUserData(user.uid);
+
+      // Delete the user account
+      await user.delete();
+    } catch (error) {
+      console.error('Delete Account Error:', error);
+      throw error;
+    }
+  }
+
+  // Delete all user data from Firestore
+  private async deleteUserData(userId: string): Promise<void> {
+    try {
+      const { doc, deleteDoc } = await import('firebase/firestore');
+      const { db } = await import('../config/firebase');
+
+      // Delete user progress
+      const userProgressRef = doc(db, 'userProgress', userId);
+      await deleteDoc(userProgressRef);
+
+      // Delete user settings
+      const userSettingsRef = doc(db, 'userSettings', userId);
+      await deleteDoc(userSettingsRef);
+
+      // Delete user workout history
+      const workoutHistoryRef = doc(db, 'userWorkoutHistory', userId);
+      await deleteDoc(workoutHistoryRef);
+
+      // Delete user focus sessions
+      const focusSessionsRef = doc(db, 'userFocusSessions', userId);
+      await deleteDoc(focusSessionsRef);
+    } catch (error) {
+      console.error('Error deleting user data:', error);
     }
   }
 
