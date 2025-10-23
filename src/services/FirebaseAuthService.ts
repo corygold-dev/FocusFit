@@ -14,6 +14,60 @@ import {
 import { Platform } from 'react-native';
 import { auth } from '../config/firebase';
 
+// User-friendly error messages
+const getFriendlyErrorMessage = (error: unknown): string => {
+  const errorCode = (error as { code?: string })?.code || '';
+
+  switch (errorCode) {
+    // Authentication errors
+    case 'auth/user-not-found':
+      return 'No account found with this email address. Please check your email or create a new account.';
+    case 'auth/wrong-password':
+      return 'Incorrect password. Please try again or reset your password.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled. Please contact support.';
+    case 'auth/too-many-requests':
+      return 'Too many failed attempts. Please try again later.';
+    case 'auth/operation-not-allowed':
+      return 'This sign-in method is not enabled. Please try a different method.';
+
+    // Registration errors
+    case 'auth/email-already-in-use':
+      return 'An account with this email already exists. Please sign in instead.';
+    case 'auth/weak-password':
+      return 'Password is too weak. Please choose a stronger password.';
+    case 'auth/invalid-credential':
+      return 'Invalid login credentials. Please check your email and password.';
+
+    // Network errors
+    case 'auth/network-request-failed':
+      return 'Network error. Please check your internet connection and try again.';
+    case 'auth/timeout':
+      return 'Request timed out. Please try again.';
+
+    // Google Sign-In specific
+    case 'auth/account-exists-with-different-credential':
+      return 'An account already exists with this email. Please sign in with your original method.';
+
+    // Generic fallbacks
+    default: {
+      const errorMessage = (error as { message?: string })?.message || '';
+      if (errorMessage.includes('network')) {
+        return 'Network error. Please check your internet connection.';
+      }
+      if (errorMessage.includes('timeout')) {
+        return 'Request timed out. Please try again.';
+      }
+      if (errorMessage.includes('cancelled')) {
+        return 'Sign-in was cancelled.';
+      }
+      return 'An unexpected error occurred. Please try again.';
+    }
+  }
+};
+
 export interface AuthUser {
   uid: string;
   email: string | null;
@@ -63,7 +117,7 @@ class FirebaseAuthService {
       return this.convertFirebaseUser(result.user);
     } catch (error) {
       console.error('Google Sign-In Error:', error);
-      throw error;
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 
@@ -108,7 +162,7 @@ class FirebaseAuthService {
       return this.convertFirebaseUser(result.user);
     } catch (error) {
       console.error('Apple Sign-In Error:', error);
-      throw error;
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 
@@ -126,7 +180,7 @@ class FirebaseAuthService {
       return this.convertFirebaseUser(result.user);
     } catch (error) {
       console.error('Email/Password Sign-In Error:', error);
-      throw error;
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 
@@ -150,7 +204,7 @@ class FirebaseAuthService {
       return this.convertFirebaseUser(result.user);
     } catch (error) {
       console.error('Email/Password Registration Error:', error);
-      throw error;
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 
