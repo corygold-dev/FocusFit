@@ -405,7 +405,6 @@ export class FirebaseDataService {
       // Check if user already has settings
       const existingSettings = await this.getUserSettings(user);
       if (!existingSettings) {
-        // Create default settings
         await this.saveUserSettings(user, {
           difficulty: 'medium',
           equipment: [],
@@ -414,7 +413,6 @@ export class FirebaseDataService {
           morningReminders: true,
           afternoonReminders: true,
           timerEndNotifications: true,
-          lastFocusTime: 1500,
           createdAt: new Date().toISOString(),
         });
       }

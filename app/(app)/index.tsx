@@ -46,13 +46,13 @@ export default function TimerScreen() {
 
   const { settings, saveUserSettings } = useUserSettings();
 
-  const needsOnboarding = !settings?.lastFocusTime;
+  const needsOnboarding = settings !== null && !settings?.lastFocusTime;
 
   useEffect(() => {
-    if (needsOnboarding) {
+    if (settings !== null && needsOnboarding) {
       router.replace('/(app)/onboarding');
     }
-  }, [needsOnboarding, router]);
+  }, [needsOnboarding, router, settings]);
   const {
     saveUserProgress,
     saveFocusSession: saveFocusSessionToDB,
