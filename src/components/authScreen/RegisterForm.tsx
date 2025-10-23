@@ -1,5 +1,6 @@
 import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -24,6 +25,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const { register, loginWithGoogle, loginWithApple, error, clearError } =
     useAuth();
   const { theme } = useTheme();
+  const router = useRouter();
   const styles = registerFormStyles(theme);
 
   const handleEmailChange = (text: string) => {
@@ -70,6 +72,8 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     setIsSubmitting(true);
     try {
       await loginWithGoogle();
+      // If successful, navigate to app
+      router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
       Alert.alert(
@@ -85,6 +89,8 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     setIsSubmitting(true);
     try {
       await loginWithApple();
+      // If successful, navigate to app
+      router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
       Alert.alert(
