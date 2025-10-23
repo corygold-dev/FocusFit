@@ -1,8 +1,0 @@
-{
-  "expo.jsEngine": "hermes",
-  "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
-  "newArchEnabled": "true",
-  "ios.useFrameworks": "static",
-  "apple.extraPods": "[{\"name\":\"RCT-Folly\",\"podspec\":\"../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec\"}]",
-  "apple.privacyManifestAggregationEnabled": "true"
-}
