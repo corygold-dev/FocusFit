@@ -13,9 +13,13 @@
     },
     "preview": {
       "distribution": "internal",
+      "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium",
         "buildConfiguration": "Release"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "preview-debug": {
@@ -26,9 +30,13 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium",
         "buildConfiguration": "Release"
+      },
+      "android": {
+        "buildType": "aab"
       }
     }
   },
