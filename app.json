@@ -39,7 +39,8 @@
       "edgeToEdgeEnabled": true,
       "package": "com.corygold.focusfit",
       "scheme": "focusfit",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 7
     },
     "web": {
       "output": "static",
