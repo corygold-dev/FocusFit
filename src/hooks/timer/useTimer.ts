@@ -3,6 +3,7 @@ import { cleanupTimerResources } from '@/src/utils/cleanupTimerResources';
 import { TIMER } from '@/src/utils/constants';
 import { scheduleTimerNotification } from '@/src/utils/notifications';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { useBackgroundTimer } from './useBackgroundTimer';
 import { useInterval } from './useInterval';
 
@@ -90,22 +91,65 @@ export function useTimer({
     () => {
       if (!isRunning) return;
 
-      setSecondsLeft(prev => {
-        const newSeconds = prev - 1;
+      if (endTimeRef.current) {
+        const remaining = Math.max(
+          Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+          0
+        );
 
-        if (newSeconds <= 0) {
+        if (remaining <= 0) {
           setIsRunning(false);
           cleanupTimerResources(intervalRef, notificationIdRef);
           playEndSound();
           onComplete?.();
-          return 0;
+          setSecondsLeft(0);
+        } else {
+          setSecondsLeft(remaining);
         }
+      } else {
+        setSecondsLeft(prev => {
+          const newSeconds = prev - 1;
 
-        return newSeconds;
-      });
+          if (newSeconds <= 0) {
+            setIsRunning(false);
+            cleanupTimerResources(intervalRef, notificationIdRef);
+            playEndSound();
+            onComplete?.();
+            return 0;
+          }
+
+          return newSeconds;
+        });
+      }
     },
     isRunning ? TIMER.ONE_SECOND : null
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      (nextAppState: AppStateStatus) => {
+        if (nextAppState === 'active' && isRunning && endTimeRef.current) {
+          const remaining = Math.max(
+            Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+            0
+          );
+          setSecondsLeft(remaining);
+
+          if (remaining <= 0) {
+            setIsRunning(false);
+            cleanupTimerResources(intervalRef, notificationIdRef);
+            playEndSound();
+            onComplete?.();
+          }
+        }
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isRunning, endTimeRef, onComplete, playEndSound, notificationIdRef]);
 
   useEffect(() => {
     return () => {

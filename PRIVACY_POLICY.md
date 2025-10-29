@@ -106,14 +106,72 @@ If you have questions about this Privacy Policy or your data:
 
 ## Data Deletion
 
-To delete your account and all associated data:
+### How to Request Account Deletion
+
+**Method 1: In-App Deletion (Recommended)**
 
 1. Open the FocusFit app
-2. Go to Settings
-3. Select "Delete Account"
-4. Confirm deletion
+2. Go to Settings (gear icon)
+3. Scroll down to "Delete Account"
+4. Follow the confirmation prompts
+5. Your account and all data will be permanently deleted
 
-Your data will be permanently deleted within 30 days.
+**Method 2: Email Request**
+If you cannot access the app, email us at: **goldcorum@gmail.com**
+
+Include the following information:
+
+- Your email address associated with the account
+- Confirmation that you want to permanently delete your account
+- Any additional information that might help us locate your account
+
+### What Data Will Be Deleted
+
+When you delete your FocusFit account, the following data will be permanently removed:
+
+**User Account Data:**
+
+- Email address and authentication information
+- Display name and profile information
+- Account creation date and settings
+
+**App Usage Data:**
+
+- All focus session history and timestamps
+- Workout history and exercise completions
+- Achievement progress and unlocked achievements
+- Streak data (focus and workout streaks)
+- Analytics and progress tracking data
+
+**Settings and Preferences:**
+
+- Theme preferences (light/dark mode)
+- Notification settings
+- Equipment selections
+- Exercise exclusions and difficulty preferences
+- Timer and reminder configurations
+
+**Technical Data:**
+
+- Device information and app usage statistics
+- Error logs and crash reports associated with your account
+- Any cached or stored data on our servers
+
+### Data Retention Policy
+
+- **Immediate Deletion**: All user data is deleted immediately upon account deletion
+- **No Retention Period**: We do not retain any personal data after account deletion
+- **Backup Cleanup**: All backups containing your data are purged within 30 days
+- **Third-Party Services**: Data shared with Firebase (our backend provider) is deleted according to their policies
+
+### What Happens After Deletion
+
+- Your account will be permanently removed from our systems
+- You will no longer receive any notifications from FocusFit
+- All your progress, achievements, and data will be lost permanently
+- You can create a new account at any time, but previous data cannot be recovered
+
+**Note**: Account deletion is permanent and cannot be undone. Please ensure you want to delete your account before proceeding.
 
 ---
 

@@ -8,6 +8,7 @@ import {
 } from '@/src/utils/exerciseUtils';
 import { scheduleExerciseNotification } from '@/src/utils/notifications';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { useInterval } from '../timer';
 import { useBackgroundTimer } from '../timer/useBackgroundTimer';
 
@@ -48,7 +49,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     [currentList, currentIndex]
   );
 
-  const { scheduleBackgroundNotification, cleanupBackgroundTimer } =
+  const { scheduleBackgroundNotification, cleanupBackgroundTimer, endTimeRef } =
     useBackgroundTimer({
       isActive: phase === 'active',
       secondsLeft,
@@ -163,10 +164,41 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
 
   useInterval(
     () => {
-      setSecondsLeft(prev => prev - 1);
+      if (phase === 'active' && endTimeRef.current) {
+        const remaining = Math.max(
+          Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+          0
+        );
+        setSecondsLeft(remaining);
+      } else if (phase === 'countdown') {
+        setSecondsLeft(prev => prev - 1);
+      }
     },
     isTimerActive ? TIMER.ONE_SECOND : null
   );
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener(
+      'change',
+      (nextAppState: AppStateStatus) => {
+        if (
+          nextAppState === 'active' &&
+          phase === 'active' &&
+          endTimeRef.current
+        ) {
+          const remaining = Math.max(
+            Math.ceil((endTimeRef.current - Date.now()) / TIMER.ONE_SECOND),
+            0
+          );
+          setSecondsLeft(remaining);
+        }
+      }
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [phase, endTimeRef]);
 
   useEffect(() => {
     if (phase === 'countdown') {

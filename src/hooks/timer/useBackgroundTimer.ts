@@ -21,21 +21,16 @@ export function useBackgroundTimer({
   const endTimeRef = useRef<number | null>(null);
 
   const scheduleBackgroundNotification = useCallback(async () => {
-    if (
-      isActive &&
-      secondsLeft > 0 &&
-      endTimeRef.current === null &&
-      settings?.timerEndNotifications
-    ) {
-      // Calculate end time for background timer
+    if (isActive && secondsLeft > 0 && endTimeRef.current === null) {
       endTimeRef.current = Date.now() + secondsLeft * TIMER.ONE_SECOND;
 
-      try {
-        const triggerDate = new Date(endTimeRef.current);
-        notificationIdRef.current = await onScheduleNotification(triggerDate);
-      } catch (error) {
-        console.error('Failed to schedule background notification:', error);
-        endTimeRef.current = null;
+      if (settings?.timerEndNotifications) {
+        try {
+          const triggerDate = new Date(endTimeRef.current);
+          notificationIdRef.current = await onScheduleNotification(triggerDate);
+        } catch (error) {
+          console.error('Failed to schedule background notification:', error);
+        }
       }
     }
   }, [
