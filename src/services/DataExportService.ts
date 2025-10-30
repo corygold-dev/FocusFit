@@ -13,7 +13,6 @@ export interface ExportData {
   user: {
     uid: string;
     email: string;
-    displayName: string | null;
     exportDate: string;
     appVersion: string;
   };
@@ -79,7 +78,6 @@ export class DataExportService {
         user: {
           uid: user.uid,
           email: user.email || 'Unknown',
-          displayName: user.displayName || 'Unknown',
           exportDate: new Date().toISOString(),
           appVersion: packageJson.version,
         },

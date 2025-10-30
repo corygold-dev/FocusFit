@@ -11,7 +11,10 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "format:staged": "prettier --write --list-different"
+    "format:staged": "prettier --write --list-different",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -60,6 +63,8 @@
     "@babel/preset-react": "^7.27.1",
     "@babel/runtime": "^7.28.4",
     "@eslint/js": "^9.35.0",
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/react": "~19.0.10",
     "@typescript-eslint/eslint-plugin": "^8.43.0",
@@ -73,11 +78,42 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-native": "^5.0.0",
     "eslint-plugin-unused-imports": "^4.2.0",
+    "jest": "^30.2.0",
+    "jest-expo": "^53.0.10",
     "patch-package": "^8.0.0",
     "prettier": "^3.6.2",
     "pretty-format": "^30.0.5",
+    "react-test-renderer": "^19.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.43.0"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?|expo|@expo|expo-modules-core|expo-winter)/)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/android/",
+      "/ios/"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/**/__tests__/**",
+      "!src/**/index.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 70,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    }
   },
   "private": true
 }
