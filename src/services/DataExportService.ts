@@ -201,6 +201,7 @@ ${this.getRecentActivitySummary(data)}
   private getRecentActivitySummary(data: ExportData): string {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    sevenDaysAgo.setHours(0, 0, 0, 0); // Start of the day 7 days ago
 
     const recentFocus = data.focusSessions.filter(
       session => new Date(session.completedAt) >= sevenDaysAgo

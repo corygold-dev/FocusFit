@@ -75,6 +75,7 @@ export default function AnalyticsModal({
 
       const thisWeek = new Date();
       thisWeek.setDate(thisWeek.getDate() - 7);
+      thisWeek.setHours(0, 0, 0, 0); // Start of the day 7 days ago
 
       const thisWeekWorkouts = workoutHistory.filter(
         session =>
