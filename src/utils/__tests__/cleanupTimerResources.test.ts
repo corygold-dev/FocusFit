@@ -6,8 +6,15 @@ jest.mock('../notifications', () => ({
 }));
 
 describe('cleanupTimerResources', () => {
+  let consoleErrorSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it('should clear interval when intervalRef is not null', async () => {
@@ -111,9 +118,6 @@ describe('cleanupTimerResources', () => {
   });
 
   it('should clear interval even if notification cancellation fails', async () => {
-    const consoleErrorSpy = jest
-      .spyOn(console, 'error')
-      .mockImplementation(() => {});
     const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
     (notifications.cancelNotification as jest.Mock).mockRejectedValue(
       new Error('Cancel failed')
@@ -127,8 +131,6 @@ describe('cleanupTimerResources', () => {
     expect(clearIntervalSpy).toHaveBeenCalledWith(789);
     expect(intervalRef.current).toBeNull();
     expect(notificationIdRef.current).toBeNull();
-
-    consoleErrorSpy.mockRestore();
   });
 
   it('should handle zero as valid interval id', async () => {

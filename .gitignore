@@ -32,9 +32,15 @@ yarn-error.*
 
 # local env files
 .env
+.env.local
 .env*.local
 
+# But keep the environment-specific config files
+!.env.development
+!.env.production
+
 # Firebase config files (environment-specific, stored securely)
+# Only ignore the active symlinked files, keep the .dev and .prod versions
 google-services.json
 GoogleService-Info.plist
 
