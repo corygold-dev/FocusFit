@@ -34,6 +34,13 @@ yarn-error.*
 .env
 .env*.local
 
+# Firebase config files (environment-specific, stored securely)
+google-services.json
+GoogleService-Info.plist
+
+# Keep app.config.js (dynamic), ignore static app.json if it exists
+app.json
+
 # typescript
 *.tsbuildinfo
 

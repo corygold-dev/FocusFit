@@ -14,7 +14,16 @@
     "format:staged": "prettier --write --list-different",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "env:dev": "./scripts/switch-env.sh dev",
+    "env:prod": "./scripts/switch-env.sh prod",
+    "env:validate": "./scripts/validate-env.sh",
+    "build:preview:ios": "npm run env:dev && eas build --profile preview --platform ios",
+    "build:preview:android": "npm run env:dev && eas build --profile preview --platform android",
+    "build:preview:all": "npm run env:dev && eas build --profile preview --platform all",
+    "build:prod:ios": "npm run env:prod && eas build --profile production --platform ios",
+    "build:prod:android": "npm run env:prod && eas build --profile production --platform android",
+    "build:prod:all": "npm run env:prod && eas build --profile production --platform all"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

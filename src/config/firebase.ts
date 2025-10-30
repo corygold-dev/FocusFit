@@ -11,6 +11,18 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
+// Log environment (helpful for debugging)
+const environment = process.env.EXPO_PUBLIC_ENV || 'unknown';
+console.log(`🔥 Firebase initializing: ${environment} environment`);
+console.log(`📦 Project ID: ${firebaseConfig.projectId}`);
+
+// Validate config
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  throw new Error(
+    `Firebase configuration is incomplete. Make sure .env.${environment} file exists and is properly configured.`
+  );
+}
+
 // Initialize Firebase with guard against multiple initializations
 let app: FirebaseApp;
 let auth: Auth;
