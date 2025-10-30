@@ -71,9 +71,6 @@ const getFriendlyErrorMessage = (error: unknown): string => {
 export interface AuthUser {
   uid: string;
   email: string | null;
-  displayName: string | null;
-  photoURL: string | null;
-  isAnonymous: boolean;
 }
 
 class FirebaseAuthService {
@@ -82,9 +79,6 @@ class FirebaseAuthService {
     return {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
-      photoURL: firebaseUser.photoURL,
-      isAnonymous: firebaseUser.isAnonymous,
     };
   }
 

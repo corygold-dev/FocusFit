@@ -12,18 +12,14 @@ import { FocusSession, WorkoutSession } from './FirebaseDataService';
 
 export interface LeaderboardEntry {
   userId: string;
-  username: string;
-  displayName: string;
+  email: string;
   score: number;
   rank: number;
-  avatar?: string;
   isCurrentUser: boolean;
 }
 
 interface UserData {
-  username?: string;
-  displayName?: string;
-  avatar?: string;
+  email?: string;
 }
 
 export interface WeeklyLeaderboard {
@@ -145,11 +141,9 @@ export class LeaderboardService {
 
         entries.push({
           userId,
-          username: userData?.username || 'Anonymous',
-          displayName: userData?.displayName || 'Anonymous User',
+          email: userData?.email || 'Anonymous User',
           score: totalMinutes,
           rank: 0, // Will be set after sorting
-          avatar: userData?.avatar,
           isCurrentUser: userId === user.uid,
         });
       }
@@ -206,11 +200,9 @@ export class LeaderboardService {
 
         entries.push({
           userId,
-          username: userData?.username || 'Anonymous',
-          displayName: userData?.displayName || 'Anonymous User',
+          email: userData?.email || 'Anonymous User',
           score: workoutCount,
           rank: 0, // Will be set after sorting
-          avatar: userData?.avatar,
           isCurrentUser: userId === user.uid,
         });
       }
