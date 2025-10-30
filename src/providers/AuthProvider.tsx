@@ -493,6 +493,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       sendEmailVerification,
       clearError,
       logout,
+      deleteAccount,
       saveUserSettings,
       saveUserProgress,
       saveWorkoutSession,

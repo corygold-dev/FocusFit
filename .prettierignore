@@ -12,6 +12,8 @@ ios/build/
 # Generated files
 *.generated.*
 *.d.ts
+google-services.json
+GoogleService-Info.plist
 
 # Logs
 *.log
