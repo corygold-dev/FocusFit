@@ -12,6 +12,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { useAuth } from './AuthProvider';
 
 interface NotificationContextType {
   isLoading: boolean;
@@ -29,6 +30,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   children,
 }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const { getUserProgress } = useAuth();
 
   useEffect(() => {
     const loadSettings = async () => {
@@ -60,9 +62,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         }
 
         await cancelAllDailyReminders();
-        // Get user settings from AuthProvider when needed
+
+        // Get user's current streak
+        const progress = await getUserProgress();
+        const focusStreak = progress?.focusStreak || 0;
+
+        // Schedule notifications with streak info
         await scheduleDailyReminder(9, 0);
-        await scheduleMotivationalReminder(15, 0);
+        await scheduleMotivationalReminder(15, 0, focusStreak);
         console.log('📱 Notifications scheduled successfully');
       } catch (error) {
         console.error('Error setting up notifications:', error);
@@ -70,7 +77,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     };
 
     setupNotifications();
-  }, [isLoading]);
+  }, [isLoading, getUserProgress]);
 
   return (
     <NotificationContext.Provider value={{ isLoading }}>

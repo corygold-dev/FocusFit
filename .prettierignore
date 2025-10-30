@@ -13,7 +13,11 @@ ios/build/
 *.generated.*
 *.d.ts
 google-services.json
+google-services.dev.json
+google-services.prod.json
 GoogleService-Info.plist
+GoogleService-Info.dev.plist
+GoogleService-Info.prod.plist
 
 # Logs
 *.log

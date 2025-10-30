@@ -75,15 +75,27 @@ export async function scheduleDailyReminder(
 
 export async function scheduleMotivationalReminder(
   hour: number = 15,
-  minute: number = 0
+  minute: number = 0,
+  currentStreak: number = 0
 ) {
   try {
+    // Different messages based on whether user has a streak
+    const hasStreak = currentStreak > 1;
+    const content = hasStreak
+      ? {
+          title: "Don't Break the Streak! 💪",
+          body: `You're on a ${currentStreak} day streak! Keep the momentum going with another focus session.`,
+        }
+      : {
+          title: 'Time to Focus! 🎯',
+          body: 'Start building your streak today. Every great journey begins with a single step.',
+        };
+
     const id = await Notifications.scheduleNotificationAsync({
       content: {
-        title: "Don't Break the Streak! 💪",
-        body: "You're on fire! Keep the momentum going with another focus session.",
+        ...content,
         sound: 'short-ping.mp3',
-        data: { type: 'motivational' },
+        data: { type: 'motivational', streak: currentStreak },
       },
       trigger: {
         type: 'daily',

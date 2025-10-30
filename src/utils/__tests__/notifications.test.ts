@@ -221,21 +221,71 @@ describe('notifications', () => {
   });
 
   describe('scheduleMotivationalReminder', () => {
-    it('should schedule motivational reminder with default time', async () => {
+    it('should schedule motivational reminder with streak message when streak > 1', async () => {
       const mockId = 'motivational-123';
       (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue(
         mockId
       );
 
-      const result = await scheduleMotivationalReminder();
+      const result = await scheduleMotivationalReminder(15, 0, 5);
 
       expect(result).toBe(mockId);
       expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
         content: {
           title: "Don't Break the Streak! 💪",
-          body: "You're on fire! Keep the momentum going with another focus session.",
+          body: "You're on a 5 day streak! Keep the momentum going with another focus session.",
           sound: 'short-ping.mp3',
-          data: { type: 'motivational' },
+          data: { type: 'motivational', streak: 5 },
+        },
+        trigger: {
+          type: 'daily',
+          hour: 15,
+          minute: 0,
+          repeats: true,
+        },
+      });
+    });
+
+    it('should schedule motivational reminder with beginner message when streak is 0', async () => {
+      const mockId = 'motivational-456';
+      (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue(
+        mockId
+      );
+
+      const result = await scheduleMotivationalReminder(15, 0, 0);
+
+      expect(result).toBe(mockId);
+      expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
+        content: {
+          title: 'Time to Focus! 🎯',
+          body: 'Start building your streak today. Every great journey begins with a single step.',
+          sound: 'short-ping.mp3',
+          data: { type: 'motivational', streak: 0 },
+        },
+        trigger: {
+          type: 'daily',
+          hour: 15,
+          minute: 0,
+          repeats: true,
+        },
+      });
+    });
+
+    it('should schedule motivational reminder with beginner message when streak is 1', async () => {
+      const mockId = 'motivational-789';
+      (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue(
+        mockId
+      );
+
+      const result = await scheduleMotivationalReminder(15, 0, 1);
+
+      expect(result).toBe(mockId);
+      expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith({
+        content: {
+          title: 'Time to Focus! 🎯',
+          body: 'Start building your streak today. Every great journey begins with a single step.',
+          sound: 'short-ping.mp3',
+          data: { type: 'motivational', streak: 1 },
         },
         trigger: {
           type: 'daily',
@@ -247,12 +297,12 @@ describe('notifications', () => {
     });
 
     it('should schedule motivational reminder with custom time', async () => {
-      const mockId = 'motivational-456';
+      const mockId = 'motivational-custom';
       (Notifications.scheduleNotificationAsync as jest.Mock).mockResolvedValue(
         mockId
       );
 
-      const result = await scheduleMotivationalReminder(18, 45);
+      const result = await scheduleMotivationalReminder(18, 45, 3);
 
       expect(result).toBe(mockId);
       expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith(
@@ -271,7 +321,7 @@ describe('notifications', () => {
         mockError
       );
 
-      const result = await scheduleMotivationalReminder();
+      const result = await scheduleMotivationalReminder(15, 0, 2);
 
       expect(result).toBeNull();
       expect(console.error).toHaveBeenCalledWith(
