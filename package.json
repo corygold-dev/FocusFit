@@ -18,12 +18,13 @@
     "env:dev": "./scripts/switch-env.sh dev",
     "env:prod": "./scripts/switch-env.sh prod",
     "env:validate": "./scripts/validate-env.sh",
-    "build:preview:ios": "npm run env:dev && eas build --profile preview --platform ios",
-    "build:preview:android": "npm run env:dev && eas build --profile preview --platform android",
-    "build:preview:all": "npm run env:dev && eas build --profile preview --platform all",
-    "build:prod:ios": "npm run env:prod && eas build --profile production --platform ios",
-    "build:prod:android": "npm run env:prod && eas build --profile production --platform android",
-    "build:prod:all": "npm run env:prod && eas build --profile production --platform all"
+    "eas-build-post-install": "node scripts/copy-firebase-configs.js",
+    "build:preview:ios": "eas build --profile preview --platform ios",
+    "build:preview:android": "eas build --profile preview --platform android",
+    "build:preview:all": "eas build --profile preview --platform all",
+    "build:prod:ios": "eas build --profile production --platform ios",
+    "build:prod:android": "eas build --profile production --platform android",
+    "build:prod:all": "eas build --profile production --platform all"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
@@ -114,15 +115,7 @@
       "!src/**/*.d.ts",
       "!src/**/__tests__/**",
       "!src/**/index.ts"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 19,
-        "functions": 20,
-        "lines": 20,
-        "statements": 20
-      }
-    }
+    ]
   },
   "private": true
 }

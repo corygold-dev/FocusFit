@@ -14,7 +14,6 @@ const config = {
       supportsTablet: true,
       bundleIdentifier: 'com.corygold.focusfit',
       buildNumber: '6',
-      googleServicesFile: './GoogleService-Info.plist',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         CFBundleURLTypes: [
@@ -45,7 +44,6 @@ const config = {
       edgeToEdgeEnabled: true,
       package: 'com.corygold.focusfit',
       scheme: 'focusfit',
-      googleServicesFile: './google-services.json',
       versionCode: 7,
     },
     web: {
