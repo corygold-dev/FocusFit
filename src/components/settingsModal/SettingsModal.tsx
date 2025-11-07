@@ -1,6 +1,8 @@
 import { useAuth, useTheme } from '@/src/providers';
+import { usePurchase } from '@/src/providers/PurchaseProvider';
 import { DIFFICULTY_LEVELS, EQUIPMENT_OPTIONS } from '@/src/utils/constants';
 import { UserSettings } from '@/src/utils/exerciseUtils';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -48,6 +50,7 @@ export default function SettingsModal({
 }: SettingsModalProps) {
   const { theme, themeMode, setThemeMode } = useTheme();
   const { logout, deleteAccount, user } = useAuth();
+  const { isPremium } = usePurchase();
   const router = useRouter();
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const styles = settingsModalStyles(theme);
@@ -164,6 +167,30 @@ export default function SettingsModal({
           <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
               <Text style={styles.modalTitle}>Settings</Text>
+
+              {/* Premium Upgrade Button */}
+              {!isPremium && (
+                <TouchableOpacity
+                  style={styles.premiumButton}
+                  onPress={() => {
+                    onClose();
+                    router.push('/(app)/premium');
+                  }}
+                >
+                  <Ionicons name="sparkles" size={20} color="#fff" />
+                  <Text style={styles.premiumButtonText}>
+                    Upgrade to Premium
+                  </Text>
+                  <Ionicons name="arrow-forward" size={20} color="#fff" />
+                </TouchableOpacity>
+              )}
+
+              {isPremium && (
+                <View style={styles.premiumBadge}>
+                  <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+                  <Text style={styles.premiumBadgeText}>Premium Active</Text>
+                </View>
+              )}
 
               <Text style={styles.sectionTitle}>Theme:</Text>
               <ThemeSelector
