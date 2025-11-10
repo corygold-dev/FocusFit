@@ -45,8 +45,13 @@ export function useTimer({
     const time = newDuration ?? secondsLeft;
     setSecondsLeft(time);
     setIsRunning(true);
-    await scheduleBackgroundNotification();
   };
+
+  useEffect(() => {
+    if (isRunning && secondsLeft > 0) {
+      scheduleBackgroundNotification();
+    }
+  }, [isRunning, scheduleBackgroundNotification, secondsLeft]);
 
   const pauseTimer = async () => {
     setIsRunning(false);

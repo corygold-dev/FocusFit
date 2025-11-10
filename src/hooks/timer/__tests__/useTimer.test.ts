@@ -18,15 +18,20 @@ jest.mock('@/src/utils/notifications', () => ({
   scheduleTimerNotification: jest.fn(),
 }));
 
-jest.mock('../useBackgroundTimer', () => ({
-  useBackgroundTimer: () => ({
-    scheduleBackgroundNotification: jest.fn(),
-    cleanupBackgroundTimer: jest.fn(),
-    resetBackgroundTimer: jest.fn(),
-    notificationIdRef: { current: null },
-    endTimeRef: { current: null },
-  }),
-}));
+jest.mock('../useBackgroundTimer', () => {
+  const actualEndTimeRef = { current: null };
+  const actualNotificationIdRef = { current: null };
+
+  return {
+    useBackgroundTimer: () => ({
+      scheduleBackgroundNotification: jest.fn(),
+      cleanupBackgroundTimer: jest.fn(),
+      resetBackgroundTimer: jest.fn(),
+      notificationIdRef: actualNotificationIdRef,
+      endTimeRef: actualEndTimeRef,
+    }),
+  };
+});
 
 jest.mock('../useInterval', () => ({
   useInterval: jest.fn(),
@@ -313,6 +318,39 @@ describe('useTimer', () => {
     expect(cleanupTimerResources).toHaveBeenCalled();
     expect(result.current.isRunning).toBe(false);
     expect(result.current.secondsLeft).toBe(100);
+  });
+
+  it('sets isRunning when timer starts to enable background timing', async () => {
+    const { result } = renderHook(() => useTimer({ initialDuration: 100 }));
+
+    expect(result.current.isRunning).toBe(false);
+
+    await act(async () => {
+      await result.current.startTimer();
+    });
+
+    expect(result.current.isRunning).toBe(true);
+    expect(result.current.secondsLeft).toBe(100);
+  });
+
+  it('verifies timer has AppState listener for background timing', async () => {
+    let appStateListener: ((state: string) => void) | null = null;
+    (AppState.addEventListener as jest.Mock).mockImplementation(
+      (event: string, callback: (state: string) => void) => {
+        if (event === 'change') {
+          appStateListener = callback;
+        }
+        return { remove: jest.fn() };
+      }
+    );
+
+    renderHook(() => useTimer({ initialDuration: 60 }));
+
+    expect(appStateListener).not.toBeNull();
+    expect(AppState.addEventListener).toHaveBeenCalledWith(
+      'change',
+      expect.any(Function)
+    );
   });
 
   it('handles pauseTimer with endTimeRef', async () => {
