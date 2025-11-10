@@ -377,4 +377,76 @@ describe('useWorkout', () => {
       expect(pickStrengthSpy).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('notification cleanup', () => {
+    it('should cleanup notifications when skipping active exercise', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      act(() => {
+        result.current.startCountdown();
+      });
+
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      act(() => {
+        result.current.skipExercise();
+      });
+
+      expect(result.current.phase).toBe('preview');
+    });
+
+    it('should cleanup notifications when phase changes from active', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      act(() => {
+        result.current.startCountdown();
+      });
+
+      expect(result.current.phase).toBe('countdown');
+    });
+
+    it('should handle unmounting during active workout', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickStrengthWorkout')
+        .mockReturnValue(mockStrengthExercises);
+
+      const { result, unmount } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'strength' })
+      );
+
+      act(() => {
+        result.current.startCountdown();
+      });
+
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      expect(() => unmount()).not.toThrow();
+    });
+  });
 });

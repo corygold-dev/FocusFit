@@ -201,6 +201,12 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   }, [phase, endTimeRef]);
 
   useEffect(() => {
+    return () => {
+      cleanupBackgroundTimer();
+    };
+  }, [cleanupBackgroundTimer]);
+
+  useEffect(() => {
     if (phase === 'countdown') {
       if (secondsLeft > 0) playSmallBeep();
       else if (secondsLeft === 0) playFinalBeep();
@@ -253,6 +259,10 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   };
 
   const skipExercise = () => {
+    if (phase === 'active') {
+      cleanupBackgroundTimer();
+    }
+
     if (workoutType === 'strength') {
       handleStrengthProgression();
     } else {

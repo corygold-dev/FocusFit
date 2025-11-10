@@ -282,6 +282,39 @@ describe('useTimer', () => {
     expect(cleanupTimerResources).toHaveBeenCalled();
   });
 
+  it('cleans up notifications when pausing timer', async () => {
+    const { result } = renderHook(() => useTimer({ initialDuration: 100 }));
+
+    await act(async () => {
+      await result.current.startTimer();
+    });
+
+    await act(async () => {
+      await result.current.pauseTimer();
+    });
+
+    expect(cleanupTimerResources).toHaveBeenCalled();
+    expect(result.current.isRunning).toBe(false);
+  });
+
+  it('cleans up notifications when resetting timer', async () => {
+    const { result } = renderHook(() => useTimer({ initialDuration: 100 }));
+
+    await act(async () => {
+      await result.current.startTimer();
+    });
+
+    jest.clearAllMocks();
+
+    await act(async () => {
+      await result.current.resetTimer();
+    });
+
+    expect(cleanupTimerResources).toHaveBeenCalled();
+    expect(result.current.isRunning).toBe(false);
+    expect(result.current.secondsLeft).toBe(100);
+  });
+
   it('handles pauseTimer with endTimeRef', async () => {
     const { result } = renderHook(() => useTimer({ initialDuration: 10 }));
 

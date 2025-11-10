@@ -5,6 +5,7 @@ import {
   scheduleDailyReminder,
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
+import * as Notifications from 'expo-notifications';
 import React, {
   createContext,
   ReactNode,
@@ -13,6 +14,16 @@ import React, {
   useState,
 } from 'react';
 import { useAuth } from './AuthProvider';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: false,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: false,
+    shouldShowList: false,
+  }),
+});
 
 interface NotificationContextType {
   isLoading: boolean;
