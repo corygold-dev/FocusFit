@@ -29,6 +29,7 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
     error,
     clearError,
     sendPasswordResetEmail,
+    resendEmailVerification,
   } = useAuth();
   const { theme } = useTheme();
   const styles = loginFormStyles(theme);
@@ -68,7 +69,35 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert('Login Error', errorObj.message || 'Failed to login');
+
+      if (errorObj.message === 'EMAIL_NOT_VERIFIED') {
+        Alert.alert(
+          'Email Not Verified',
+          'Please verify your email before logging in. Check your inbox for the verification link.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Resend Email',
+              onPress: async () => {
+                try {
+                  await resendEmailVerification(email, password);
+                  Alert.alert(
+                    'Email Sent',
+                    'Verification email has been resent. Please check your inbox.'
+                  );
+                } catch {
+                  Alert.alert(
+                    'Error',
+                    'Failed to resend verification email. Please try again later.'
+                  );
+                }
+              },
+            },
+          ]
+        );
+      } else {
+        Alert.alert('Login Error', errorObj.message || 'Failed to login');
+      }
     } finally {
       setIsSubmitting(false);
     }

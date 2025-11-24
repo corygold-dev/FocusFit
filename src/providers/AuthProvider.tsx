@@ -35,6 +35,7 @@ interface AuthContextType {
   register: (email: string, password: string) => Promise<void>;
   sendEmailVerification: () => Promise<void>;
   sendPasswordResetEmail: (email: string) => Promise<void>;
+  resendEmailVerification: (email: string, password: string) => Promise<void>;
   clearError: () => void;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -159,6 +160,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw err;
     }
   }, []);
+
+  const resendEmailVerification = useCallback(
+    async (email: string, password: string) => {
+      try {
+        setError(null);
+        await firebaseAuthService.resendEmailVerification(email, password);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to resend verification email'
+        );
+        throw err;
+      }
+    },
+    []
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -470,6 +488,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       register,
       sendEmailVerification,
       sendPasswordResetEmail,
+      resendEmailVerification,
       clearError,
       logout,
       deleteAccount,
@@ -508,6 +527,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       register,
       sendEmailVerification,
       sendPasswordResetEmail,
+      resendEmailVerification,
       clearError,
       logout,
       deleteAccount,

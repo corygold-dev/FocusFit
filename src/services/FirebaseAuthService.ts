@@ -185,8 +185,17 @@ class FirebaseAuthService {
         email,
         password
       );
+
+      if (!result.user.emailVerified) {
+        await this.signOut();
+        throw new Error('EMAIL_NOT_VERIFIED');
+      }
+
       return this.convertFirebaseUser(result.user);
     } catch (error) {
+      if ((error as Error).message === 'EMAIL_NOT_VERIFIED') {
+        throw error;
+      }
       console.error('Email/Password Sign-In Error:', error);
       throw new Error(getFriendlyErrorMessage(error));
     }
@@ -231,6 +240,28 @@ class FirebaseAuthService {
       await sendPasswordResetEmail(auth, email);
     } catch (error) {
       console.error('Password Reset Error:', error);
+      throw new Error(getFriendlyErrorMessage(error));
+    }
+  }
+
+  async resendEmailVerification(
+    email: string,
+    password: string
+  ): Promise<void> {
+    try {
+      const result: UserCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (result.user && !result.user.emailVerified) {
+        await sendEmailVerification(result.user);
+      }
+
+      await this.signOut();
+    } catch (error) {
+      console.error('Resend Verification Error:', error);
       throw new Error(getFriendlyErrorMessage(error));
     }
   }
