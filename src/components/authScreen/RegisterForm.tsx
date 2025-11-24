@@ -65,10 +65,10 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     try {
       await register(email, password);
       Alert.alert(
-        'Success',
-        'Account created successfully! You can now sign in.'
+        'Account Created! 🎉',
+        'Check your email for a verification link to complete your registration. Then you can sign in.',
+        [{ text: 'Got it', onPress: onNavigateToLogin }]
       );
-      onNavigateToLogin();
     } catch (err) {
       const errorObj = err as Error;
       Alert.alert(
