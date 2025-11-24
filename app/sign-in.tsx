@@ -9,7 +9,7 @@ export default function SignIn() {
   const { theme } = useTheme();
 
   const navigateToSignUp = () => {
-    router.push('/sign-up');
+    router.replace('/sign-up');
   };
 
   return (
