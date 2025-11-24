@@ -27,6 +27,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   const [totalDuration, setTotalDuration] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isShuffling, setIsShuffling] = useState(false);
 
   const hasSavedWorkoutRef = useRef(false);
 
@@ -259,6 +260,8 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   };
 
   const skipExercise = () => {
+    if (isShuffling) return;
+
     if (phase === 'active') {
       cleanupBackgroundTimer();
     }
@@ -277,6 +280,13 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
 
   const shuffleExercise = () => {
     if (currentList.length <= 1) return;
+    if (isShuffling) return;
+
+    setIsShuffling(true);
+
+    if (phase === 'active' || phase === 'countdown') {
+      cleanupBackgroundTimer();
+    }
 
     const currentExercise = currentList[currentIndex];
     const currentCategory = currentExercise.category;
@@ -291,7 +301,10 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
         !settings.excludedExercises.includes(ex.name)
     );
 
-    if (sameCategoryExercises.length === 0) return;
+    if (sameCategoryExercises.length === 0) {
+      setIsShuffling(false);
+      return;
+    }
 
     const randomIndex = Math.floor(
       Math.random() * sameCategoryExercises.length
@@ -302,9 +315,15 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
     newList[currentIndex] = newExercise;
     setCurrentList(newList);
     setPhase('preview');
+
+    setTimeout(() => setIsShuffling(false), 300);
   };
 
   const restartExercise = () => {
+    if (isShuffling) return;
+
+    cleanupBackgroundTimer();
+
     let duration: number;
     if (workoutType === 'strength') {
       duration = WORKOUT.STRENGTH.DURATION_PER_ROUND;

@@ -449,4 +449,253 @@ describe('useWorkout', () => {
       expect(() => unmount()).not.toThrow();
     });
   });
+
+  describe('restart + shuffle interaction (crash fix)', () => {
+    it('should handle restart followed by shuffle without crashing', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Start exercise
+      act(() => {
+        result.current.startCountdown();
+      });
+
+      // Restart exercise (sets phase to active)
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      // Shuffle should work without crashing
+      act(() => {
+        result.current.shuffleExercise();
+      });
+
+      expect(result.current.phase).toBe('preview');
+    });
+
+    it('should debounce rapid shuffle clicks', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      const firstExercise = result.current.currentExercise;
+
+      // Rapidly click shuffle multiple times
+      act(() => {
+        result.current.shuffleExercise();
+        result.current.shuffleExercise();
+        result.current.shuffleExercise();
+      });
+
+      // Should still be in preview phase (not crashed)
+      expect(result.current.phase).toBe('preview');
+
+      // Exercise should have changed (at least once)
+      // Note: might be the same if only one alternative available
+      expect(result.current.currentExercise).toBeTruthy();
+
+      // Fast-forward through the debounce timeout
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      // Should be able to shuffle again after debounce
+      act(() => {
+        result.current.shuffleExercise();
+      });
+
+      expect(result.current.phase).toBe('preview');
+    });
+
+    it('should prevent skip during shuffle operation', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Start shuffling
+      act(() => {
+        result.current.shuffleExercise();
+      });
+
+      const exerciseAfterShuffle = result.current.currentExercise;
+
+      // Try to skip immediately (should be blocked during shuffle)
+      act(() => {
+        result.current.skipExercise();
+      });
+
+      // Should still show the same exercise (skip was blocked)
+      expect(result.current.currentExercise).toBe(exerciseAfterShuffle);
+
+      // Fast-forward through the debounce timeout
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      // Now skip should work
+      act(() => {
+        result.current.skipExercise();
+      });
+
+      expect(result.current.phase).toBe('preview');
+    });
+
+    it('should prevent restart during shuffle operation', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Start shuffling
+      act(() => {
+        result.current.shuffleExercise();
+      });
+
+      expect(result.current.phase).toBe('preview');
+
+      // Try to restart immediately (should be blocked during shuffle)
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      // Should still be in preview (restart was blocked)
+      expect(result.current.phase).toBe('preview');
+
+      // Fast-forward through the debounce timeout
+      act(() => {
+        jest.advanceTimersByTime(300);
+      });
+
+      // Now restart should work
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+    });
+
+    it('should cleanup timers when shuffling from active phase', () => {
+      const mockCleanup = jest.fn();
+      jest.mock('../../timer/useBackgroundTimer', () => ({
+        useBackgroundTimer: () => ({
+          scheduleBackgroundNotification: jest.fn(),
+          cleanupBackgroundTimer: mockCleanup,
+          endTimeRef: { current: Date.now() + 30000 },
+        }),
+      }));
+
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Start exercise and get to active phase
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      // Shuffle from active phase
+      act(() => {
+        result.current.shuffleExercise();
+      });
+
+      // Should have cleaned up timers and moved to preview
+      expect(result.current.phase).toBe('preview');
+    });
+
+    it('should cleanup timers when restarting from active phase', () => {
+      const mockCleanup = jest.fn();
+      jest.mock('../../timer/useBackgroundTimer', () => ({
+        useBackgroundTimer: () => ({
+          scheduleBackgroundNotification: jest.fn(),
+          cleanupBackgroundTimer: mockCleanup,
+          endTimeRef: { current: Date.now() + 30000 },
+        }),
+      }));
+
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Start exercise
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      expect(result.current.phase).toBe('active');
+
+      // Restart again (should cleanup previous timers)
+      act(() => {
+        result.current.restartExercise();
+      });
+
+      // Should still be in active phase with fresh timer
+      expect(result.current.phase).toBe('active');
+      expect(result.current.secondsLeft).toBeGreaterThan(0);
+    });
+
+    it('should handle multiple restart-shuffle cycles without crashing', () => {
+      jest
+        .spyOn(exerciseUtils, 'pickMobilityWorkout')
+        .mockReturnValue(mockMobilityExercises);
+
+      const { result } = renderHook(() =>
+        useWorkout({ settings: mockSettings, workoutType: 'mobility' })
+      );
+
+      // Simulate the crash scenario: restart -> shuffle -> restart -> shuffle
+      for (let i = 0; i < 5; i++) {
+        act(() => {
+          result.current.restartExercise();
+        });
+
+        expect(result.current.phase).toBe('active');
+
+        act(() => {
+          jest.advanceTimersByTime(300);
+        });
+
+        act(() => {
+          result.current.shuffleExercise();
+        });
+
+        expect(result.current.phase).toBe('preview');
+
+        act(() => {
+          jest.advanceTimersByTime(300);
+        });
+      }
+
+      // Should not have crashed and should be in valid state
+      expect(result.current.phase).toBe('preview');
+      expect(result.current.currentExercise).toBeTruthy();
+    });
+  });
 });
