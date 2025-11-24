@@ -1,5 +1,11 @@
-import { FirebaseApp, initializeApp } from 'firebase/app';
-import { Auth, getAuth, initializeAuth } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
+import {
+  Auth,
+  getAuth,
+  getReactNativePersistence,
+  initializeAuth,
+} from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -11,46 +17,27 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Log environment (helpful for debugging)
 const environment = process.env.EXPO_PUBLIC_ENV || 'unknown';
 console.log(`🔥 Firebase initializing: ${environment} environment`);
 console.log(`📦 Project ID: ${firebaseConfig.projectId}`);
 
-// Validate config
 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
   throw new Error(
     `Firebase configuration is incomplete. Make sure .env.${environment} file exists and is properly configured.`
   );
 }
 
-// Initialize Firebase with guard against multiple initializations
 let app: FirebaseApp;
 let auth: Auth;
 
-// Guard against multiple Firebase app initializations
-try {
+if (!getApps().length) {
   app = initializeApp(firebaseConfig);
-} catch (error: unknown) {
-  console.error('Firebase app initialization error:', error);
-  throw error;
-}
-
-// Initialize auth (persistence is handled automatically in React Native)
-try {
-  auth = initializeAuth(app);
-} catch (error: unknown) {
-  // If auth is already initialized, get the existing instance
-  if (
-    error &&
-    typeof error === 'object' &&
-    'code' in error &&
-    error.code === 'auth/already-initialized'
-  ) {
-    auth = getAuth(app);
-  } else {
-    console.error('Firebase auth initialization error:', error);
-    throw error;
-  }
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
+} else {
+  app = getApp();
+  auth = getAuth(app);
 }
 
 const db: Firestore = getFirestore(app);

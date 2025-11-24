@@ -489,8 +489,6 @@ describe('useWorkout', () => {
         useWorkout({ settings: mockSettings, workoutType: 'mobility' })
       );
 
-      const firstExercise = result.current.currentExercise;
-
       // Rapidly click shuffle multiple times
       act(() => {
         result.current.shuffleExercise();
