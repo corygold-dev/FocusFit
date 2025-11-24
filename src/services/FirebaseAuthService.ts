@@ -9,6 +9,7 @@ import {
   OAuthProvider,
   onAuthStateChanged,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInWithCredential,
   signInWithEmailAndPassword,
   User,
@@ -222,6 +223,15 @@ class FirebaseAuthService {
     } catch (error) {
       console.error('Sign Out Error:', error);
       throw error;
+    }
+  }
+
+  async sendPasswordResetEmail(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error('Password Reset Error:', error);
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 

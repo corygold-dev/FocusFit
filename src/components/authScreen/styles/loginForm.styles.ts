@@ -94,4 +94,14 @@ export const loginFormStyles = (theme: Theme) =>
     socialButton: {
       marginBottom: 10,
     },
+    forgotPasswordContainer: {
+      alignItems: 'center',
+      marginTop: 12,
+      marginBottom: 10,
+    },
+    forgotPasswordText: {
+      color: theme.colors.primary,
+      fontSize: 14,
+      textDecorationLine: 'underline',
+    },
   });

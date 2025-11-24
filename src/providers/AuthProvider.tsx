@@ -34,6 +34,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   sendEmailVerification: () => Promise<void>;
+  sendPasswordResetEmail: (email: string) => Promise<void>;
   clearError: () => void;
   logout: () => Promise<void>;
   deleteAccount: () => Promise<void>;
@@ -140,6 +141,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Email verification failed'
+      );
+      throw err;
+    }
+  }, []);
+
+  const sendPasswordResetEmail = useCallback(async (email: string) => {
+    try {
+      setError(null);
+      await firebaseAuthService.sendPasswordResetEmail(email);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'Failed to send password reset email'
       );
       throw err;
     }
@@ -454,6 +469,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login,
       register,
       sendEmailVerification,
+      sendPasswordResetEmail,
       clearError,
       logout,
       deleteAccount,
@@ -491,6 +507,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       login,
       register,
       sendEmailVerification,
+      sendPasswordResetEmail,
       clearError,
       logout,
       deleteAccount,

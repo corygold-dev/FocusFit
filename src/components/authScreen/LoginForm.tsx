@@ -21,8 +21,14 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, loginWithGoogle, loginWithApple, error, clearError } =
-    useAuth();
+  const {
+    login,
+    loginWithGoogle,
+    loginWithApple,
+    error,
+    clearError,
+    sendPasswordResetEmail,
+  } = useAuth();
   const { theme } = useTheme();
   const styles = loginFormStyles(theme);
   const router = useRouter();
@@ -94,6 +100,38 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
     }
   };
 
+  const handleForgotPassword = () => {
+    if (!email) {
+      Alert.alert(
+        'Email Required',
+        'Please enter your email address to reset your password.'
+      );
+      return;
+    }
+
+    Alert.alert('Reset Password', `Send password reset email to ${email}?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Send',
+        onPress: async () => {
+          try {
+            await sendPasswordResetEmail(email);
+            Alert.alert(
+              'Email Sent',
+              'Check your email for instructions to reset your password.'
+            );
+          } catch (err) {
+            const errorObj = err as Error;
+            Alert.alert(
+              'Error',
+              errorObj.message || 'Failed to send password reset email'
+            );
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
@@ -139,6 +177,14 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
           ) : (
             <Text style={styles.buttonText}>Log In</Text>
           )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleForgotPassword}
+          disabled={isSubmitting}
+          style={styles.forgotPasswordContainer}
+        >
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 
         <View style={styles.dividerContainer}>
