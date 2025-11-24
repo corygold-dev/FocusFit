@@ -1,4 +1,7 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
@@ -110,6 +113,12 @@ class FirebaseAuthService {
 
       return this.convertFirebaseUser(result.user);
     } catch (error) {
+      if (
+        (error as { code?: string })?.code === statusCodes.SIGN_IN_CANCELLED
+      ) {
+        throw new Error('SIGN_IN_CANCELLED');
+      }
+
       console.error('Google Sign-In Error:', error);
       throw new Error(getFriendlyErrorMessage(error));
     }
@@ -155,6 +164,10 @@ class FirebaseAuthService {
 
       return this.convertFirebaseUser(result.user);
     } catch (error) {
+      if ((error as { code?: string })?.code === '1001') {
+        throw new Error('SIGN_IN_CANCELLED');
+      }
+
       console.error('Apple Sign-In Error:', error);
       throw new Error(getFriendlyErrorMessage(error));
     }

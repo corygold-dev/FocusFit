@@ -65,10 +65,12 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert(
-        'Google Sign-In Error',
-        errorObj.message || 'Failed to sign in with Google'
-      );
+      if (errorObj.message !== 'SIGN_IN_CANCELLED') {
+        Alert.alert(
+          'Google Sign-In Error',
+          errorObj.message || 'Failed to sign in with Google'
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -81,10 +83,12 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       router.replace('/(app)');
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert(
-        'Apple Sign-In Error',
-        errorObj.message || 'Failed to sign in with Apple'
-      );
+      if (errorObj.message !== 'SIGN_IN_CANCELLED') {
+        Alert.alert(
+          'Apple Sign-In Error',
+          errorObj.message || 'Failed to sign in with Apple'
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
