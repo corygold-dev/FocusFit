@@ -40,6 +40,11 @@ export const registerFormStyles = (theme: Theme) =>
       color: theme.colors.text,
       backgroundColor: theme.colors.card,
     },
+    inputError: {
+      borderColor: theme.colors.error,
+      borderWidth: 2,
+      marginBottom: 8,
+    },
     button: {
       width: '100%',
       height: 50,
@@ -59,9 +64,17 @@ export const registerFormStyles = (theme: Theme) =>
       marginTop: 20,
       textAlign: 'center',
     },
+    errorContainer: {
+      backgroundColor: theme.colors.error + '15',
+      borderRadius: 8,
+      padding: 10,
+      marginBottom: 15,
+      borderLeftWidth: 3,
+      borderLeftColor: theme.colors.error,
+    },
     errorText: {
       color: theme.colors.error,
-      marginBottom: 15,
+      fontSize: 14,
     },
     socialButton: {
       marginBottom: 10,

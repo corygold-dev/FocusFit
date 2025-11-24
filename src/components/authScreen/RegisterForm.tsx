@@ -21,6 +21,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const { register, loginWithGoogle, loginWithApple, error, clearError } =
     useAuth();
@@ -28,8 +29,14 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const router = useRouter();
   const styles = registerFormStyles(theme);
 
+  const validateEmail = (emailToValidate: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailToValidate);
+  };
+
   const handleEmailChange = (text: string) => {
     setEmail(text);
+    if (emailError) setEmailError('');
     if (error) clearError();
   };
 
@@ -41,6 +48,11 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill out all fields');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
       return;
     }
 
@@ -118,7 +130,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
 
       <View style={styles.formContainer}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, emailError ? styles.inputError : null]}
           placeholder="Email"
           placeholderTextColor={theme.colors.text + '80'}
           value={email}
@@ -127,6 +139,11 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
           autoCapitalize="none"
           editable={!isSubmitting}
         />
+        {emailError && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{emailError}</Text>
+          </View>
+        )}
 
         <TextInput
           style={styles.input}

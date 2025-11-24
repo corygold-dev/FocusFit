@@ -20,6 +20,7 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
   const {
     login,
@@ -33,8 +34,15 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   const styles = loginFormStyles(theme);
   const router = useRouter();
 
+  const validateEmail = (emailToValidate: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailToValidate);
+  };
+
   const handleEmailChange = (text: string) => {
     setEmail(text);
+    // Clear email error when user starts typing
+    if (emailError) setEmailError('');
     if (error) clearError();
   };
 
@@ -48,6 +56,12 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
       Alert.alert('Error', 'Please enter both email and password');
       return;
     }
+
+    if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await login(email, password);
@@ -141,7 +155,7 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
 
       <View style={styles.formContainer}>
         <TextInput
-          style={styles.input}
+          style={[styles.input, emailError ? styles.inputError : null]}
           placeholder="Email"
           placeholderTextColor={theme.colors.text + '80'}
           value={email}
@@ -150,6 +164,11 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
           autoCapitalize="none"
           editable={!isSubmitting}
         />
+        {emailError && (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{emailError}</Text>
+          </View>
+        )}
 
         <TextInput
           style={styles.input}

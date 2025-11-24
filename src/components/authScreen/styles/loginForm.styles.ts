@@ -45,6 +45,11 @@ export const loginFormStyles = (theme: Theme) =>
       color: theme.colors.text,
       backgroundColor: theme.colors.card,
     },
+    inputError: {
+      borderColor: theme.colors.error,
+      borderWidth: 2,
+      marginBottom: 8,
+    },
     button: {
       width: '100%',
       height: 50,
