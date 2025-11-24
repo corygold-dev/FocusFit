@@ -52,6 +52,11 @@ export const workoutChoiceModalStyles = (theme: Theme) =>
       backgroundColor: 'transparent',
       borderColor: theme.colors.secondary,
     },
+    skipButton: {
+      backgroundColor: 'transparent',
+      borderColor: theme.colors.text + '40',
+      marginTop: 8,
+    },
     description: {
       fontSize: 14,
       color: theme.colors.text + '60',

@@ -17,11 +17,12 @@ import { useAuth } from './AuthProvider';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: false,
-    shouldPlaySound: false,
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+
     shouldSetBadge: false,
-    shouldShowBanner: false,
-    shouldShowList: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
   }),
 });
 

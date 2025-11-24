@@ -8,12 +8,14 @@ interface WorkoutChoiceModalProps {
   visible: boolean;
   onChooseStrength: () => void;
   onChooseMobility: () => void;
+  onSkip?: () => void;
 }
 
 export default function WorkoutChoiceModal({
   visible,
   onChooseStrength,
   onChooseMobility,
+  onSkip,
 }: WorkoutChoiceModalProps) {
   const { theme } = useTheme();
   const styles = workoutChoiceModalStyles(theme);
@@ -41,6 +43,16 @@ export default function WorkoutChoiceModal({
                 style={styles.mobilityButton}
                 accessibilityLabel="Choose mobility workout"
               />
+
+              {onSkip && (
+                <Button
+                  title="Skip for now"
+                  variant="secondary"
+                  onPress={onSkip}
+                  style={styles.skipButton}
+                  accessibilityLabel="Skip workout"
+                />
+              )}
             </View>
           </View>
         </View>

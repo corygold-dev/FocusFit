@@ -134,6 +134,11 @@ export default function TimerScreen() {
     hasSavedFocusRef.current = false;
   }, [resetTimer]);
 
+  const handleSkipWorkout = useCallback((): void => {
+    setShowWorkoutChoice(false);
+    handleResetTimer();
+  }, [setShowWorkoutChoice, handleResetTimer]);
+
   useEffect(() => {
     if (shouldAutoStart && !isRunning) {
       toggleTimer();
@@ -303,6 +308,7 @@ export default function TimerScreen() {
         visible={showWorkoutChoice}
         onChooseStrength={handleChooseStrength}
         onChooseMobility={handleChooseMobility}
+        onSkip={handleSkipWorkout}
       />
     </SafeAreaView>
   );
