@@ -332,6 +332,7 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
         currentList[currentIndex]?.duration ||
         WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
     }
+    endTimeRef.current = Date.now() + duration * TIMER.ONE_SECOND;
     setSecondsLeft(duration);
     setTotalDuration(duration);
     setPhase('active');
