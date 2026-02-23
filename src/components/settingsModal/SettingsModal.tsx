@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -50,6 +51,10 @@ export default function SettingsModal({
   const { logout, deleteAccount, user } = useAuth();
   const router = useRouter();
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showReauthModal, setShowReauthModal] = useState(false);
+  const [reauthPassword, setReauthPassword] = useState('');
+  const [reauthError, setReauthError] = useState<string | null>(null);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const styles = settingsModalStyles(theme);
 
   const [equipment, setEquipment] = useState<string[]>(initialEquipment);
@@ -118,6 +123,45 @@ export default function SettingsModal({
     }
   };
 
+  const performDeleteAccount = async (password?: string) => {
+    try {
+      setIsDeletingAccount(true);
+      await deleteAccount(password);
+      setShowReauthModal(false);
+      Alert.alert(
+        'Account Deleted',
+        'Your account and all associated data have been permanently deleted.',
+        [{ text: 'OK' }]
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to delete account. Please try again.';
+      if (message === 'REQUIRES_RECENT_LOGIN') {
+        // Need reauthentication — show password prompt
+        if (Platform.OS === 'ios') {
+          Alert.prompt(
+            'Confirm Your Password',
+            'For security, please enter your password to delete your account.',
+            async (pwd) => {
+              if (pwd) {
+                await performDeleteAccount(pwd);
+              }
+            },
+            'secure-text'
+          );
+        } else {
+          setReauthPassword('');
+          setReauthError(null);
+          setShowReauthModal(true);
+        }
+      } else {
+        Alert.alert('Error', message);
+      }
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
@@ -136,7 +180,7 @@ export default function SettingsModal({
                 {
                   text: 'Yes, Delete',
                   style: 'destructive',
-                  onPress: deleteAccount,
+                  onPress: () => performDeleteAccount(),
                 },
               ]
             );
@@ -251,6 +295,58 @@ export default function SettingsModal({
         onClose={() => setShowFeedbackModal(false)}
         onSubmit={handleFeedbackSubmit}
       />
+
+      <Modal visible={showReauthModal} transparent animationType="fade">
+        <View style={styles.reauthOverlay}>
+          <View style={styles.reauthDialog}>
+            <Text style={styles.reauthTitle}>
+              Confirm Your Password
+            </Text>
+            <Text style={styles.reauthMessage}>
+              For security, please enter your password to delete your account.
+            </Text>
+            <TextInput
+              style={styles.reauthInput}
+              secureTextEntry
+              placeholder="Password"
+              placeholderTextColor={theme.colors.textSecondary}
+              value={reauthPassword}
+              onChangeText={(text) => {
+                setReauthPassword(text);
+                setReauthError(null);
+              }}
+              autoFocus
+            />
+            {reauthError ? (
+              <Text style={styles.reauthErrorText}>{reauthError}</Text>
+            ) : null}
+            <View style={styles.reauthButtonRow}>
+              <TouchableOpacity
+                style={styles.reauthCancelButton}
+                onPress={() => setShowReauthModal(false)}
+              >
+                <Text style={styles.reauthCancelText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.reauthDeleteButton}
+                onPress={async () => {
+                  if (!reauthPassword) {
+                    setReauthError('Please enter your password.');
+                    return;
+                  }
+                  setReauthError(null);
+                  await performDeleteAccount(reauthPassword);
+                }}
+                disabled={isDeletingAccount}
+              >
+                <Text style={styles.reauthDeleteButtonText}>
+                  {isDeletingAccount ? 'Deleting...' : 'Delete Account'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </Modal>
   );
 }

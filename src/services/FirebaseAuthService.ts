@@ -4,10 +4,12 @@ import {
 } from '@react-native-google-signin/google-signin';
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   signOut as firebaseSignOut,
   GoogleAuthProvider,
   OAuthProvider,
   onAuthStateChanged,
+  reauthenticateWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithCredential,
@@ -267,11 +269,16 @@ class FirebaseAuthService {
   }
 
   // Delete Account
-  async deleteAccount(): Promise<void> {
+  async deleteAccount(password?: string): Promise<void> {
     try {
       const user = auth.currentUser;
       if (!user) {
         throw new Error('No user is currently signed in');
+      }
+
+      if (password && user.email) {
+        const credential = EmailAuthProvider.credential(user.email, password);
+        await reauthenticateWithCredential(user, credential);
       }
 
       // Delete user data from Firestore
@@ -280,8 +287,12 @@ class FirebaseAuthService {
       // Delete the user account
       await user.delete();
     } catch (error) {
+      const errorCode = (error as { code?: string })?.code;
+      if (errorCode === 'auth/requires-recent-login') {
+        throw new Error('REQUIRES_RECENT_LOGIN');
+      }
       console.error('Delete Account Error:', error);
-      throw error;
+      throw new Error(getFriendlyErrorMessage(error));
     }
   }
 
