@@ -30,7 +30,9 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const styles = registerFormStyles(theme);
 
   useEffect(() => {
-    return () => { clearError(); };
+    return () => {
+      clearError();
+    };
   }, [clearError]);
 
   const validateEmail = (emailToValidate: string): boolean => {

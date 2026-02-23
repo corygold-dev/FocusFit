@@ -36,7 +36,9 @@ export default function LoginForm({ onNavigateToRegister }: LoginFormProps) {
   const router = useRouter();
 
   useEffect(() => {
-    return () => { clearError(); };
+    return () => {
+      clearError();
+    };
   }, [clearError]);
 
   const validateEmail = (emailToValidate: string): boolean => {
