@@ -168,4 +168,11 @@ export const createStyles = (theme: Theme) =>
       fontWeight: '700',
       fontSize: 16,
     },
+    supportLinkText: {
+      color: theme.colors.textSecondary,
+      fontSize: 14,
+      textAlign: 'center',
+      marginTop: 12,
+      textDecorationLine: 'underline',
+    },
   });

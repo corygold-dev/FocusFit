@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -258,6 +259,14 @@ export default function SettingsModal({
                   onPress={() => setShowFeedbackModal(true)}
                 >
                   <Text style={styles.feedbackButtonText}>Send Feedback</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL('https://buymeacoffee.com/corygold')
+                  }
+                >
+                  <Text style={styles.supportLinkText}>☕ Support the app</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
