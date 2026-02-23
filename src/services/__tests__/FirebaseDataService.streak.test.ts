@@ -1,3 +1,29 @@
+// Mock Firebase modules to avoid ESM import issues
+jest.mock('firebase/app', () => ({
+  initializeApp: jest.fn(),
+  getApp: jest.fn(),
+}));
+
+jest.mock('firebase/firestore', () => ({
+  collection: jest.fn(),
+  doc: jest.fn(),
+  getDoc: jest.fn(),
+  getDocs: jest.fn(),
+  setDoc: jest.fn(),
+  updateDoc: jest.fn(),
+  deleteDoc: jest.fn(),
+  getFirestore: jest.fn(),
+  where: jest.fn(),
+  query: jest.fn(),
+  orderBy: jest.fn(),
+  limit: jest.fn(),
+  Timestamp: {
+    fromDate: jest.fn(date => ({ seconds: date.getTime() / 1000 })),
+    now: jest.fn(() => ({ seconds: Date.now() / 1000 })),
+  },
+}));
+
+// Now import the service class that depends on the mocked Firebase modules
 import { FirebaseDataService } from '../FirebaseDataService';
 
 describe('FirebaseDataService - Streak Calculation Logic', () => {
@@ -25,6 +51,7 @@ describe('FirebaseDataService - Streak Calculation Logic', () => {
       });
     });
 
+    // Rest of your test cases follow here - I'm not modifying them
     describe('Same Day Activity', () => {
       it('should maintain current streak for same-day activity', () => {
         const today = new Date('2024-01-15T10:00:00Z');
