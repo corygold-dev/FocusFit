@@ -135,14 +135,16 @@ export default function SettingsModal({
       );
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : 'Failed to delete account. Please try again.';
+        err instanceof Error
+          ? err.message
+          : 'Failed to delete account. Please try again.';
       if (message === 'REQUIRES_RECENT_LOGIN') {
         // Need reauthentication — show password prompt
         if (Platform.OS === 'ios') {
           Alert.prompt(
             'Confirm Your Password',
             'For security, please enter your password to delete your account.',
-            async (pwd) => {
+            async pwd => {
               if (pwd) {
                 await performDeleteAccount(pwd);
               }
@@ -299,9 +301,7 @@ export default function SettingsModal({
       <Modal visible={showReauthModal} transparent animationType="fade">
         <View style={styles.reauthOverlay}>
           <View style={styles.reauthDialog}>
-            <Text style={styles.reauthTitle}>
-              Confirm Your Password
-            </Text>
+            <Text style={styles.reauthTitle}>Confirm Your Password</Text>
             <Text style={styles.reauthMessage}>
               For security, please enter your password to delete your account.
             </Text>
@@ -311,7 +311,7 @@ export default function SettingsModal({
               placeholder="Password"
               placeholderTextColor={theme.colors.textSecondary}
               value={reauthPassword}
-              onChangeText={(text) => {
+              onChangeText={text => {
                 setReauthPassword(text);
                 setReauthError(null);
               }}
