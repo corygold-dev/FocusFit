@@ -338,8 +338,9 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
   };
 
   const currentExercise = useMemo(() => {
-    if (workoutType === 'strength' && currentList.length >= 2) {
-      const exerciseIndex = currentIndex % 2;
+    if (currentList.length === 0) return '';
+    if (workoutType === 'strength') {
+      const exerciseIndex = currentIndex % Math.min(2, currentList.length);
       return currentList[exerciseIndex]?.name ?? '';
     }
     return currentList[currentIndex]?.name ?? '';
