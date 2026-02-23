@@ -9,7 +9,10 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium",
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Debug",
+        "cache": {
+          "disabled": true
+        }
       }
     },
     "preview": {
@@ -17,7 +20,10 @@
       "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium",
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": true
+        }
       },
       "android": {
         "buildType": "apk"
@@ -27,14 +33,20 @@
       "distribution": "internal",
       "ios": {
         "resourceClass": "m-medium",
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Debug",
+        "cache": {
+          "disabled": true
+        }
       }
     },
     "production": {
       "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium",
-        "buildConfiguration": "Release"
+        "buildConfiguration": "Release",
+        "cache": {
+          "disabled": true
+        }
       },
       "android": {
         "buildType": "app-bundle"
