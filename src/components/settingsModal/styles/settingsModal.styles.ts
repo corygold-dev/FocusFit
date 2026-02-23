@@ -3,6 +3,72 @@ import { StyleSheet } from 'react-native';
 
 export const createStyles = (theme: Theme) =>
   StyleSheet.create({
+    reauthOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.6)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    reauthDialog: {
+      width: '100%',
+      maxWidth: 400,
+      borderRadius: 12,
+      padding: 24,
+      backgroundColor: theme.colors.modalBackground,
+    },
+    reauthTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      marginBottom: 8,
+      color: theme.colors.text,
+    },
+    reauthMessage: {
+      fontSize: 14,
+      marginBottom: 16,
+      color: theme.colors.textSecondary,
+    },
+    reauthInput: {
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      fontSize: 16,
+      marginBottom: 8,
+      color: theme.colors.text,
+      borderColor: theme.colors.border,
+    },
+    reauthErrorText: {
+      fontSize: 13,
+      marginBottom: 8,
+      color: theme.colors.error,
+    },
+    reauthButtonRow: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      gap: 12,
+      marginTop: 8,
+    },
+    reauthCancelButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+    },
+    reauthCancelText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.textSecondary,
+    },
+    reauthDeleteButton: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      backgroundColor: theme.colors.error,
+    },
+    reauthDeleteButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '700',
+    },
     modalOverlay: {
       flex: 1,
       backgroundColor: 'rgba(0,0,0,0.5)',
