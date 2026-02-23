@@ -1,7 +1,7 @@
 import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -28,6 +28,10 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
   const { theme } = useTheme();
   const router = useRouter();
   const styles = registerFormStyles(theme);
+
+  useEffect(() => {
+    return () => { clearError(); };
+  }, [clearError]);
 
   const validateEmail = (emailToValidate: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
