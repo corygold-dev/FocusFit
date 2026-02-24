@@ -21,7 +21,7 @@ import { Platform } from 'react-native';
 import { auth } from '../config/firebase';
 
 // User-friendly error messages
-const getFriendlyErrorMessage = (error: unknown): string => {
+export const getFriendlyErrorMessage = (error: unknown): string => {
   const errorCode = (error as { code?: string })?.code || '';
 
   switch (errorCode) {
@@ -60,6 +60,16 @@ const getFriendlyErrorMessage = (error: unknown): string => {
     // Generic fallbacks
     default: {
       const errorMessage = (error as { message?: string })?.message || '';
+      // Sentinel constants used internally — convert to user-friendly strings
+      if (errorMessage === 'REQUIRES_RECENT_LOGIN') {
+        return 'Please sign in again before deleting your account.';
+      }
+      if (errorMessage === 'EMAIL_NOT_VERIFIED') {
+        return 'Please verify your email before signing in.';
+      }
+      if (errorMessage === 'SIGN_IN_CANCELLED') {
+        return 'Sign-in was cancelled.';
+      }
       if (errorMessage.includes('network')) {
         return 'Network error. Please check your internet connection.';
       }
