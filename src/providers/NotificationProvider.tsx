@@ -6,6 +6,7 @@ import {
   scheduleMotivationalReminder,
 } from '@/src/utils/notifications';
 import * as Notifications from 'expo-notifications';
+import { AppState } from 'react-native';
 import React, {
   createContext,
   ReactNode,
@@ -16,14 +17,16 @@ import React, {
 import { useAuth } from './AuthProvider';
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
+  handleNotification: async () => {
+    const isForegrounded = AppState.currentState === 'active';
+    return {
+      shouldShowAlert: !isForegrounded,
+      shouldPlaySound: !isForegrounded,
+      shouldSetBadge: false,
+      shouldShowBanner: !isForegrounded,
+      shouldShowList: true,
+    };
+  },
 });
 
 interface NotificationContextType {
