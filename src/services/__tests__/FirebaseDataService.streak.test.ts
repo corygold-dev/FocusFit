@@ -2,6 +2,22 @@
 jest.mock('firebase/app', () => ({
   initializeApp: jest.fn(),
   getApp: jest.fn(),
+  getApps: jest.fn(() => []),
+}));
+
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(),
+  initializeAuth: jest.fn(),
+}));
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  default: {},
+}));
+
+jest.mock('../../config/firebase', () => ({
+  db: {},
+  auth: {},
+  app: {},
 }));
 
 jest.mock('firebase/firestore', () => ({
