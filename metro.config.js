@@ -7,15 +7,16 @@ const config = getDefaultConfig(__dirname);
 // this override Firebase's own internal imports of @firebase/auth resolve to the
 // browser ESM bundle while our code gets the RN bundle — two copies of the same
 // module that don't share singletons. This resolver intercepts ALL imports of
-// @firebase/auth and routes them to dist/rn/index.js, ensuring a single copy of
-// the RN bundle is used throughout the app.
+// @firebase/auth and re-resolves them with the "react-native" condition active,
+// ensuring a single copy of the RN bundle is used throughout the app.
 const originalResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === '@firebase/auth') {
-    return {
-      filePath: require.resolve('@firebase/auth/dist/rn/index.js'),
-      type: 'sourceFile',
-    };
+    return context.resolveRequest(
+      { ...context, customConditions: ['react-native'] },
+      moduleName,
+      platform
+    );
   }
   return originalResolveRequest
     ? originalResolveRequest(context, moduleName, platform)
