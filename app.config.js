@@ -5,7 +5,7 @@ const config = {
   expo: {
     name: 'FocusFit',
     slug: 'focusfit',
-    version: '1.1.2',
+    version: '1.1.3',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
