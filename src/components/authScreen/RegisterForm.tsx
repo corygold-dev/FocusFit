@@ -1,5 +1,6 @@
 import Button from '@/src/components/ui/Button';
 import { useAuth, useTheme } from '@/src/providers';
+import { getFriendlyErrorMessage } from '@/src/services/FirebaseAuthService';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -77,10 +78,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
       );
     } catch (err) {
       const errorObj = err as Error;
-      Alert.alert(
-        'Registration Error',
-        errorObj.message || 'Failed to register'
-      );
+      Alert.alert('Registration Error', getFriendlyErrorMessage(errorObj));
     } finally {
       setIsSubmitting(false);
     }
@@ -95,10 +93,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     } catch (err) {
       const errorObj = err as Error;
       if (errorObj.message !== 'SIGN_IN_CANCELLED') {
-        Alert.alert(
-          'Google Sign-In Error',
-          errorObj.message || 'Failed to sign in with Google'
-        );
+        Alert.alert('Google Sign-In Error', getFriendlyErrorMessage(errorObj));
       }
     } finally {
       setIsSubmitting(false);
@@ -114,10 +109,7 @@ export default function RegisterForm({ onNavigateToLogin }: RegisterFormProps) {
     } catch (err) {
       const errorObj = err as Error;
       if (errorObj.message !== 'SIGN_IN_CANCELLED') {
-        Alert.alert(
-          'Apple Sign-In Error',
-          errorObj.message || 'Failed to sign in with Apple'
-        );
+        Alert.alert('Apple Sign-In Error', getFriendlyErrorMessage(errorObj));
       }
     } finally {
       setIsSubmitting(false);
