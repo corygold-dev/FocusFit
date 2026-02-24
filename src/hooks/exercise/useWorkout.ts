@@ -332,14 +332,16 @@ export function useWorkout({ settings, workoutType }: UseWorkoutProps) {
         currentList[currentIndex]?.duration ||
         WORKOUT.MOBILITY.DURATION_PER_EXERCISE;
     }
+    endTimeRef.current = Date.now() + duration * TIMER.ONE_SECOND;
     setSecondsLeft(duration);
     setTotalDuration(duration);
     setPhase('active');
   };
 
   const currentExercise = useMemo(() => {
-    if (workoutType === 'strength' && currentList.length >= 2) {
-      const exerciseIndex = currentIndex % 2;
+    if (currentList.length === 0) return '';
+    if (workoutType === 'strength') {
+      const exerciseIndex = currentIndex % Math.min(2, currentList.length);
       return currentList[exerciseIndex]?.name ?? '';
     }
     return currentList[currentIndex]?.name ?? '';
