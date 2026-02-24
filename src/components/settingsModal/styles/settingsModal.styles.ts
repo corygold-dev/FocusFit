@@ -168,11 +168,19 @@ export const createStyles = (theme: Theme) =>
       fontWeight: '700',
       fontSize: 16,
     },
-    supportLinkText: {
-      color: theme.colors.textSecondary,
-      fontSize: 14,
-      textAlign: 'center',
-      marginTop: 12,
-      textDecorationLine: 'underline',
+    supportButton: {
+      backgroundColor: theme.colors.primary + '15',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginTop: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      alignItems: 'center',
+    },
+    supportButtonText: {
+      color: theme.colors.primary,
+      fontWeight: '600',
+      fontSize: 16,
     },
   });

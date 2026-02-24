@@ -262,11 +262,14 @@ export default function SettingsModal({
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                  style={styles.supportButton}
                   onPress={() =>
                     Linking.openURL('https://buymeacoffee.com/corygold')
                   }
                 >
-                  <Text style={styles.supportLinkText}>☕ Support the app</Text>
+                  <Text style={styles.supportButtonText}>
+                    ☕ Buy Me a Coffee
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
