@@ -1,6 +1,3 @@
-/* eslint-env node */
-/* global process */
-
 const config = {
   expo: {
     name: 'FocusFit',
