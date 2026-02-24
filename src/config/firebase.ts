@@ -1,11 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FirebaseApp, getApp, getApps, initializeApp } from 'firebase/app';
-import {
-  Auth,
-  getAuth,
-  getReactNativePersistence,
-  initializeAuth,
-} from 'firebase/auth';
+import { Auth, getAuth, initializeAuth } from 'firebase/auth';
+// getReactNativePersistence is not re-exported from firebase/auth in Firebase 12.
+// @firebase/auth has a "react-native" export condition that Metro resolves to the
+// RN bundle (dist/rn/index.js) which exports getReactNativePersistence correctly.
+// TypeScript resolves to the browser types so we suppress the type error here —
+// the import works correctly at runtime via Metro's react-native condition.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { getReactNativePersistence } from '@firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
