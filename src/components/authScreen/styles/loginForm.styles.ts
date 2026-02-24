@@ -25,6 +25,7 @@ export const loginFormStyles = (theme: Theme) =>
       fontWeight: 'bold',
       color: theme.colors.text,
       marginBottom: 8,
+      paddingHorizontal: 4,
     },
     subtitle: {
       fontSize: 16,
