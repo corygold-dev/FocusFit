@@ -3,6 +3,7 @@ import prettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import ts from 'typescript-eslint';
+import globals from 'globals';
 
 export default [
   js.configs.recommended,
@@ -26,6 +27,16 @@ export default [
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
       },
+    },
+  },
+  {
+    files: ['metro.config.js', 'app.config.js', 'babel.config.js'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      globals: globals.node,
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 ];
