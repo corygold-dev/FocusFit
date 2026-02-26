@@ -1,6 +1,7 @@
 import { timerScreenStyles } from '@/src/components/timerScreen/styles';
 import { useTimer } from '@/src/hooks';
 import {
+  useAuth,
   useBackendData,
   useTheme,
   useTimerContext,
@@ -36,6 +37,7 @@ export default function TimerScreen() {
   const router = useRouter();
   const { shouldAutoStart, clearAutoStart, selectedFocusTime } =
     useTimerContext();
+  const { isSyncing } = useAuth();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -46,13 +48,16 @@ export default function TimerScreen() {
 
   const { settings, saveUserSettings } = useUserSettings();
 
-  const needsOnboarding = settings !== null && !settings?.lastFocusTime;
+  // Only check onboarding once settings have fully loaded from Firestore
+  // (settings === null means not yet loaded; isSyncing means fetch in progress)
+  const needsOnboarding =
+    !isSyncing && settings !== null && !settings?.lastFocusTime;
 
   useEffect(() => {
-    if (settings !== null && needsOnboarding) {
+    if (needsOnboarding) {
       router.replace('/(app)/onboarding');
     }
-  }, [needsOnboarding, router, settings]);
+  }, [needsOnboarding, router]);
   const {
     saveUserProgress,
     saveFocusSession: saveFocusSessionToDB,

@@ -414,7 +414,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // ============================================================================
 
   useEffect(() => {
+    let authResolved = false;
+
     const unsubscribe = firebaseAuthService.onAuthStateChanged(authUser => {
+      authResolved = true;
+      console.log(
+        '🔑 onAuthStateChanged fired:',
+        authUser ? `uid=${authUser.uid}` : 'null (not authenticated)'
+      );
       setUser(authUser);
       setIsLoading(false);
 
@@ -424,9 +431,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     });
 
-    // Timeout to ensure loading state doesn't get stuck
+    // Fallback timeout — only fires if onAuthStateChanged hasn't resolved yet
     const timeout = setTimeout(() => {
-      setIsLoading(false);
+      if (!authResolved) {
+        console.log(
+          '⏰ Auth timeout fired — onAuthStateChanged never resolved, defaulting to logged out'
+        );
+        setUser(null);
+        setIsLoading(false);
+      }
     }, 3000);
 
     return () => {
@@ -546,14 +559,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 
   // ============================================================================
-  // RENDER PROVIDER (always render context, but conditionally render children)
+  // RENDER PROVIDER
   // ============================================================================
 
-  return (
-    <AuthContext.Provider value={value}>
-      {isLoading ? null : children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 // ============================================================================

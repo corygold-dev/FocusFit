@@ -56,6 +56,11 @@ app-example
 /ios
 /android
 
+# Local build artifacts
+*.ipa
+*.apk
+*.aab
+
 # Documentation
 USER_TESTING_GUIDE.md
 DISTRIBUTION_SETUP.md
