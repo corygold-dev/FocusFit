@@ -6,7 +6,6 @@ import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Button,
-  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -17,6 +16,7 @@ import {
 } from 'react-native';
 import { FeedbackData, feedbackService } from '../../services/FeedbackService';
 import FeedbackModal from '../FeedbackModal';
+import { TipJarModal } from '../TipJarModal';
 import DataExportSection from './DataExportSection';
 import DifficultySelector from './DifficultySelector';
 import EquipmentSelector from './EquipmentSelector';
@@ -52,6 +52,7 @@ export default function SettingsModal({
   const { logout, deleteAccount, user } = useAuth();
   const router = useRouter();
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showTipJarModal, setShowTipJarModal] = useState(false);
   const [showReauthModal, setShowReauthModal] = useState(false);
   const [reauthPassword, setReauthPassword] = useState('');
   const [reauthError, setReauthError] = useState<string | null>(null);
@@ -261,16 +262,14 @@ export default function SettingsModal({
                   <Text style={styles.feedbackButtonText}>Send Feedback</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.supportButton}
-                  onPress={() =>
-                    Linking.openURL('https://buymeacoffee.com/corygold')
-                  }
-                >
-                  <Text style={styles.supportButtonText}>
-                    ☕ Buy Me a Coffee
-                  </Text>
-                </TouchableOpacity>
+                {Platform.OS !== 'web' && (
+                  <TouchableOpacity
+                    style={styles.supportButton}
+                    onPress={() => setShowTipJarModal(true)}
+                  >
+                    <Text style={styles.supportButtonText}>Tip Jar</Text>
+                  </TouchableOpacity>
+                )}
 
                 <TouchableOpacity
                   style={styles.logoutButton}
@@ -308,6 +307,11 @@ export default function SettingsModal({
         visible={showFeedbackModal}
         onClose={() => setShowFeedbackModal(false)}
         onSubmit={handleFeedbackSubmit}
+      />
+
+      <TipJarModal
+        visible={showTipJarModal}
+        onClose={() => setShowTipJarModal(false)}
       />
 
       <Modal visible={showReauthModal} transparent animationType="fade">

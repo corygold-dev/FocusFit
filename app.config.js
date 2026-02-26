@@ -93,6 +93,7 @@ const config = {
         },
       ],
       'expo-asset',
+      'react-native-iap',
     ],
     splash: {
       image: './assets/images/icon.png',
