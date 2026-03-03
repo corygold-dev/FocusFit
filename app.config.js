@@ -10,7 +10,7 @@ const config = {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.corygold.focusfit',
-      buildNumber: '6',
+      buildNumber: '7',
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         CFBundleURLTypes: [

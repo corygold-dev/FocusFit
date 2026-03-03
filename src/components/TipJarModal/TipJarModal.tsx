@@ -5,7 +5,7 @@ import {
   TIP_LABELS,
   type TipProductId,
 } from '@/src/services/IAPService';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -30,65 +30,79 @@ export default function TipJarModal({ visible, onClose }: TipJarModalProps) {
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const handlePurchaseSuccess = useCallback(() => {
-    setPurchasing(false);
-    Alert.alert(
-      'Thank You!',
-      'Your support means the world and helps keep FocusFit going!',
-      [{ text: 'OK', onPress: onClose }]
-    );
-  }, [onClose]);
-
-  const handlePurchaseError = useCallback((err: { message?: string }) => {
-    setPurchasing(false);
-    Alert.alert(
-      'Purchase Failed',
-      err.message || 'Something went wrong. Please try again.'
-    );
-  }, []);
+  const [retryCount, setRetryCount] = useState(0);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!visible) return;
 
-    let mounted = true;
+    let cancelled = false;
 
-    const setup = async () => {
+    const handlePurchaseSuccess = () => {
+      setPurchasing(false);
+      Alert.alert(
+        'Thank You!',
+        'Your support means the world and helps keep FocusFit going!',
+        [{ text: 'OK', onPress: () => onCloseRef.current() }]
+      );
+    };
+
+    const handlePurchaseError = (err: { message?: string }) => {
+      setPurchasing(false);
+      Alert.alert(
+        'Purchase Failed',
+        err.message || 'Something went wrong. Please try again.'
+      );
+    };
+
+    const loadProducts = async () => {
       setLoading(true);
       setError(null);
 
-      await iapService.init(handlePurchaseSuccess, handlePurchaseError);
-      const fetchedProducts = await iapService.fetchProducts();
+      try {
+        await iapService.init(handlePurchaseSuccess, handlePurchaseError);
+        const fetchedProducts = await iapService.fetchProducts();
 
-      if (!mounted) return;
+        if (cancelled) return;
 
-      if (fetchedProducts.length === 0) {
-        setError('Unable to load tip options. Please try again later.');
+        if (fetchedProducts.length === 0) {
+          throw new Error('No products returned');
+        }
+
+        const sorted = [...fetchedProducts].sort((a, b) => {
+          const priceA = parseFloat(a.price);
+          const priceB = parseFloat(b.price);
+          return priceA - priceB;
+        });
+
+        setProducts(sorted);
+        setLoading(false);
+      } catch (err) {
+        if (cancelled) return;
+        const msg = err instanceof Error ? err.message : String(err);
+        setError(msg);
+        setLoading(false);
       }
-
-      // Sort products by price to ensure consistent ordering
-      const sorted = [...fetchedProducts].sort((a, b) => {
-        const priceA = parseFloat(a.price);
-        const priceB = parseFloat(b.price);
-        return priceA - priceB;
-      });
-
-      setProducts(sorted);
-      setLoading(false);
     };
 
-    setup();
+    loadProducts();
 
     return () => {
-      mounted = false;
+      cancelled = true;
     };
-  }, [visible, handlePurchaseSuccess, handlePurchaseError]);
+  }, [visible, retryCount]);
 
   useEffect(() => {
     return () => {
       iapService.end();
     };
   }, []);
+
+  const handleRetry = async () => {
+    await iapService.reset();
+    setRetryCount(c => c + 1);
+  };
 
   const handleTip = async (productId: TipProductId) => {
     setPurchasing(true);
@@ -114,7 +128,15 @@ export default function TipJarModal({ visible, onClose }: TipJarModalProps) {
               <Text style={styles.loadingText}>Loading tip options...</Text>
             </View>
           ) : error ? (
-            <Text style={styles.errorText}>{error}</Text>
+            <View style={styles.loadingContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={handleRetry}
+              >
+                <Text style={styles.retryText}>Retry</Text>
+              </TouchableOpacity>
+            </View>
           ) : (
             products.map(product => {
               const productId = product.productId as TipProductId;
