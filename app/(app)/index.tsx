@@ -37,7 +37,7 @@ export default function TimerScreen() {
   const router = useRouter();
   const { shouldAutoStart, clearAutoStart, selectedFocusTime } =
     useTimerContext();
-  const { isSyncing } = useAuth();
+  const { isSyncing, isLoading } = useAuth();
 
   const [showSettings, setShowSettings] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
@@ -51,7 +51,11 @@ export default function TimerScreen() {
   // Only check onboarding once settings have fully loaded from Firestore
   // (settings === null means not yet loaded; isSyncing means fetch in progress)
   const needsOnboarding =
-    !isSyncing && settings !== null && !settings?.lastFocusTime;
+    !isLoading &&
+    !isSyncing &&
+    settings !== null &&
+    !settings?.hasCompletedOnboarding &&
+    !settings?.lastFocusTime;
 
   useEffect(() => {
     if (needsOnboarding) {

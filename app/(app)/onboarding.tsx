@@ -58,7 +58,10 @@ export default function OnboardingScreen() {
     if (selectedTime) {
       setSelectedFocusTime(selectedTime);
       setShouldAutoStart(true);
-      await saveUserSettings({ lastFocusTime: selectedTime * 60 });
+      await saveUserSettings({
+        lastFocusTime: selectedTime * 60,
+        hasCompletedOnboarding: true,
+      });
       router.replace('/(app)');
     }
   };
