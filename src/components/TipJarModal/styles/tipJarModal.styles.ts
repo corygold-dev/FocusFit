@@ -93,4 +93,15 @@ export const createStyles = (theme: Theme) =>
       textAlign: 'center',
       marginBottom: 16,
     },
+    retryButton: {
+      backgroundColor: theme.colors.primary,
+      borderRadius: 8,
+      paddingVertical: 10,
+      paddingHorizontal: 24,
+    },
+    retryText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: '#fff',
+    },
   });

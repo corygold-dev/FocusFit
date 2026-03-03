@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import {
+  setup,
   finishTransaction,
   getProducts,
   initConnection,
@@ -48,40 +49,55 @@ class IAPService {
     if (Platform.OS === 'web') return;
     if (this.connected) return;
 
-    try {
-      await initConnection();
-      this.connected = true;
+    setup({ storekitMode: 'STOREKIT_HYBRID_MODE' });
+    await initConnection();
+    this.connected = true;
 
-      this.purchaseUpdateSubscription = purchaseUpdatedListener(
-        async purchase => {
-          try {
-            await finishTransaction({ purchase, isConsumable: true });
-            onPurchaseSuccess(purchase);
-          } catch (err) {
-            console.error('Failed to finish transaction:', err);
-          }
+    this.purchaseUpdateSubscription = purchaseUpdatedListener(
+      async purchase => {
+        try {
+          await finishTransaction({ purchase, isConsumable: true });
+          onPurchaseSuccess(purchase);
+        } catch (err) {
+          console.error('Failed to finish transaction:', err);
         }
-      );
+      }
+    );
 
-      this.purchaseErrorSubscription = purchaseErrorListener(error => {
-        if (error.code !== 'E_USER_CANCELLED') {
-          onPurchaseError(error);
-        }
-      });
-    } catch (err) {
-      console.error('Failed to init IAP connection:', err);
-    }
+    this.purchaseErrorSubscription = purchaseErrorListener(error => {
+      if (error.code !== 'E_USER_CANCELLED') {
+        onPurchaseError(error);
+      }
+    });
   }
 
   async fetchProducts(): Promise<Product[]> {
     if (Platform.OS === 'web') return [];
 
-    try {
-      const products = await getProducts({ skus: [...TIP_PRODUCT_IDS] });
-      return products;
-    } catch (err) {
-      console.error('Failed to fetch products:', err);
-      return [];
+    if (!this.connected) {
+      throw new Error('IAP not connected');
+    }
+
+    const products = await getProducts({ skus: [...TIP_PRODUCT_IDS] });
+    return products;
+  }
+
+  async reset(): Promise<void> {
+    if (this.purchaseUpdateSubscription) {
+      this.purchaseUpdateSubscription.remove();
+      this.purchaseUpdateSubscription = null;
+    }
+    if (this.purchaseErrorSubscription) {
+      this.purchaseErrorSubscription.remove();
+      this.purchaseErrorSubscription = null;
+    }
+    if (this.connected) {
+      try {
+        await endConnection();
+      } catch {
+        // ignore cleanup errors
+      }
+      this.connected = false;
     }
   }
 
