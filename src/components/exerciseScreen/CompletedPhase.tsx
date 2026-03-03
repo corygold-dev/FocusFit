@@ -1,8 +1,9 @@
 import Button from '@/src/components/ui/Button';
 import { useTheme } from '@/src/providers';
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import { completedPhaseStyles } from './styles';
+import { ENCOURAGEMENT_PHRASES } from '@/src/utils/constants';
 
 interface CompletedPhaseProps {
   onReturnHome: () => void;
@@ -17,12 +18,17 @@ export default function CompletedPhase({
 }: CompletedPhaseProps) {
   const { theme } = useTheme();
   const styles = completedPhaseStyles(theme);
+  const [finishingMessageIndex, setFinishingMessageIndex] = useState(0);
+
+  setFinishingMessageIndex(
+    Math.floor(Math.random() * ENCOURAGEMENT_PHRASES.length)
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Workout Complete!</Text>
       <Text style={styles.completedText}>
-        Great job — don't forget to hydrate!
+        {ENCOURAGEMENT_PHRASES[finishingMessageIndex]}
       </Text>
       <Button
         title="Time to Focus"

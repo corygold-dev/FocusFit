@@ -68,6 +68,13 @@ export const FOCUS_PHRASES = [
   'Progress, not perfection.',
 ];
 
+export const ENCOURAGEMENT_PHRASES = [
+  'Great job — don\'t forget to hydrate!',
+  'You crushed it! Ready to get back to it?',
+  'Awesome work! Take a breath and then dive back in.',
+  'Fantastic effort! Grab some water.',
+];
+
 export const FOCUS_PHRASE_INTERVAL = 15000;
 
 // Feedback Modal Constants
